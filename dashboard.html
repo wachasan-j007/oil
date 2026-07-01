@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>OR Oil Retail Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f7f9fc;
+  --surface:#ffffff;
+  --ink:#0f172a;
+  --muted:#64748b;
+  --line:#e2e8f0;
+  --brand:#0ea5e9;
+  --red:#ef4444;
+  --radius:14px;
+  --shadow:0 16px 38px -28px rgba(15,23,42,.45);
+}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);color:var(--ink);font-family:"Prompt",sans-serif}
+a{color:inherit;text-decoration:none}
+.app{width:min(1440px,calc(100% - 36px));margin:0 auto;padding:22px 0 44px}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:18px}
+.nav{display:flex;gap:10px;flex-wrap:wrap}
+.nav a,.ghost{
+  border:1px solid var(--line);
+  background:var(--surface);
+  color:var(--muted);
+  padding:10px 13px;
+  border-radius:10px;
+  font-size:13px;
+  font-weight:600;
+  cursor:pointer;
+}
+.nav a:hover,.ghost:hover{color:var(--ink);border-color:#bae6fd}
+.brand-pill{display:flex;align-items:center;gap:10px;font-weight:700}
+.brand-mark{
+  width:38px;height:38px;border-radius:12px;
+  display:grid;place-items:center;background:var(--brand);color:white;
+  box-shadow:0 14px 28px -20px var(--brand);
+}
+.hero{
+  background:linear-gradient(135deg,rgba(15,23,42,.94),rgba(30,41,59,.88));
+  color:#fff;
+  border-radius:18px;
+  padding:26px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:20px;
+  box-shadow:var(--shadow);
+}
+.hero h1{font-size:clamp(26px,4vw,44px);line-height:1.12;margin:8px 0}
+.hero p{margin:0;color:#cbd5e1;max-width:780px;line-height:1.7}
+.stamp{color:#93c5fd;font-size:12px;text-transform:uppercase;letter-spacing:2px;font-weight:700}
+.filters{
+  margin:18px 0;
+  display:grid;
+  grid-template-columns:repeat(6,minmax(150px,1fr));
+  gap:14px;
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:16px;
+}
+.field{display:flex;flex-direction:column;gap:7px}
+label{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px}
+select{
+  width:100%;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#f8fafc;
+  padding:11px 12px;
+  font:inherit;
+  color:var(--ink);
+}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.kpi{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+.kpi span{display:block;color:var(--muted);font-size:13px;font-weight:600;margin-bottom:8px}
+.kpi strong{font-size:30px;line-height:1}
+.kpi small{display:block;color:var(--muted);margin-top:8px}
+.content-grid{display:grid;grid-template-columns:420px 1fr;gap:18px;align-items:start}
+.panel{
+  background:var(--surface);
+  border:1px solid var(--line);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  padding:18px;
+}
+.panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
+.panel h2{font-size:18px;margin:0}
+.map-wrap{display:grid;grid-template-columns:1fr 150px;gap:16px;align-items:center}
+.map-stage{position:relative;min-height:470px}
+#map,.fallback-map{width:100%;height:470px}
+#map{display:none}
+.simplemap-loaded #map{display:block}
+.simplemap-loaded .fallback-map{display:none}
+.region{cursor:pointer;transition:filter .2s,opacity .2s,transform .2s;transform-origin:center}
+.region:hover{filter:brightness(1.06);transform:translateY(-2px)}
+.region.dim{opacity:.28}
+.region.active{filter:drop-shadow(0 10px 12px rgba(14,165,233,.25))}
+.map-legend{display:flex;flex-direction:column;gap:10px}
+.legend-item{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.dot{width:11px;height:11px;border-radius:50%;background:var(--c)}
+.province-summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:10px;
+  margin-top:14px;
+}
+.summary-item{
+  background:#f8fafc;
+  border:1px solid var(--line);
+  border-radius:10px;
+  padding:10px;
+}
+.summary-item span{display:block;color:var(--muted);font-size:12px;margin-bottom:4px}
+.summary-item strong{font-size:16px}
+.charts{display:grid;grid-template-columns:1.15fr .85fr;gap:18px;margin-bottom:18px}
+.chart-box{height:310px}
+.table-wrap{overflow:auto}
+table{width:100%;border-collapse:separate;border-spacing:0;min-width:760px}
+th,td{padding:13px 14px;border-bottom:1px solid var(--line);text-align:left;font-size:14px;white-space:nowrap}
+th{background:#f8fafc;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.4px}
+tbody tr:hover td{background:#f8fafc}
+.badge{
+  display:inline-flex;
+  padding:5px 9px;
+  border-radius:999px;
+  background:#eff6ff;
+  color:#2563eb;
+  font-size:12px;
+  font-weight:700;
+}
+.status{color:var(--muted);font-size:13px}
+.error{color:var(--red);font-weight:700}
+.right{text-align:right}
+@media(max-width:1100px){
+  .content-grid,.charts{grid-template-columns:1fr}
+  .kpis{grid-template-columns:repeat(2,1fr)}
+  .filters{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:700px){
+  .app{width:min(100% - 24px,1440px)}
+  .hero,.topbar{align-items:flex-start;flex-direction:column}
+  .kpis,.filters{grid-template-columns:1fr}
+  .map-wrap{grid-template-columns:1fr}
+  .map-stage{min-height:380px}
+  #map,.fallback-map{height:380px}
+}
+</style>
+</head>
+<body>
+<main class="app">
+  <nav class="topbar" aria-label="Page navigation">
+    <div class="brand-pill"><span class="brand-mark">OR</span><span>OR Oil Retail Dashboard</span></div>
+    <div class="nav">
+      <a href="index.html">Fuel Value Chain</a>
+      <a href="companies.html">Companies</a>
+      <button class="ghost" type="button" onclick="resetFilters()">Reset Filters</button>
+    </div>
+  </nav>
+
+<section class="hero">
+  <div>
+
+    <div class="stamp" id="excelName">
+      Excel Source : or 2569.xlsx
+    </div>
+
+    <h1>OR Retail Price Dashboard</h1>
+
+    <p>ดึงข้อมูลจากไฟล์ Excel ในโปรเจกต์นี้โดยตรง เพื่อวิเคราะห์ราคาน้ำมันตามภูมิภาค จังหวัด อำเภอ และผลิตภัณฑ์</p>
+
+  </div>
+
+  <div>
+
+    <div class="stamp">Status</div>
+
+    <strong id="loadStatus">Loading...</strong>
+
+  </div>
+</section>
+
+  <section class="filters" aria-label="Dashboard filters">
+        <div class="field">
+        <label for="yearFilter">Year</label>
+        <select id="yearFilter">
+            <option value="2567">2567</option>
+            <option value="2568">2568</option>
+            <option value="2569" selected>2569</option>
+        </select>
+    </div>
+    <div class="field">
+      <label for="companyFilter">Company</label>
+      <select id="companyFilter"><option value="OR">OR</option></select>
+    </div>
+    <div class="field">
+      <label for="regionFilter">Region</label>
+      <select id="regionFilter"></select>
+    </div>
+    <div class="field">
+      <label for="provinceFilter">Province</label>
+      <select id="provinceFilter"></select>
+    </div>
+    <div class="field">
+      <label for="districtFilter">District</label>
+      <select id="districtFilter"></select>
+    </div>
+    <div class="field">
+      <label for="fuelFilter">Fuel Type</label>
+      <select id="fuelFilter"></select>
+    </div>
+    <div class="field">
+      <label for="metricFilter">Chart Metric</label>
+      <select id="metricFilter">
+        <option value="records">Records</option>
+        <option value="products">Products</option>
+        <option value="price">Average Price</option>
+      </select>
+    </div>
+  </section>
+
+  <section class="kpis" aria-label="KPI cards">
+    <article class="kpi"><span>Total Records</span><strong id="kpiRecords">0</strong><small>จำนวนรายการจาก Excel</small></article>
+    <article class="kpi"><span>Provinces</span><strong id="kpiProvinces">0</strong><small>จังหวัดที่พบในข้อมูล</small></article>
+    <article class="kpi"><span>Avg. Price</span><strong id="kpiPrice">0</strong><small>บาท / ลิตร</small></article>
+    <article class="kpi"><span>Latest Date</span><strong id="kpiLatest">-</strong><small>วันที่ล่าสุดในไฟล์</small></article>
+  </section>
+
+  <section class="content-grid">
+    <article class="panel">
+      <div class="panel-title">
+        <h2>Thailand Map</h2>
+        <span class="badge" id="activeRegion">All Regions</span>
+      </div>
+      <div class="map-wrap">
+        <div class="map-stage">
+          <div id="map" aria-label="Thailand map"></div>
+          <svg id="fallbackMap" class="fallback-map" viewBox="0 0 260 520" role="img" aria-label="Stylized Thailand map by region">
+            <path class="region" data-region="North" fill="#bae6fd" d="M105 24 C84 28 66 48 70 76 L48 97 L58 128 L45 157 L69 184 L101 177 L122 195 L151 180 L147 144 L166 119 L149 88 L157 55 L132 36 Z"></path>
+            <path class="region" data-region="Northeast" fill="#bbf7d0" d="M164 102 L206 115 L231 145 L223 184 L241 216 L222 256 L181 247 L154 268 L126 238 L139 204 L122 184 L148 168 L145 137 Z"></path>
+            <path class="region" data-region="Central" fill="#fde68a" d="M89 190 L119 202 L136 238 L126 276 L146 306 L127 340 L93 329 L75 298 L56 270 L69 238 L58 210 Z"></path>
+            <path class="region" data-region="East" fill="#fecaca" d="M139 272 L176 263 L211 279 L214 315 L188 342 L150 326 L130 304 Z"></path>
+            <path class="region" data-region="South" fill="#ddd6fe" d="M113 337 L132 356 L126 389 L145 419 L131 452 L139 493 L119 502 L98 468 L103 430 L85 395 L92 358 Z"></path>
+          </svg>
+        </div>
+        <div class="map-legend">
+          <div class="legend-item"><span class="dot" style="--c:#38bdf8"></span>North</div>
+          <div class="legend-item"><span class="dot" style="--c:#22c55e"></span>Northeast</div>
+          <div class="legend-item"><span class="dot" style="--c:#f59e0b"></span>Central</div>
+          <div class="legend-item"><span class="dot" style="--c:#ef4444"></span>East</div>
+          <div class="legend-item"><span class="dot" style="--c:#8b5cf6"></span>South</div>
+        </div>
+      </div>
+      <div class="province-summary" aria-label="Selected province summary">
+        <div class="summary-item"><span>Selected Area</span><strong id="selectedArea">All Thailand</strong></div>
+        <div class="summary-item"><span>Most Expensive District</span><strong id="topDistrict">-</strong></div>
+        <div class="summary-item"><span>Cheapest District</span><strong id="lowDistrict">-</strong></div>
+      </div>
+    </article>
+
+    <div>
+      <section class="charts">
+        <article class="panel">
+          <div class="panel-title"><h2>Monthly Trend</h2><span class="badge" id="metricLabel">Records</span></div>
+          <div class="chart-box"><canvas id="trendChart"></canvas></div>
+        </article>
+        <article class="panel">
+          <div class="panel-title"><h2>Fuel Mix</h2><span class="badge">By Records</span></div>
+          <div class="chart-box"><canvas id="fuelChart"></canvas></div>
+        </article>
+      </section>
+
+      <article class="panel">
+        <div class="panel-title"><h2>OR Price Table</h2><span class="badge" id="rowCount">Loading Excel...</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Year</th>
+                <th>Region</th>
+                <th>Province</th>
+                <th>District</th>
+                <th>Fuel Type</th>
+                <th class="right">Price</th>
+              </tr>
+            </thead>
+            <tbody id="dataTable">
+              <tr><td colspan="7" class="status">กำลังโหลดไฟล์ Excel...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </article>
+    </div>
+  </section>
+</main>
+
+<script src="mapdata.js"></script>
+<script src="countrymap.js" onload="document.documentElement.classList.add('simplemap-loaded')" onerror="document.documentElement.classList.add('simplemap-missing')"></script>
+<script>
+let EXCEL_PATH = "data/or 2569.xlsx";
+const regions = ["North","Northeast","Central","East","South"];
+const regionLabels = {North:"North",Northeast:"Northeast",Central:"Central",East:"East",South:"South"};
+if(window.simplemaps_countrymap_mapdata){
+  simplemaps_countrymap_mapdata.main_settings.all_states_zoomable = "no";
+  simplemaps_countrymap_mapdata.main_settings.state_hover_color = "#0ea5e9";
+}
+const provinceRegion = {
+  "เชียงใหม่":"North","เชียงราย":"North","ลำปาง":"North","ลำพูน":"North","แม่ฮ่องสอน":"North","น่าน":"North","พะเยา":"North","แพร่":"North","อุตรดิตถ์":"North","ตาก":"North","พิษณุโลก":"North","สุโขทัย":"North","เพชรบูรณ์":"North","พิจิตร":"North","กำแพงเพชร":"North",
+  "นครราชสีมา":"Northeast","ขอนแก่น":"Northeast","อุบลราชธานี":"Northeast","อุดรธานี":"Northeast","บุรีรัมย์":"Northeast","สุรินทร์":"Northeast","ศรีสะเกษ":"Northeast","ร้อยเอ็ด":"Northeast","มหาสารคาม":"Northeast","ชัยภูมิ":"Northeast","สกลนคร":"Northeast","นครพนม":"Northeast","หนองคาย":"Northeast","เลย":"Northeast","มุกดาหาร":"Northeast","ยโสธร":"Northeast","หนองบัวลำภู":"Northeast","บึงกาฬ":"Northeast","อำนาจเจริญ":"Northeast","กาฬสินธุ์":"Northeast",
+  "กรุงเทพมหานคร":"Central","นนทบุรี":"Central","ปทุมธานี":"Central","พระนครศรีอยุธยา":"Central","อ่างทอง":"Central","ลพบุรี":"Central","สิงห์บุรี":"Central","ชัยนาท":"Central","สระบุรี":"Central","นครปฐม":"Central","สมุทรปราการ":"Central","สมุทรสาคร":"Central","สมุทรสงคราม":"Central","นครสวรรค์":"Central","อุทัยธานี":"Central","สุพรรณบุรี":"Central","กาญจนบุรี":"Central","ราชบุรี":"Central","เพชรบุรี":"Central","ประจวบคีรีขันธ์":"Central",
+  "ชลบุรี":"East","ระยอง":"East","จันทบุรี":"East","ตราด":"East","ฉะเชิงเทรา":"East","ปราจีนบุรี":"East","สระแก้ว":"East","นครนายก":"East",
+  "ชุมพร":"South","ระนอง":"South","สุราษฎร์ธานี":"South","พังงา":"South","ภูเก็ต":"South","กระบี่":"South","นครศรีธรรมราช":"South","ตรัง":"South","พัทลุง":"South","สงขลา":"South","สตูล":"South","ปัตตานี":"South","ยะลา":"South","นราธิวาส":"South"
+};
+const mapStateProvince = {
+  TH10:"กรุงเทพมหานคร",TH11:"สมุทรปราการ",TH12:"นนทบุรี",TH13:"ปทุมธานี",TH14:"พระนครศรีอยุธยา",TH15:"อ่างทอง",TH16:"ลพบุรี",TH17:"สิงห์บุรี",TH18:"ชัยนาท",TH19:"สระบุรี",
+  TH20:"ชลบุรี",TH21:"ระยอง",TH22:"จันทบุรี",TH23:"ตราด",TH24:"ฉะเชิงเทรา",TH25:"ปราจีนบุรี",TH26:"นครนายก",TH27:"สระแก้ว",
+  TH30:"นครราชสีมา",TH31:"บุรีรัมย์",TH32:"สุรินทร์",TH33:"ศรีสะเกษ",TH34:"อุบลราชธานี",TH35:"ยโสธร",TH36:"ชัยภูมิ",TH37:"อำนาจเจริญ",TH38:"บึงกาฬ",TH39:"หนองบัวลำภู",TH40:"ขอนแก่น",TH41:"อุดรธานี",TH42:"เลย",TH43:"หนองคาย",TH44:"มหาสารคาม",TH45:"ร้อยเอ็ด",TH46:"กาฬสินธุ์",TH47:"สกลนคร",TH48:"นครพนม",TH49:"มุกดาหาร",
+  TH50:"เชียงใหม่",TH51:"ลำพูน",TH52:"ลำปาง",TH53:"อุตรดิตถ์",TH54:"แพร่",TH55:"น่าน",TH56:"พะเยา",TH57:"เชียงราย",TH58:"แม่ฮ่องสอน",TH60:"นครสวรรค์",TH61:"อุทัยธานี",TH62:"กำแพงเพชร",TH63:"ตาก",TH64:"สุโขทัย",TH65:"พิษณุโลก",TH66:"พิจิตร",TH67:"เพชรบูรณ์",
+  TH70:"ราชบุรี",TH71:"กาญจนบุรี",TH72:"สุพรรณบุรี",TH73:"นครปฐม",TH74:"สมุทรสาคร",TH75:"สมุทรสงคราม",TH76:"เพชรบุรี",TH77:"ประจวบคีรีขันธ์",
+  TH80:"นครศรีธรรมราช",TH81:"กระบี่",TH82:"พังงา",TH83:"ภูเก็ต",TH84:"สุราษฎร์ธานี",TH85:"ระนอง",TH86:"ชุมพร",TH90:"สงขลา",TH91:"สตูล",TH92:"ตรัง",TH93:"พัทลุง",TH94:"ปัตตานี",TH95:"ยะลา",TH96:"นราธิวาส"
+};
+
+let allData = [];
+let trendChart;
+let fuelChart;
+
+const loadStatus = document.getElementById("loadStatus");
+const regionFilter = document.getElementById("regionFilter");
+const provinceFilter = document.getElementById("provinceFilter");
+const districtFilter = document.getElementById("districtFilter");
+const fuelFilter = document.getElementById("fuelFilter");
+const metricFilter = document.getElementById("metricFilter");
+const kpiRecords = document.getElementById("kpiRecords");
+const kpiProvinces = document.getElementById("kpiProvinces");
+const kpiPrice = document.getElementById("kpiPrice");
+const kpiLatest = document.getElementById("kpiLatest");
+const activeRegion = document.getElementById("activeRegion");
+const metricLabel = document.getElementById("metricLabel");
+const rowCount = document.getElementById("rowCount");
+const dataTable = document.getElementById("dataTable");
+const selectedArea = document.getElementById("selectedArea");
+const topDistrict = document.getElementById("topDistrict");
+const lowDistrict = document.getElementById("lowDistrict");
+const yearFilter = document.getElementById("yearFilter");
+
+function optionList(select, items, allLabel){
+  const currentValue = select.value;
+  select.innerHTML = `<option value="">${allLabel}</option>` + items.map(item=>`<option value="${item}">${item}</option>`).join("");
+  if(items.includes(currentValue)) select.value = currentValue;
+}
+
+function uniqueSorted(rows,key){
+  return [...new Set(rows.map(row=>row[key]).filter(Boolean))].sort((a,b)=>a.localeCompare(b,"th"));
+}
+
+function parsePrice(value){
+  const parsed = Number(String(value).replace(/,/g,""));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function normalizeDate(value){
+  if(value instanceof Date) return value.toLocaleDateString("th-TH");
+  return String(value || "").trim();
+}
+
+function dateRank(dateText){
+  const match = String(dateText).match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
+  if(!match) return 0;
+  return Number(match[3]) * 10000 + Number(match[2]) * 100 + Number(match[1]);
+}
+
+function monthKey(dateText){
+  const match = String(dateText).match(/(\d{1,2})-(\d{1,2})-(\d{4})/);
+  if(!match) return "ไม่ระบุ";
+  return `${match[3]}-${match[2].padStart(2,"0")}`;
+}
+
+function filteredRows(){
+  return allData.filter(row=>
+    (!regionFilter.value || row.region === regionFilter.value) &&
+    (!provinceFilter.value || row.province === provinceFilter.value) &&
+    (!districtFilter.value || row.district === districtFilter.value) &&
+    (!fuelFilter.value || row.product === fuelFilter.value)
+  );
+}
+
+function avg(rows,key){
+  const values = rows.map(row=>row[key]).filter(value=>Number.isFinite(value));
+  return values.length ? values.reduce((a,b)=>a+b,0) / values.length : 0;
+}
+
+function updateDependentFilters(changed){
+  if(changed === "region"){
+    provinceFilter.value = "";
+    districtFilter.value = "";
+  }
+  if(changed === "province") districtFilter.value = "";
+
+  const regionRows = allData.filter(row=>!regionFilter.value || row.region === regionFilter.value);
+  optionList(provinceFilter, uniqueSorted(regionRows,"province"), "All Provinces");
+
+  const provinceRows = regionRows.filter(row=>!provinceFilter.value || row.province === provinceFilter.value);
+  optionList(districtFilter, uniqueSorted(provinceRows,"district"), "All Districts");
+  optionList(fuelFilter, uniqueSorted(provinceRows,"product"), "All Fuel Types");
+}
+
+async function loadExcelData(){
+  allData=[];
+
+  try{
+    loadStatus.textContent = "Loading Excel...";
+    const response = await fetch(EXCEL_PATH);
+    if(!response.ok) throw new Error(`Cannot load ${EXCEL_PATH}`);
+    const buffer = await response.arrayBuffer();
+    const workbook = XLSX.read(buffer,{type:"array",cellDates:false});
+    const sheetName = workbook.SheetNames[0];
+    const sheet = workbook.Sheets[sheetName];
+    const rows = XLSX.utils.sheet_to_json(sheet,{header:1,defval:""});
+
+    allData = rows.slice(1).map(row=>{
+      const province = String(row[2] || "").trim();
+      return {
+        date: normalizeDate(row[0]),
+        year: String(row[1] || "").trim(),
+        province,
+        district: String(row[3] || "").trim(),
+        product: String(row[4] || "").trim(),
+        price: parsePrice(row[5]),
+        region: provinceRegion[province] || "Central"
+      };
+    }).filter(row=>row.date && row.province && row.product && Number.isFinite(row.price));
+
+    optionList(regionFilter, regions, "All Regions");
+    updateDependentFilters();
+    loadStatus.textContent = `${allData.length.toLocaleString()} rows`;
+    updateDashboard();
+  }catch(error){
+    console.error(error);
+    loadStatus.innerHTML = '<span class="error">Excel load failed</span>';
+    dataTable.innerHTML = `<tr><td colspan="7" class="error">โหลด ${EXCEL_PATH} ไม่สำเร็จ ตรวจว่าไฟล์อยู่โฟลเดอร์เดียวกับ dashboard.html และเปิดผ่าน web server/GitHub Pages</td></tr>`;
+  }
+}
+
+function bindEvents(){
+
+  regionFilter.addEventListener("change",()=>{
+    updateDependentFilters("region");
+    updateDashboard();
+  });
+
+  provinceFilter.addEventListener("change",()=>{
+    if(provinceFilter.value)
+      regionFilter.value = provinceRegion[provinceFilter.value] || "";
+
+    updateDependentFilters("province");
+    updateDashboard();
+  });
+
+  districtFilter.addEventListener("change",updateDashboard);
+
+  fuelFilter.addEventListener("change",updateDashboard);
+
+  metricFilter.addEventListener("change",updateDashboard);
+
+  document.querySelectorAll(".region").forEach(path=>{
+    path.addEventListener("click",()=>{
+      regionFilter.value =
+        path.dataset.region === regionFilter.value ? "" : path.dataset.region;
+
+      updateDependentFilters("region");
+      updateDashboard();
+    });
+  });
+
+yearFilter.addEventListener("change",()=>{
+
+    EXCEL_PATH = `data/or ${yearFilter.value}.xlsx`;
+
+    document.getElementById("excelName").textContent =
+        `Excel Source : ${yearFilter.value}.xlsx`;
+
+    loadExcelData();
+
+});
+
+}
+
+function setupSimpleMapClicks(){
+  if(!window.simplemaps_countrymap) return;
+  simplemaps_countrymap.hooks.click_state = function(id){
+    selectProvinceFromMap(id);
+  };
+}
+
+function selectProvinceFromMap(id){
+  const province = mapStateProvince[id];
+  if(!province) return;
+  regionFilter.value = provinceRegion[province] || "";
+  updateDependentFilters("region");
+  provinceFilter.value = province;
+  updateDependentFilters("province");
+  updateDashboard();
+}
+
+function updateDashboard(){
+  const rows = filteredRows();
+  const provinces = new Set(rows.map(row=>row.province));
+  const latest = rows.reduce((best,row)=>dateRank(row.date) > dateRank(best) ? row.date : best,"");
+  kpiRecords.textContent = rows.length.toLocaleString();
+  kpiProvinces.textContent = provinces.size.toLocaleString();
+  kpiPrice.textContent = avg(rows,"price").toFixed(2);
+  kpiLatest.textContent = latest || "-";
+  activeRegion.textContent = provinceFilter.value || (regionFilter.value ? regionLabels[regionFilter.value] : "All Regions");
+  metricLabel.textContent = metricFilter.options[metricFilter.selectedIndex].text;
+  rowCount.textContent = `${rows.length.toLocaleString()} rows`;
+  updateAreaSummary(rows);
+  updateMap();
+  updateCharts(rows);
+  updateTable(rows);
+}
+
+function updateAreaSummary(rows){
+  selectedArea.textContent = districtFilter.value || provinceFilter.value || (regionFilter.value ? regionLabels[regionFilter.value] : "All Thailand");
+  const byDistrict = new Map();
+  rows.forEach(row=>{
+    const key = row.district || "ไม่ระบุ";
+    if(!byDistrict.has(key)) byDistrict.set(key,[]);
+    byDistrict.get(key).push(row);
+  });
+  const ranked = [...byDistrict.entries()]
+    .map(([district,items])=>({district,price:avg(items,"price"),count:items.length}))
+    .filter(item=>item.count > 0)
+    .sort((a,b)=>b.price-a.price);
+  topDistrict.textContent = ranked[0] ? `${ranked[0].district} ${ranked[0].price.toFixed(2)}` : "-";
+  lowDistrict.textContent = ranked.length ? `${ranked[ranked.length - 1].district} ${ranked[ranked.length - 1].price.toFixed(2)}` : "-";
+}
+
+function updateMap(){
+  document.querySelectorAll(".region").forEach(path=>{
+    const active = regionFilter.value && path.dataset.region === regionFilter.value;
+    path.classList.toggle("active",active);
+    path.classList.toggle("dim",Boolean(regionFilter.value) && !active);
+  });
+  updateSimpleMapSelection();
+}
+
+function updateSimpleMapSelection(){
+  if(!window.simplemaps_countrymap_mapdata || !window.simplemaps_countrymap) return;
+  const selectedId = Object.keys(mapStateProvince).find(id=>mapStateProvince[id] === provinceFilter.value);
+  Object.keys(mapStateProvince).forEach(id=>{
+    const province = mapStateProvince[id];
+    const state = simplemaps_countrymap_mapdata.state_specific[id];
+    if(!state) return;
+    state.color = selectedId ? (id === selectedId ? "#0ea5e9" : "#dbeafe") : "default";
+    state.hover_color = "#0284c7";
+    state.description = province;
+    state.url = "";
+    try{
+      if(simplemaps_countrymap.loaded && simplemaps_countrymap.refresh_state) simplemaps_countrymap.refresh_state(id);
+    }catch(error){
+      console.warn("Map refresh skipped", error);
+    }
+  });
+}
+
+function updateCharts(rows){
+  const grouped = new Map();
+  rows.forEach(row=>{
+    const key = monthKey(row.date);
+    if(!grouped.has(key)) grouped.set(key,[]);
+    grouped.get(key).push(row);
+  });
+  const labels = [...grouped.keys()].sort().slice(-12);
+  const metric = metricFilter.value;
+  const values = labels.map(label=>{
+    const bucket = grouped.get(label) || [];
+    if(metric === "price") return +avg(bucket,"price").toFixed(2);
+    if(metric === "products") return new Set(bucket.map(row=>row.product)).size;
+    return bucket.length;
+  });
+
+  if(trendChart) trendChart.destroy();
+  trendChart = new Chart(document.getElementById("trendChart"),{
+    type:"line",
+    data:{labels,datasets:[{data:values,borderColor:"#0ea5e9",backgroundColor:"rgba(14,165,233,.08)",fill:true,tension:.35,borderWidth:3,pointRadius:3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{border:{display:false},grid:{color:"#e2e8f0"}}}}
+  });
+
+  const productCounts = new Map();
+  rows.forEach(row=>productCounts.set(row.product,(productCounts.get(row.product) || 0) + 1));
+  const topProducts = [...productCounts.entries()].sort((a,b)=>b[1]-a[1]).slice(0,8);
+  if(fuelChart) fuelChart.destroy();
+  fuelChart = new Chart(document.getElementById("fuelChart"),{
+    type:"doughnut",
+    data:{labels:topProducts.map(item=>item[0]),datasets:[{data:topProducts.map(item=>item[1]),backgroundColor:["#0ea5e9","#22c55e","#f59e0b","#8b5cf6","#ef4444","#64748b","#14b8a6","#f97316"],borderWidth:0}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"bottom",labels:{boxWidth:10,usePointStyle:true}}},cutout:"68%"}
+  });
+}
+
+function updateTable(rows){
+  const tableRows = rows
+    .slice()
+    .sort((a,b)=>dateRank(b.date)-dateRank(a.date))
+    .slice(0,300);
+  dataTable.innerHTML = tableRows.map(row=>`
+    <tr>
+      <td>${row.date}</td>
+      <td>${row.year}</td>
+      <td><span class="badge">${regionLabels[row.region] || row.region}</span></td>
+      <td>${row.province}</td>
+      <td>${row.district}</td>
+      <td>${row.product}</td>
+      <td class="right">${row.price.toFixed(2)}</td>
+    </tr>
+  `).join("") || '<tr><td colspan="7" class="status">ไม่พบข้อมูลตาม filter ที่เลือก</td></tr>';
+}
+
+function resetFilters(){
+  regionFilter.value = "";
+  provinceFilter.value = "";
+  districtFilter.value = "";
+  fuelFilter.value = "";
+  metricFilter.value = "records";
+  updateDependentFilters();
+  updateDashboard();
+}
+
+optionList(regionFilter, regions, "All Regions");
+optionList(provinceFilter, [], "Loading provinces...");
+optionList(districtFilter, [], "Loading districts...");
+optionList(fuelFilter, [], "Loading products...");
+setupSimpleMapClicks();
+bindEvents();
+loadExcelData();
+</script>
+</body>
+</html>
