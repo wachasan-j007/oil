@@ -100,7 +100,12 @@ select{
 .kpi span{display:block;color:var(--muted);font-size:13px;font-weight:600;margin-bottom:8px}
 .kpi strong{font-size:30px;line-height:1; color:var(--ink);}
 .kpi small{display:block;color:var(--muted);margin-top:8px; font-size: 11px;}
-.content-grid{display:grid;grid-template-columns:460px 1fr;gap:18px;align-items:start}
+.content-grid{
+    display:grid;
+    grid-template-columns:650px 1fr;
+    gap:18px;
+    align-items:start;
+}
 .panel{
   background:var(--surface);
   border:1px solid var(--line);
@@ -110,8 +115,27 @@ select{
 }
 .panel-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}
 .panel h2{font-size:18px;margin:0}
-.map-wrap{display:grid;grid-template-columns:1fr 140px;gap:16px;align-items:center}
-.map-stage{position:relative;min-height:580px}
+.map-wrap{
+    display:grid;
+    grid-template-columns:1fr 180px;
+    gap:18px;
+    align-items:center;
+}
+.map-stage{
+    position:relative;
+    min-height:720px;
+}
+
+#map,
+.fallback-map{
+    width:100%;
+    height:720px;
+}
+
+#map svg{
+    width:100% !important;
+    height:100% !important;
+}
 #map,.fallback-map{width:100%;height:580px}
 #map{display:none}
 .simplemap-loaded #map{display:block}
@@ -174,6 +198,15 @@ tbody tr:hover td{background:#f8fafc}
   .map-wrap{grid-template-columns:1fr}
   .map-stage{min-height:380px}
   #map,.fallback-map{height:380px}
+  /* ซ่อนคำว่า Simplemap Trial */
+#map a {
+  display: none !important;
+}
+
+/* หากมันเป็นแค่ข้อความ (Text) ไม่ใช่ลิงก์ ให้เพิ่มโค้ดนี้ไปด้วย */
+#map text tspan {
+  display: none !important;
+}
 }
 </style>
 </head>
@@ -328,6 +361,8 @@ const colorsSolid = { "เหนือ": "#38bdf8", "ตะวันออกเ
 
 if(window.simplemaps_countrymap_mapdata){
   simplemaps_countrymap_mapdata.main_settings.all_states_zoomable = "no";
+  simplemaps_countrymap_mapdata.main_settings.width="400";
+  simplemaps_countrymap_mapdata.main_settings.div="map";
 }
 
 const provinceRegion = {
