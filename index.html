@@ -84,7 +84,8 @@
 
     .chain-wrap {
       padding: 20px 16px 30px;
-      overflow-x: hidden
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .flow-wrap {
@@ -92,6 +93,12 @@
       width: 100%;
       max-width: 1900px;
       margin: 0 auto
+    }
+
+    @media (max-width: 900px) {
+      .flow-wrap {
+        min-width: 900px;
+      }
     }
 
     .section-title-row {
