@@ -122,6 +122,22 @@ body::before{
 @keyframes fadeIn{from{opacity:0; transform:translateY(6px);} to{opacity:1; transform:translateY(0);}}
 
 .kpi-row{display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:10px; margin-bottom:16px;}
+.region-grid{display:grid; grid-template-columns:repeat(auto-fill,minmax(210px,1fr)); gap:12px;}
+.region-card{
+  background:var(--surface-solid); border:1px solid var(--border); border-radius:12px; padding:12px 14px;
+  cursor:pointer; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
+}
+.region-card:hover{transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--blue-400);}
+.region-card .region-name{font-size:12.5px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+.region-card .region-dot{width:9px; height:9px; border-radius:50%; flex:none;}
+.region-card .region-stats{display:flex; gap:8px;}
+.region-card .region-stats > div{flex:1; text-align:center; background:var(--blue-100); border-radius:8px; padding:6px 2px;}
+.region-card .region-stats .l{display:block; font-size:10px; color:var(--text-dim);}
+.region-card .region-stats .v{display:block; font-size:13.5px; font-weight:600; margin-top:2px;}
+.region-card .region-stats .v.hl{color:var(--blue-400);}
+#regionOverview .back-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
+#regionOverview .back-row h3{margin:0;}
+
 .kpi-card{
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;
   backdrop-filter:blur(10px); box-shadow:var(--shadow); position:relative; overflow:hidden;
@@ -245,12 +261,13 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
   <div class="kpi-row" id="kpiRow"></div>
   <div class="grid-2">
     <div class="card">
-      <h3>แผนที่ราคาขายปลีกน้ำมันรายจังหวัด <span class="hint">คลิกจังหวัดเพื่อดูอำเภอ · กรอบทอง = จังหวัดที่เลือกอยู่</span></h3>
+      <h3>แผนที่ราคาขายปลีกน้ำมันรายจังหวัด <span class="hint">คลิกภาค/จังหวัดบนแผนที่เพื่อซูมเข้าไปดู · กรอบทอง = จังหวัดที่เลือกอยู่</span></h3>
       <div class="layer-switch" id="mapColorSwitch">
         <button class="chip active" data-mode="diff">แบ่งสีตามส่วนต่างราคา</button>
         <button class="chip" data-mode="region">แบ่งสีตามภูมิภาค</button>
       </div>
       <div id="mapChart" class="echart map-xl"></div>
+      <div class="card" id="regionOverview" style="margin-top:14px;"></div>
     </div>
     <div class="card">
       <h3>Top 5 / Bottom 5 จังหวัด</h3>
@@ -743,6 +760,9 @@ function initFilters(){
     renderAll();
   }
 
+  window.refreshProvinceOptions = refreshProvinceOptions;
+  window.refreshDistrictOptions = refreshDistrictOptions;
+
   prodSel.onchange = ()=>{ state.filterProduct=+prodSel.value; renderAll(); };
   yearSel.onchange = updateDateFromPickers;
   monthSel.onchange = updateDateFromPickers;
@@ -839,14 +859,38 @@ function initFilters(){
 
 // ---------- REGION MAPPING (5-region, consistent with existing OR system) ----------
 const REGIONS = {
-  "เหนือ": ["เชียงใหม่","เชียงราย","ลำปาง","ลำพูน","แม่ฮ่องสอน","น่าน","พะเยา","แพร่","อุตรดิตถ์","ตาก","สุโขทัย","พิษณุโลก","กำแพงเพชร","พิจิตร","เพชรบูรณ์","นครสวรรค์","อุทัยธานี"],
-  "กลาง": ["กรุงเทพมหานคร","นนทบุรี","ปทุมธานี","สมุทรปราการ","สมุทรสาคร","สมุทรสงคราม","นครปฐม","พระนครศรีอยุธยา","อ่างทอง","สิงห์บุรี","ชัยนาท","ลพบุรี","สระบุรี","สุพรรณบุรี","กาญจนบุรี","ราชบุรี","เพชรบุรี","ประจวบคีรีขันธ์","นครนายก"],
-  "อีสาน": ["นครราชสีมา","บุรีรัมย์","สุรินทร์","ศรีสะเกษ","อุบลราชธานี","ยโสธร","ชัยภูมิ","อำนาจเจริญ","หนองบัวลำภู","ขอนแก่น","อุดรธานี","เลย","หนองคาย","มหาสารคาม","ร้อยเอ็ด","กาฬสินธุ์","สกลนคร","นครพนม","มุกดาหาร","บึงกาฬ"],
-  "ตะวันออก": ["ชลบุรี","ระยอง","จันทบุรี","ตราด","ฉะเชิงเทรา","ปราจีนบุรี","สระแก้ว"],
-  "ใต้": ["นครศรีธรรมราช","กระบี่","พังงา","ภูเก็ต","สุราษฎร์ธานี","ระนอง","ชุมพร","สงขลา","สตูล","ตรัง","พัทลุง","ปัตตานี","ยะลา","นราธิวาส"]
+  "เหนือ": ["เชียงราย","เชียงใหม่","พะเยา","ลำปาง","แม่ฮ่องสอน","ลำพูน","น่าน","แพร่","อุตรดิตถ์"],
+  "กรุงเทพและปริมณฑล": ["กรุงเทพมหานคร","นนทบุรี","ปทุมธานี","สมุทรปราการ","นครปฐม","สมุทรสาคร"],
+  "กลาง": ["ลพบุรี","สิงห์บุรี","อุทัยธานี","ชัยนาท","อ่างทอง","พระนครศรีอยุธยา","สระบุรี","นครนายก","สุโขทัย","พิษณุโลก","กำแพงเพชร","พิจิตร","เพชรบูรณ์","นครสวรรค์","สมุทรสงคราม","สุพรรณบุรี"],
+  "ตะวันตก": ["กาญจนบุรี","ราชบุรี","เพชรบุรี","ประจวบคีรีขันธ์","ตาก"],
+  "อีสาน": ["เลย","หนองคาย","หนองบัวลำภู","อุดรธานี","ขอนแก่น","ชัยภูมิ","นครราชสีมา","บุรีรัมย์","สกลนคร","บึงกาฬ","นครพนม","กาฬสินธุ์","มหาสารคาม","มุกดาหาร","ร้อยเอ็ด","ยโสธร","อำนาจเจริญ","อุบลราชธานี","ศรีสะเกษ","สุรินทร์"],
+  "ตะวันออก": ["ปราจีนบุรี","สระแก้ว","ฉะเชิงเทรา","ชลบุรี","จันทบุรี","ระยอง","ตราด"],
+  "ใต้": ["ชุมพร","ระนอง","สุราษฎร์ธานี","พังงา","นครศรีธรรมราช","กระบี่","ภูเก็ต","ตรัง","พัทลุง","สงขลา","สตูล","ปัตตานี","ยะลา","นราธิวาส"]
 };
 function regionOf(prov){ for(const r in REGIONS){ if(REGIONS[r].includes(prov)) return r; } return 'อื่นๆ'; }
-const REGION_COLORS = { 'เหนือ':'#2563c9', 'กลาง':'#f59e0b', 'อีสาน':'#10b981', 'ตะวันออก':'#8b5cf6', 'ใต้':'#ec4899', 'อื่นๆ':'#94a3b8' };
+const REGION_COLORS = {
+  'เหนือ':'#8b5cf6', 'กรุงเทพและปริมณฑล':'#eab308', 'กลาง':'#10b981', 'ตะวันตก':'#64748b',
+  'อีสาน':'#d97706', 'ตะวันออก':'#4338ca', 'ใต้':'#06b6d4', 'อื่นๆ':'#94a3b8'
+};
+
+function computeRegionBBoxCenterZoom(region){
+  if(!state.geo || !state.geo.features) return null;
+  const names = REGIONS[region] || [];
+  const feats = state.geo.features.filter(f=>names.includes(f.properties && f.properties.name));
+  if(!feats.length) return null;
+  let minX=Infinity,minY=Infinity,maxX=-Infinity,maxY=-Infinity;
+  const walk = coords=>{
+    if(typeof coords[0]==='number'){
+      const [x,y]=coords; if(x<minX)minX=x; if(x>maxX)maxX=x; if(y<minY)minY=y; if(y>maxY)maxY=y;
+    } else coords.forEach(walk);
+  };
+  feats.forEach(f=>{ if(f.geometry && f.geometry.coordinates) walk(f.geometry.coordinates); });
+  if(!isFinite(minX)) return null;
+  const center = [(minX+maxX)/2, (minY+maxY)/2];
+  const span = Math.max(maxX-minX, maxY-minY, 0.6);
+  const zoom = Math.max(1.4, Math.min(9, 11/span));
+  return {center, zoom};
+}
 
 // ---------- DATA HELPERS ----------
 // ---------- ALL-PRODUCT AVERAGES ----------
@@ -886,7 +930,7 @@ function latestSnapshot(){
     const diff = ref!=null ? +(price-ref).toFixed(2) : null;
     out.push({distIdx:i, provIdx:dd[0], prov, dist:dd[1], price, bkk, transport, ref, diff, region:regionOf(prov), compliant: diff!=null && Math.abs(diff)<=0.001});
   });
-  if(bkk!=null && state.filterDistrictIdx==='' && (!state.filterProvince || state.filterProvince==='กรุงเทพมหานคร') && (!state.filterRegion || state.filterRegion==='กลาง')){
+  if(bkk!=null && state.filterDistrictIdx==='' && (!state.filterProvince || state.filterProvince==='กรุงเทพมหานคร') && (!state.filterRegion || state.filterRegion==='กรุงเทพและปริมณฑล')){
     out.push({distIdx:null, provIdx:null, prov:'กรุงเทพมหานคร', dist:'ราคากลาง (กทม.)', price:bkk, transport:0, ref:bkk, diff:0, region:regionOf('กรุงเทพมหานคร'), compliant:true, isBangkokBaseline:true});
   }
   return out;
@@ -902,6 +946,7 @@ function renderAll(){
   if(!state.data) return;
   if(state.sidebarState.type==null) $('sidebar').classList.remove('open');
   renderKPI();
+  renderRegionOverview();
   renderMap();
   renderTopBottom();
   renderRegionPie();
@@ -923,6 +968,86 @@ function chartTheme(){
     blue: '#2563c9', blueLight:'#8db2ee', up:'#e0483e', down:'#1ea672', border: getComputedStyle(document.body).getPropertyValue('--border').trim(),
     surface: getComputedStyle(document.body).getPropertyValue('--surface-solid').trim() || (state.theme==='dark' ? '#101a2e' : '#ffffff')
   };
+}
+
+// ---------- REGION / PROVINCE DRILLDOWN OVERVIEW ----------
+function computeRegionStats(){
+  const savedR=state.filterRegion, savedP=state.filterProvince, savedD=state.filterDistrictIdx;
+  state.filterRegion=''; state.filterProvince=''; state.filterDistrictIdx='';
+  const snap = latestSnapshot();
+  state.filterRegion=savedR; state.filterProvince=savedP; state.filterDistrictIdx=savedD;
+  const byRegion = {};
+  snap.forEach(r=>{ (byRegion[r.region] ||= []).push(r.price); });
+  return Object.keys(REGIONS).map(r=>{
+    const arr = byRegion[r]||[];
+    return {
+      region:r, provCount:REGIONS[r].length,
+      min: arr.length? Math.min(...arr).toFixed(2): null,
+      max: arr.length? Math.max(...arr).toFixed(2): null,
+      avg: arr.length? (arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2): null
+    };
+  });
+}
+function computeProvinceStatsForRegion(region){
+  const savedR=state.filterRegion, savedP=state.filterProvince, savedD=state.filterDistrictIdx;
+  state.filterRegion=region; state.filterProvince=''; state.filterDistrictIdx='';
+  const snap = latestSnapshot();
+  state.filterRegion=savedR; state.filterProvince=savedP; state.filterDistrictIdx=savedD;
+  const byProv = {};
+  snap.forEach(r=>{ (byProv[r.prov] ||= []).push(r.price); });
+  return Object.entries(byProv).map(([prov,arr])=>({
+    prov, n:arr.length,
+    min:Math.min(...arr).toFixed(2), max:Math.max(...arr).toFixed(2),
+    avg:(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2)
+  })).sort((a,b)=>a.prov.localeCompare(b.prov,'th'));
+}
+function renderRegionOverview(){
+  const el = $('regionOverview'); if(!el) return;
+  if(!state.filterRegion){
+    const stats = computeRegionStats();
+    el.innerHTML = `<h3>ราคาน้ำมันขายปลีก (บาท/ลิตร) <span class="hint">คลิกภาคเพื่อดูรายจังหวัด</span></h3>
+      <div class="region-grid">` + stats.map(s=>`
+        <div class="region-card" data-region="${s.region}">
+          <div class="region-name"><span class="region-dot" style="background:${REGION_COLORS[s.region]||'#94a3b8'}"></span>ภาค${s.region} · ${s.provCount} จังหวัด</div>
+          <div class="region-stats">
+            <div><span class="l">ต่ำสุด</span><span class="v">${s.min??'-'}</span></div>
+            <div><span class="l">เฉลี่ย</span><span class="v hl">${s.avg??'-'}</span></div>
+            <div><span class="l">สูงสุด</span><span class="v">${s.max??'-'}</span></div>
+          </div>
+        </div>`).join('') + `</div>`;
+    el.querySelectorAll('.region-card').forEach(c=>{
+      c.onclick = ()=>{
+        state.filterRegion = c.dataset.region; $('fRegion').value = state.filterRegion;
+        state.filterProvince=''; state.filterDistrictIdx='';
+        refreshProvinceOptions(); refreshDistrictOptions(); renderAll();
+      };
+    });
+  } else {
+    const provs = computeProvinceStatsForRegion(state.filterRegion);
+    el.innerHTML = `<div class="back-row">
+        <button class="small-btn" id="regionBackBtn">← ย้อนกลับ</button>
+        <h3>ภาค${state.filterRegion} — ราคารายจังหวัด (บาท/ลิตร) <span class="hint">คลิกจังหวัดเพื่อดูรายอำเภอ</span></h3>
+      </div>
+      <div class="region-grid">` + provs.map(p=>`
+        <div class="region-card province-card" data-prov="${p.prov}">
+          <div class="region-name">${p.prov} (${p.n})</div>
+          <div class="region-stats">
+            <div><span class="l">ต่ำสุด</span><span class="v">${p.min}</span></div>
+            <div><span class="l">เฉลี่ย</span><span class="v hl">${p.avg}</span></div>
+            <div><span class="l">สูงสุด</span><span class="v">${p.max}</span></div>
+          </div>
+        </div>`).join('') + `</div>`;
+    $('regionBackBtn').onclick = ()=>{
+      state.filterRegion=''; $('fRegion').value=''; state.filterProvince=''; state.filterDistrictIdx='';
+      refreshProvinceOptions(); refreshDistrictOptions(); renderAll();
+    };
+    el.querySelectorAll('.province-card').forEach(c=>{
+      c.onclick = ()=>{
+        state.filterProvince = c.dataset.prov; $('fProvince').value = state.filterProvince;
+        refreshDistrictOptions(); renderAll(); openProvinceSidebar(state.filterProvince);
+      };
+    });
+  }
 }
 
 // ---------- KPI ----------
@@ -1014,6 +1139,9 @@ function renderMap(){
     } else if(isSelected){
       base.itemStyle = {borderColor:HL, borderWidth:3};
     }
+    if(state.filterRegion && region!==state.filterRegion){
+      base.itemStyle = {...(base.itemStyle||{}), opacity:0.12};
+    }
     return base;
   });
 
@@ -1084,9 +1212,27 @@ function renderMap(){
     }, true);
   }
 
-  // reset any previous zoom/pan so the map returns to its default view when filters change/clear
-  chart.dispatchAction({type:'restore'});
-  chart.off('click'); chart.on('click', p=>{ if(p.name){ const cleared = setProvinceFilter(p.name); if(cleared){ $('sidebar').classList.remove('open'); state.sidebarState = {type:null, key:null}; } else { openProvinceSidebar(p.name); } } });
+  // zoom the map to the selected region's bounding box; otherwise restore default view
+  if(state.filterRegion){
+    const bz = computeRegionBBoxCenterZoom(state.filterRegion);
+    if(bz) chart.setOption({series:[{center:bz.center, zoom:bz.zoom}]});
+    else chart.dispatchAction({type:'restore'});
+  } else {
+    chart.dispatchAction({type:'restore'});
+  }
+  chart.off('click'); chart.on('click', p=>{
+    if(!p.name) return;
+    if(!state.filterRegion){
+      // first click on the whole-country map drills into that province's region, mirroring the region-cards flow
+      state.filterRegion = regionOf(p.name); $('fRegion').value = state.filterRegion;
+      state.filterProvince=''; state.filterDistrictIdx='';
+      refreshProvinceOptions(); refreshDistrictOptions(); renderAll();
+      return;
+    }
+    const cleared = setProvinceFilter(p.name);
+    if(cleared){ $('sidebar').classList.remove('open'); state.sidebarState = {type:null, key:null}; }
+    else { openProvinceSidebar(p.name); }
+  });
 }
 
 function diffBadgeHtml(diff, compliant){
@@ -1286,21 +1432,32 @@ function openDistrictSidebar(distIdx){
 window.openDistrictSidebar = openDistrictSidebar;
 
 // ---------- TOP/BOTTOM + REGION PIE ----------
+// tight axis range so bars actually show variation, instead of a fixed min that makes close values look identical
+function barAxisRange(vals){
+  if(!vals.length) return {min:undefined, max:undefined};
+  const lo = Math.min(...vals), hi = Math.max(...vals);
+  // fixed padding (not proportional to the data spread) so a real 0.2 บาท difference
+  // still looks like a small difference instead of being stretched to fill the whole bar
+  const pad = 3;
+  return {min:Math.floor(lo-pad), max:Math.ceil(hi+pad)};
+}
 function renderTopBottom(){
   const snap = latestSnapshot();
   const provAvg = provinceAverages(snap).sort((a,b)=>b.avg-a.avg);
   const top5 = provAvg.slice(0,5);
   const bottom5 = provAvg.slice(-5).reverse();
   const t = chartTheme();
+  const allVals = [...top5,...bottom5].map(x=>x.avg);
+  const {min:axisMin, max:axisMax} = barAxisRange(allVals);
   getChart('topBottomChart').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
     legend:{data:['สูงสุด','ต่ำสุด'], textStyle:{color:t.dim, fontSize:10}, top:0},
-    grid:{left:70,right:16,top:30,bottom:20},
-    xAxis:{type:'value', axisLabel:{color:t.dim,fontSize:9}, splitLine:{lineStyle:{color:t.border}}},
+    grid:{left:70,right:36,top:30,bottom:20},
+    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:9}, splitLine:{lineStyle:{color:t.border}}},
     yAxis:{type:'category', data:[...top5.map(x=>x.prov),...bottom5.map(x=>x.prov)].reverse(), axisLabel:{color:t.text,fontSize:10}},
     series:[{
-      type:'bar', data:[...top5.map(x=>({value:x.avg,itemStyle:{color:t.up}})),...bottom5.map(x=>({value:x.avg,itemStyle:{color:t.down}}))].reverse(),
+      type:'bar', barMaxWidth:22, data:[...top5.map(x=>({value:x.avg,itemStyle:{color:t.up}})),...bottom5.map(x=>({value:x.avg,itemStyle:{color:t.down}}))].reverse(),
       label:{show:true, position:'right', color:t.text, fontSize:9, formatter:p=>p.value.toFixed(2)}
     }]
   }, true);
@@ -1309,13 +1466,21 @@ function renderRegionPie(){
   const snap = latestSnapshot();
   const m = {};
   snap.forEach(r=>{ (m[r.region] ||= []).push(r.price); });
-  const data = Object.entries(m).map(([name,arr])=>({name, value:+(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2), itemStyle:{color:REGION_COLORS[name]||'#94a3b8'}}));
+  const data = Object.entries(m).map(([name,arr])=>({name, value:+(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2)}))
+    .sort((a,b)=>b.value-a.value);
   const t = chartTheme();
+  const {min:axisMin, max:axisMax} = barAxisRange(data.map(x=>x.value));
   getChart('regionPie').setOption({
     backgroundColor:'transparent',
-    tooltip:{trigger:'item', formatter:'{b}: {c} ฿ ({d}%)'},
-    legend:{bottom:0, textStyle:{color:t.dim, fontSize:10}},
-    series:[{type:'pie', radius:['35%','65%'], data, label:{color:t.text, fontSize:10}, itemStyle:{borderColor: getComputedStyle(document.body).getPropertyValue('--bg'), borderWidth:2}}]
+    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, formatter:p=>`${p[0].name}: ${p[0].value.toFixed(2)} ฿`},
+    grid:{left:70,right:36,top:10,bottom:20},
+    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:9}, splitLine:{lineStyle:{color:t.border}}},
+    yAxis:{type:'category', data:data.map(x=>'ภาค'+x.name).reverse(), axisLabel:{color:t.text, fontSize:10}},
+    series:[{
+      type:'bar', barMaxWidth:22,
+      data:data.map(x=>({value:x.value, itemStyle:{color:REGION_COLORS[x.name]||'#94a3b8'}})).reverse(),
+      label:{show:true, position:'right', color:t.text, fontSize:9, formatter:p=>p.value.toFixed(2)}
+    }]
   }, true);
 }
 
@@ -1475,12 +1640,23 @@ function renderTransport(){
         + (c.nonCompliant? `ส่วนต่างเฉลี่ยของอำเภอที่ไม่ตรง: ${c.avgNonCompliantDiff>0?'+':''}${c.avgNonCompliantDiff} ฿` : 'ตรงตามราคาอ้างอิง สนพ. ทั้งหมด');
     }},
     grid:{left:80,right:20,top:20,bottom:70},
-    xAxis:{type:'category', data:d.products, axisLabel:{color:t.dim, fontSize:9, rotate:40, interval:0}, splitArea:{show:true}},
-    yAxis:{type:'category', data:regionNames, axisLabel:{color:t.text, fontSize:11}, splitArea:{show:true}},
-    visualMap:{ min:0, max:100, calculable:true, orient:'horizontal', left:'center', bottom:0, text:['ไม่ตรงตามสนพ.มาก','ตรงตามสนพ.ทั้งหมด'], inRange:{color:['#eef3fb','#f6c453','#e0483e']}, textStyle:{color:t.dim} },
+    xAxis:{type:'category', data:d.products, axisLabel:{color:t.dim, fontSize:11, rotate:40, interval:0}, splitArea:{show:true}},
+    yAxis:{type:'category', data:regionNames, axisLabel:{color:t.text, fontSize:13}, splitArea:{show:true}},
+    visualMap:{
+      show:true, min:0, max:100, orient:'horizontal', left:'center', bottom:0, type:'piecewise',
+      text:['ไม่ตรงตามสนพ.มาก','ตรงตามสนพ.ทั้งหมด'], textStyle:{color:t.dim, fontSize:11},
+      pieces:[
+        {min:0, max:0, color:'#1ea672', label:'0% (ตรงทั้งหมด)'},
+        {min:0.001, max:5, color:'#8bc98a', label:'0–5%'},
+        {min:5, max:15, color:'#f6c453', label:'5–15%'},
+        {min:15, max:30, color:'#f0983f', label:'15–30%'},
+        {min:30, max:60, color:'#e0483e', label:'30–60%'},
+        {min:60, max:100, color:'#8a1a1a', label:'60–100%'}
+      ]
+    },
     series:[{
       type:'heatmap', data:cells,
-      label:{show:true, color:'#fff', fontSize:10, fontWeight:700, formatter:p=>p.data.total? p.data.value[2]+'%' : '–',
+      label:{show:true, color:'#fff', fontSize:16, fontWeight:700, formatter:p=>p.data.total? p.data.value[2]+'%' : '–',
         textBorderColor:'rgba(0,0,0,.65)', textBorderWidth:2.5},
       itemStyle:{ borderColor:t.border, borderWidth:1,
         color: p=> p.data.total===0 ? '#9aa7bb' : undefined }
@@ -1537,19 +1713,21 @@ function renderRanking(){
   const t = chartTheme();
   const top20 = provAvg.slice(0,20).reverse();
   const bottom20 = provAvg.slice(-20);
+  const topRange = barAxisRange(top20.map(x=>x.avg));
+  const bottomRange = barAxisRange(bottom20.map(x=>x.avg));
   getChart('rankTop').setOption({
     backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    grid:{left:90,right:20,top:10,bottom:20},
-    xAxis:{type:'value', axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
+    grid:{left:90,right:36,top:10,bottom:20},
+    xAxis:{type:'value', min:topRange.min, max:topRange.max, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
     yAxis:{type:'category', data:top20.map(x=>x.prov), axisLabel:{color:t.text, fontSize:10}},
-    series:[{type:'bar', data:top20.map(x=>x.avg), itemStyle:{color:t.up}, label:{show:true,position:'right',color:t.text,fontSize:9,formatter:p=>p.value.toFixed(2)}}]
+    series:[{type:'bar', barMaxWidth:16, data:top20.map(x=>x.avg), itemStyle:{color:t.up}, label:{show:true,position:'right',color:t.text,fontSize:9,formatter:p=>p.value.toFixed(2)}}]
   }, true);
   getChart('rankBottom').setOption({
     backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    grid:{left:90,right:20,top:10,bottom:20},
-    xAxis:{type:'value', axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
+    grid:{left:90,right:36,top:10,bottom:20},
+    xAxis:{type:'value', min:bottomRange.min, max:bottomRange.max, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
     yAxis:{type:'category', data:bottom20.map(x=>x.prov).reverse(), axisLabel:{color:t.text, fontSize:10}},
-    series:[{type:'bar', data:bottom20.map(x=>x.avg).reverse(), itemStyle:{color:t.down}, label:{show:true,position:'right',color:t.text,fontSize:9,formatter:p=>p.value.toFixed(2)}}]
+    series:[{type:'bar', barMaxWidth:16, data:bottom20.map(x=>x.avg).reverse(), itemStyle:{color:t.down}, label:{show:true,position:'right',color:t.text,fontSize:9,formatter:p=>p.value.toFixed(2)}}]
   }, true);
 }
 
