@@ -17,6 +17,7 @@
   --text:#0e2038; --text-dim:#5b7291; --border:rgba(20,50,100,.10);
   --up:#e0483e; --down:#1ea672; --neutral:#8a97a8;
   --radius:16px; --shadow: 0 8px 30px rgba(15,40,90,.08);
+  --ui-scale:1;
 }
 html[data-theme="dark"]{
   --bg:#060c1a; --surface:rgba(20,32,58,.6); --surface-solid:#101b33;
@@ -25,25 +26,16 @@ html[data-theme="dark"]{
   --blue-100:#132446;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
-body.senior-mode{font-size:18px !important;}
-body.senior-mode .topbar{padding:16px 22px;}
-body.senior-mode .topbar .title{font-size:22px;}
-body.senior-mode .filterbar label{font-size:16px;}
-body.senior-mode .filterbar select,
-body.senior-mode .filterbar input{font-size:16px; padding:10px 12px;}
-body.senior-mode .filterbar .reset-btn{font-size:15px; padding:10px 16px;}
-body.senior-mode .card h3{font-size:18px;}
-body.senior-mode .card h3 .hint{font-size:14px;}
-body.senior-mode .kpi-card .label{font-size:14px;}
-body.senior-mode .kpi-card .value{font-size:22px;}
-body.senior-mode .kpi-card .sub{font-size:13px;}
-body.senior-mode .chip{font-size:15px; padding:8px 14px;}
-body.senior-mode .badge{font-size:13px; padding:4px 10px;}
-body.senior-mode .district-row{font-size:15px; padding:10px 12px;}
-body.senior-mode .sidebar .sb-head h4{font-size:18px;}
-body.senior-mode #searchResults div{font-size:16px; padding:12px;}
-body.senior-mode .echart.tall{height:760px !important;}
-body.senior-mode .echart.map-xl{height:960px !important;}
+body.size-small{--ui-scale:0.88;}
+body.size-medium{--ui-scale:1;}
+body.size-large{--ui-scale:1.32;}
+body.zoom-mode{zoom:1.3;}
+.size-btn{
+  font-family:inherit; font-size:12px; padding:6px 12px; border-radius:8px; border:1px solid var(--border);
+  background:var(--surface-solid); color:var(--text-dim); cursor:pointer;
+}
+.size-btn.active{background:var(--blue-600); color:#fff; border-color:var(--blue-600);}
+.size-switch{display:flex; gap:4px; align-items:center;}
 body{
   font-family:'Kanit',sans-serif; background:var(--bg); color:var(--text);
   transition:background .3s, color .3s; min-height:100vh;
@@ -64,14 +56,14 @@ body::before{
   padding:12px 22px; background:var(--surface); backdrop-filter:blur(16px);
   border-bottom:1px solid var(--border);
 }
-.brand{display:flex; align-items:center; gap:10px; font-weight:600; font-size:17px; white-space:nowrap;}
+.brand{display:flex; align-items:center; gap:10px; font-weight:600; font-size:calc(23px * var(--ui-scale)); white-space:nowrap;}
 .brand .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-300)); box-shadow:0 0 12px var(--blue-400);}
 .brand .logo-mark{flex-shrink:0;}
-.brand small{display:block; font-weight:300; font-size:11px; color:var(--text-dim);}
+.brand small{display:block; font-weight:300; font-size:calc(15px * var(--ui-scale)); color:var(--text-dim);}
 .tabs{display:flex; gap:4px; overflow-x:auto; flex:1;}
 .tab-btn{
   border:none; background:transparent; color:var(--text-dim); font-family:inherit;
-  font-size:13.5px; padding:8px 14px; border-radius:10px; cursor:pointer; white-space:nowrap;
+  font-size:calc(13.5px * var(--ui-scale)); padding:8px 14px; border-radius:10px; cursor:pointer; white-space:nowrap;
   transition:all .2s;
 }
 .tab-btn:hover{background:var(--blue-100); color:var(--text);}
@@ -79,14 +71,14 @@ body::before{
 .topbar-actions{display:flex; align-items:center; gap:8px;}
 .icon-btn{
   width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--surface-solid);
-  color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:15px;
+  color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:calc(20px * var(--ui-scale));
 }
 .icon-btn:hover{background:var(--blue-100);}
 .page-nav{display:flex; align-items:center; gap:8px; white-space:nowrap;}
 .page-nav a{
   display:inline-flex; align-items:center; gap:6px; text-decoration:none;
   border:1px solid var(--border); background:var(--surface-solid); color:var(--text-dim);
-  font-size:12.5px; font-weight:500; padding:7px 14px; border-radius:20px; transition:all .2s;
+  font-size:calc(12.5px * var(--ui-scale)); font-weight:500; padding:7px 14px; border-radius:20px; transition:all .2s;
 }
 .page-nav a:hover{background:var(--blue-100); color:var(--text); border-color:var(--blue-300);}
 
@@ -97,24 +89,39 @@ body::before{
   backdrop-filter:blur(16px);
 }
 .filterbar select, .filterbar input{
-  font-family:inherit; font-size:12.5px; padding:7px 10px; border-radius:9px; border:1px solid var(--border);
+  font-family:inherit; font-size:calc(12.5px * var(--ui-scale)); padding:7px 10px; border-radius:9px; border:1px solid var(--border);
   background:var(--surface-solid); color:var(--text); outline:none; min-width:100px;
 }
-.filterbar label{font-size:11px; color:var(--text-dim); display:flex; flex-direction:column; gap:3px;}
+.filterbar label{font-size:calc(15px * var(--ui-scale)); color:var(--text-dim); display:flex; flex-direction:column; gap:3px;}
 .search-wrap{position:relative;}
 .search-results{
   position:absolute; top:100%; left:0; margin-top:4px; width:220px; max-height:220px; overflow:auto;
   background:var(--surface-solid); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow);
   z-index:60; display:none;
 }
-.search-results div{padding:7px 12px; font-size:12.5px; cursor:pointer;}
+.search-results div{padding:7px 12px; font-size:calc(12.5px * var(--ui-scale)); cursor:pointer;}
 .search-results div:hover{background:var(--blue-100);}
 .chip{
-  font-size:11px; padding:6px 12px; border-radius:20px; border:1px solid var(--blue-500); color:var(--blue-500);
+  font-size:calc(15px * var(--ui-scale)); padding:6px 12px; border-radius:20px; border:1px solid var(--blue-500); color:var(--blue-500);
   background:transparent; cursor:pointer; font-family:inherit;
 }
 .chip.active{background:var(--blue-600); color:#fff; border-color:var(--blue-600);}
-.reset-btn{margin-left:auto; font-size:12px; color:var(--text-dim); background:none; border:none; cursor:pointer; text-decoration:underline;}
+.reset-btn{margin-left:auto; font-size:calc(16px * var(--ui-scale)); color:var(--text-dim); background:none; border:none; cursor:pointer; text-decoration:underline;}
+.compare-item{
+  display:flex; align-items:center; gap:6px; font-size:calc(16px * var(--ui-scale)); padding:6px 6px 6px 12px; border-radius:20px;
+  border:1px solid var(--border); background:var(--surface-solid); color:var(--text);
+}
+.compare-item .swatch{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
+.compare-item .rm{
+  border:none; background:var(--border); color:var(--text-dim); width:18px; height:18px; border-radius:50%;
+  cursor:pointer; font-size:calc(16px * var(--ui-scale)); line-height:1; display:flex; align-items:center; justify-content:center;
+}
+.compare-item .rm:hover{background:var(--down); color:#fff;}
+.product-chip{
+  font-size:calc(15px * var(--ui-scale)); padding:5px 12px; border-radius:20px; border:1px solid var(--border); color:var(--text-dim);
+  background:transparent; cursor:pointer; font-family:inherit;
+}
+.product-chip.active{background:var(--blue-100); color:var(--blue-600); border-color:var(--blue-500);}
 
 /* ---------- Layout ---------- */
 .page{display:none; padding:18px 22px 60px;}
@@ -128,12 +135,12 @@ body::before{
   cursor:pointer; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
 .region-card:hover{transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--blue-400);}
-.region-card .region-name{font-size:12.5px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+.region-card .region-name{font-size:calc(12.5px * var(--ui-scale)); font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
 .region-card .region-dot{width:9px; height:9px; border-radius:50%; flex:none;}
 .region-card .region-stats{display:flex; gap:8px;}
 .region-card .region-stats > div{flex:1; text-align:center; background:var(--blue-100); border-radius:8px; padding:6px 2px;}
-.region-card .region-stats .l{display:block; font-size:10px; color:var(--text-dim);}
-.region-card .region-stats .v{display:block; font-size:13.5px; font-weight:600; margin-top:2px;}
+.region-card .region-stats .l{display:block; font-size:calc(14px * var(--ui-scale)); color:var(--text-dim);}
+.region-card .region-stats .v{display:block; font-size:calc(13.5px * var(--ui-scale)); font-weight:600; margin-top:2px;}
 .region-card .region-stats .v.hl{color:var(--blue-400);}
 #regionOverview .back-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
 #regionOverview .back-row h3{margin:0;}
@@ -142,12 +149,12 @@ body::before{
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;
   backdrop-filter:blur(10px); box-shadow:var(--shadow); position:relative; overflow:hidden;
 }
-.kpi-card .label{font-size:11px; color:var(--text-dim); margin-bottom:6px;}
-.kpi-card .value{font-size:21px; font-weight:600; line-height:1.15;}
-.kpi-card .sub{font-size:10.5px; color:var(--text-dim); margin-top:4px;}
+.kpi-card .label{font-size:calc(15px * var(--ui-scale)); color:var(--text-dim); margin-bottom:6px;}
+.kpi-card .value{font-size:calc(28px * var(--ui-scale)); font-weight:600; line-height:1.15;}
+.kpi-card .sub{font-size:calc(10.5px * var(--ui-scale)); color:var(--text-dim); margin-top:4px;}
 .kpi-card.accent{border-color:var(--blue-400);}
 
-.grid-2{display:grid; grid-template-columns:7fr 3fr; gap:14px;}
+.grid-2{display:grid; grid-template-columns:8fr 2fr; gap:14px;}
 .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
 @media(max-width:980px){.grid-2,.grid-3{grid-template-columns:1fr;}}
 
@@ -155,13 +162,13 @@ body::before{
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:16px;
   backdrop-filter:blur(10px); box-shadow:var(--shadow); margin-bottom:14px;
 }
-.card h3{font-size:14.5px; font-weight:500; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;}
-.card h3 .hint{font-size:11px; color:var(--text-dim); font-weight:300;}
-.echart{width:100%; height:420px;}
-.echart.tall{height:640px;}
-.echart.map-xl{height:860px;}
+.card h3{font-size:calc(14.5px * var(--ui-scale)); font-weight:500; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;}
+.card h3 .hint{font-size:calc(15px * var(--ui-scale)); color:var(--text-dim); font-weight:300;}
+.echart{width:100%; height:calc(460px * var(--ui-scale));}
+.echart.tall{height:calc(680px * var(--ui-scale));}
+.echart.map-xl{height:calc(940px * var(--ui-scale));}
 #page-overview .grid-2{align-items:start;}
-.echart.short{height:280px;}
+.echart.short{height:calc(280px * var(--ui-scale));}
 
 .layer-switch{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
 #sidebar{
@@ -170,9 +177,9 @@ body::before{
   transition:right .35s ease; overflow-y:auto; padding:18px;
 }
 #sidebar.open{right:0;}
-#sidebar .close-btn{float:right; cursor:pointer; font-size:20px; color:var(--text-dim);}
-.district-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed var(--border); font-size:12.5px;}
-.badge{padding:2px 8px; border-radius:20px; font-size:10.5px; font-weight:500;}
+#sidebar .close-btn{float:right; cursor:pointer; font-size:calc(27px * var(--ui-scale)); color:var(--text-dim);}
+.district-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed var(--border); font-size:calc(12.5px * var(--ui-scale));}
+.badge{padding:2px 8px; border-radius:20px; font-size:calc(10.5px * var(--ui-scale)); font-weight:500;}
 .badge.up{background:rgba(224,72,62,.12); color:var(--up);}
 .badge.down{background:rgba(30,166,114,.12); color:var(--down);}
 .badge.flat{background:rgba(138,151,168,.12); color:var(--neutral);}
@@ -180,7 +187,7 @@ body::before{
 .badge.diffneg{background:rgba(30,166,114,.12); color:var(--down);}
 .badge.compliant{background:rgba(30,166,114,.12); color:var(--down);}
 
-table.data-table{width:100%; border-collapse:collapse; font-size:12.5px;}
+table.data-table{width:100%; border-collapse:collapse; font-size:calc(12.5px * var(--ui-scale));}
 table.data-table th{
   text-align:left; padding:8px 10px; color:var(--text-dim); font-weight:500; border-bottom:1px solid var(--border);
   position:sticky; top:0; background:var(--surface-solid);
@@ -191,11 +198,11 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 
 .insight-item{
   display:flex; gap:10px; padding:10px 12px; border-radius:12px; background:var(--blue-100); margin-bottom:8px;
-  font-size:13px; align-items:flex-start;
+  font-size:calc(18px * var(--ui-scale)); align-items:flex-start;
 }
-.insight-item .ic{font-size:16px;}
+.insight-item .ic{font-size:calc(22px * var(--ui-scale));}
 .small-btn{
-  font-size:11.5px; padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface-solid);
+  font-size:calc(11.5px * var(--ui-scale)); padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface-solid);
   color:var(--text); cursor:pointer;
 }
 .small-btn:hover{background:var(--blue-100);}
@@ -205,10 +212,10 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 }
 .spinner{width:44px; height:44px; border-radius:50%; border:4px solid var(--blue-100); border-top-color:var(--blue-500); animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.footer-note{text-align:center; font-size:11px; color:var(--text-dim); margin-top:24px;}
+.footer-note{text-align:center; font-size:calc(15px * var(--ui-scale)); color:var(--text-dim); margin-top:24px;}
 </style>
 </head>
-<body>
+<body class="size-medium">
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
@@ -235,7 +242,12 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
   </div>
   <div class="topbar-actions">
     <button class="icon-btn" id="themeToggle" title="สลับโหมดสี">🌙</button>
-    <button class="icon-btn" id="seniorToggle" title="โหมดผู้สูงอายุ (ขนาดตัวอักษรใหญ่)">🔍</button>
+    <div class="size-switch" title="ขนาดตัวอักษร (ทั้งเว็บ)">
+      <button class="size-btn" data-size="small">เล็ก</button>
+      <button class="size-btn active" data-size="medium">กลาง</button>
+      <button class="size-btn" data-size="large">ใหญ่</button>
+    </div>
+    <button class="icon-btn" id="zoomToggle" title="โหมดแว่นขยาย (ซูมทั้งหน้าจอ ไม่ใช่แค่ตัวอักษร)">🔍</button>
     <button class="icon-btn" id="refreshData" title="โหลดข้อมูลใหม่จาก Excel (ล้างแคช)">↻</button>
     <button class="icon-btn" id="exportCsv" title="Export CSV">⬇</button>
   </div>
@@ -259,20 +271,22 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 <!-- ============ PAGE: OVERVIEW / MAP ============ -->
 <div class="page active" id="page-overview">
   <div class="kpi-row" id="kpiRow"></div>
-  <div class="grid-2">
-    <div class="card">
-      <h3>แผนที่ราคาขายปลีกน้ำมันรายจังหวัด <span class="hint">คลิกภาค/จังหวัดบนแผนที่เพื่อซูมเข้าไปดู · กรอบทอง = จังหวัดที่เลือกอยู่</span></h3>
-      <div class="layer-switch" id="mapColorSwitch">
-        <button class="chip active" data-mode="diff">แบ่งสีตามส่วนต่างราคา</button>
-        <button class="chip" data-mode="region">แบ่งสีตามภูมิภาค</button>
-      </div>
-      <div id="mapChart" class="echart map-xl"></div>
-      <div class="card" id="regionOverview" style="margin-top:14px;"></div>
+  <div class="card">
+    <h3>แผนที่ราคาขายปลีกน้ำมันรายจังหวัด <span class="hint">คลิกภาค/จังหวัดบนแผนที่เพื่อซูมเข้าไปดู · กรอบทอง = จังหวัดที่เลือกอยู่</span></h3>
+    <div class="layer-switch" id="mapColorSwitch">
+      <button class="chip active" data-mode="diff">แบ่งสีตามส่วนต่างราคา</button>
+      <button class="chip" data-mode="region">แบ่งสีตามภูมิภาค</button>
     </div>
+    <div id="mapChart" class="echart map-xl"></div>
+    <div class="card" id="regionOverview" style="margin-top:14px;"></div>
+  </div>
+  <div class="grid-2" style="margin-top:14px;">
     <div class="card">
       <h3>Top 5 / Bottom 5 จังหวัด</h3>
       <div id="topBottomChart" class="echart" style="height:250px"></div>
-      <h3 style="margin-top:14px">สัดส่วนตามภาค</h3>
+    </div>
+    <div class="card">
+      <h3>สัดส่วนตามภาค</h3>
       <div id="regionPie" class="echart" style="height:250px"></div>
     </div>
   </div>
@@ -303,14 +317,14 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 <!-- ============ PAGE: TRANSPORT ============ -->
 <div class="page" id="page-transport">
   <div class="card">
-    <h3>Heatmap: สัดส่วนอำเภอที่ไม่ตรงตามราคาอ้างอิง สนพ. (ตามภาค x ผลิตภัณฑ์) <span class="hint">สีเข้ม/แดง = พบอำเภอไม่ตรงตามสนพ.เยอะ · สีอ่อน = ตรงเกือบทั้งหมด · ช่องเทา = ไม่มีข้อมูลผลิตภัณฑ์นี้ในตัวกรอง</span></h3>
-    <div id="transportHeatmap" class="echart tall"></div>
+    <h3>Heatmap: สัดส่วนอำเภอที่ไม่ปฏิบัติตามราคาอ้างอิง สนพ. (ตามภาค x ผลิตภัณฑ์) <span class="hint">สีเข้ม/แดง = พบอำเภอไม่ปฏิบัติตาม สนพ. เยอะ · สีอ่อน = ปฏิบัติตามเกือบทั้งหมด · ช่องเทา = ไม่มีข้อมูลผลิตภัณฑ์นี้ในตัวกรอง</span></h3>
+    <div id="transportHeatmap" class="echart tall" style="height:calc(760px * var(--ui-scale));"></div>
   </div>
   <div class="card">
     <h3>จังหวัดผิดปกติ (Outlier: ค่าขนส่งสูง-ราคาต่ำ หรือ ค่าขนส่งต่ำ-ราคาสูง) <span class="hint">ค่าความคลาดเคลื่อน = ส่วนต่างเฉลี่ยที่พบ (ปลายทาง−ต้นทาง) ลบด้วยค่าขนส่ง สนพ. ที่ควรจะเป็น · ถ้าราคาปลายทาง=ต้นทางเป๊ะ แต่ค่าขนส่ง สนพ. &gt; 0 จะติดลบ เพราะราคาที่ขายจริง "ไม่ได้บวกค่าขนส่งตามที่ควรจะเป็น" เท่ากับขายถูกกว่าที่ควร</span></h3>
     <div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
-      <input type="text" id="outlierSearch" placeholder="พิมพ์ค้นหา จังหวัด / อำเภอ / ผลิตภัณฑ์..." style="flex:1; min-width:220px; max-width:340px; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-solid); color:var(--text); font-size:12.5px;">
-      <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim); cursor:pointer;">
+      <input type="text" id="outlierSearch" placeholder="พิมพ์ค้นหา จังหวัด / อำเภอ / ผลิตภัณฑ์..." style="flex:1; min-width:220px; max-width:340px; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-solid); color:var(--text); font-size:calc(12.5px * var(--ui-scale));">
+      <label style="display:flex; align-items:center; gap:6px; font-size:calc(12.5px * var(--ui-scale)); color:var(--text-dim); cursor:pointer;">
         <input type="checkbox" id="outlierShowAll"> แสดงทั้งหมด (รวมอำเภอที่ตรงตามสนพ.)
       </label>
     </div>
@@ -333,12 +347,19 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 <!-- ============ PAGE: COMPARE ============ -->
 <div class="page" id="page-compare">
   <div class="card">
-    <h3>เปรียบเทียบจังหวัด <span class="hint">เลือก 2 จังหวัดเพื่อเทียบราคาเฉลี่ยแยกตามชนิดน้ำมัน ตามปีที่เลือกอยู่ในตัวกรอง เทียบกับราคากลาง สนพ.</span></h3>
-    <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:10px;">
-      <select id="compareProvA"></select>
-      <select id="compareProvB"></select>
+    <h3>เปรียบเทียบจังหวัด/อำเภอ <span class="hint">เพิ่มได้กี่จังหวัด/อำเภอก็ได้ เทียบราคาเฉลี่ยแยกตามชนิดน้ำมันที่เลือก ตามปีที่เลือกอยู่ในตัวกรอง เทียบกับราคากลาง กทม.และปริมณฑล สนพ.</span></h3>
+    <div class="filterbar" style="position:static; padding:0; border:none; background:transparent; backdrop-filter:none; margin-bottom:10px;">
+      <label>จังหวัด<select id="compareAddProv"><option value="">ทั้งหมด</option></select></label>
+      <label>อำเภอ<select id="compareAddDist"><option value="">ทั้งหมด</option></select></label>
+      <div class="search-wrap">
+        <label>ค้นหาจังหวัด/อำเภอ<input id="compareAddSearch" placeholder="พิมพ์ชื่อ..." autocomplete="off"></label>
+        <div class="search-results" id="compareSearchResults"></div>
+      </div>
+      <button class="chip active" id="compareAddBtn" type="button" style="border-radius:9px;">+ เพิ่มรายการเปรียบเทียบ</button>
     </div>
-    <div id="compareBar" class="echart tall"></div>
+    <div id="compareItemsList" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;"></div>
+    <div id="compareProductPicker" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;"></div>
+    <div id="compareBar" class="echart tall" style="height:calc(760px * var(--ui-scale));"></div>
   </div>
 </div>
 
@@ -444,13 +465,26 @@ $('themeToggle').onclick = ()=>{
   $('themeToggle').textContent = state.theme==='light' ? '🌙':'☀️';
   renderAll();
 };
-$('seniorToggle').onclick = ()=>{
-  document.body.classList.toggle('senior-mode');
-  const on = document.body.classList.contains('senior-mode');
-  $('seniorToggle').textContent = on ? '👁' : '🔍';
-  $('seniorToggle').title = on ? 'โหมดปกติ' : 'โหมดผู้สูงอายุ (ขนาดตัวอักษรใหญ่)';
-  setTimeout(()=>Object.values(charts).forEach(c=>c.resize()), 100);
+$('zoomToggle').onclick = ()=>{
+  document.body.classList.toggle('zoom-mode');
+  const on = document.body.classList.contains('zoom-mode');
+  $('zoomToggle').title = on ? 'ปิดโหมดแว่นขยาย' : 'โหมดแว่นขยาย (ซูมทั้งหน้าจอ ไม่ใช่แค่ตัวอักษร)';
+  $('zoomToggle').style.color = on ? 'var(--blue-600)' : '';
+  setTimeout(()=>Object.values(charts).forEach(c=>c.resize()), 150);
 };
+state.uiScale = 1; // 1 = medium; used to scale numeric fontSize values inside echarts options (canvas text doesn't inherit CSS)
+function SC(n){ return Math.round(n * state.uiScale); }
+document.querySelectorAll('.size-btn').forEach(btn=>{
+  btn.onclick = ()=>{
+    document.querySelectorAll('.size-btn').forEach(b=>b.classList.toggle('active', b===btn));
+    const size = btn.dataset.size;
+    document.body.classList.remove('size-small','size-medium','size-large');
+    document.body.classList.add('size-'+size);
+    state.uiScale = size==='small' ? 0.88 : size==='large' ? 1.32 : 1;
+    renderAll();
+    setTimeout(()=>Object.values(charts).forEach(c=>c.resize()), 150);
+  };
+});
 
 // ---------- LOAD DATA ----------
 const charts = {};
@@ -820,14 +854,8 @@ function initFilters(){
   $('trendProvA').value = d.provinces.includes('เชียงใหม่') ? 'เชียงใหม่' : d.provinces[0];
   $('trendProvB').value = d.provinces.includes('ภูเก็ต') ? 'ภูเก็ต' : d.provinces[1];
 
-  // compare page province selectors (ไม่รวม กทม. เพราะไม่มีข้อมูลระดับอำเภอ)
-  ['compareProvA','compareProvB'].forEach(id=>{
-    const sel = $(id);
-    [...d.provinces].sort((a,b)=>a.localeCompare(b,'th')).forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; sel.appendChild(o); });
-    sel.onchange = renderCompare;
-  });
-  $('compareProvA').value = d.provinces.includes('เชียงใหม่') ? 'เชียงใหม่' : d.provinces[0];
-  $('compareProvB').value = d.provinces.includes('ภูเก็ต') ? 'ภูเก็ต' : d.provinces[1];
+  // compare page: add-province selector + dependent add-district selector
+  initCompareControls();
 
   $('sidebarClose').onclick = ()=>{ $('sidebar').classList.remove('open'); state.sidebarState = {type:null, key:null}; };
   $('outlierSearch').oninput = renderOutlierTable;
@@ -1171,7 +1199,7 @@ function renderMap(){
     backgroundColor:'transparent',
     tooltip:{ trigger:'item', formatter: tooltipFmt },
     series:[{
-      type:'map', map:'thailand', roam:true, label:{show:false},
+      type:'map', map:'thailand', roam:'move', label:{show:false},
       emphasis:{ label:{show:true, color:'#fff'}, itemStyle:{areaColor:t.blue} },
       itemStyle:{ borderColor:t.border, borderWidth:.6 },
       data: mapData,
@@ -1183,7 +1211,7 @@ function renderMap(){
     chart.setOption({
       ...baseOption,
       visualMap:{show:false},
-      legend:{ data:Object.keys(REGION_COLORS), bottom:10, left:10, textStyle:{color:t.dim, fontSize:11}, itemWidth:12, itemHeight:12, icon:'circle' }
+      legend:{ data:Object.keys(REGION_COLORS), bottom:10, left:10, textStyle:{color:t.dim, fontSize:SC(15)}, itemWidth:12, itemHeight:12, icon:'circle' }
     }, true);
   } else {
     const diffVals = mapData.map(x=>x.diff).filter(v=>v!=null);
@@ -1200,14 +1228,14 @@ function renderMap(){
           {min:0.10, max:0.20, color:'#D32F2F', label:'แพง'},
           {min:0.05, max:0.10, color:'#E53935', label:'แพงเล็กน้อย'},
           {min:0.001, max:0.05, color:'#EF5350', label:'แพงนิดหน่อย'},
-          {min:-0.001, max:0.001, color:'#757575', label:'ปกติ'},
+          {min:-0.001, max:0.001, color:'#bdbdbd', label:'ปกติ'},
           {min:-0.05, max:-0.001, color:'#43A047', label:'ถูกนิดหน่อย'},
           {min:-0.10, max:-0.05, color:'#388E3C', label:'ถูกเล็กน้อย'},
           {min:-0.20, max:-0.10, color:'#2E7D32', label:'ถูก'},
           {min:-0.56, max:-0.20, color:'#1B5E20', label:'ถูกมาก'},
           {min:-maxAbs-1, max:-0.56, color:'#0B3D0B', label:'ถูกที่สุด'}
         ],
-        textStyle:{color:t.dim, fontSize:11, fontWeight:500}
+        textStyle:{color:t.dim, fontSize:SC(15), fontWeight:500}
       }
     }, true);
   }
@@ -1285,7 +1313,7 @@ function openProvinceSidebar(prov){
 
   $('sbTitle').textContent = 'จังหวัด'+prov;
   let html = `<div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;">${region} · ${rows.length} อำเภอ · ณ ${thDate(state.filterDateISO,'full')}</div>`;
-  html += `<div style="font-size:11.5px;color:var(--text-dim);margin-bottom:10px;">${isAllProd?'ทุกผลิตภัณฑ์ (เฉลี่ย)':d.products[prod]} · ราคากลาง กทม.: <b style="color:var(--text)">${bkk!=null? bkk.toFixed(2)+' ฿':'-'}</b></div>`;
+  html += `<div style="font-size:calc(11.5px * var(--ui-scale));color:var(--text-dim);margin-bottom:10px;">${isAllProd?'ทุกผลิตภัณฑ์ (เฉลี่ย)':d.products[prod]} · ราคากลาง กทม.: <b style="color:var(--text)">${bkk!=null? bkk.toFixed(2)+' ฿':'-'}</b></div>`;
 
   // Summary cards
   html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">`;
@@ -1296,7 +1324,7 @@ function openProvinceSidebar(prov){
   html += `</div>`;
 
   if(d._zeroTransportProvinces.has(prov)){
-    html += `<div style="font-size:11.5px;color:var(--blue-600);margin-bottom:10px;">ℹ ค่าขนส่ง สนพ. = 0 บาททุกอำเภอ (ราคาเท่า กทม.)</div>`;
+    html += `<div style="font-size:calc(11.5px * var(--ui-scale));color:var(--blue-600);margin-bottom:10px;">ℹ ค่าขนส่ง สนพ. = 0 บาททุกอำเภอ (ราคาเท่า กทม.)</div>`;
   }
   if(rows.length){
     const maxRow = rows[0], minRow = rows[rows.length-1];
@@ -1352,8 +1380,8 @@ function openProvinceSidebar(prov){
     getChart('sbProvTrend').setOption({
       backgroundColor:'transparent',
       grid:{left:40,right:10,top:10,bottom:24},
-      xAxis:{type:'category', data:trendPoints.map(p=>thDate(p[0],'axis')), axisLabel:{color:chartT.dim,fontSize:8,rotate:30}},
-      yAxis:{type:'value', scale:true, axisLabel:{color:chartT.dim,fontSize:8}, splitLine:{lineStyle:{color:chartT.border}}},
+      xAxis:{type:'category', data:trendPoints.map(p=>thDate(p[0],'axis')), axisLabel:{color:chartT.dim,fontSize:SC(11),rotate:30}},
+      yAxis:{type:'value', scale:true, axisLabel:{color:chartT.dim,fontSize:SC(11)}, splitLine:{lineStyle:{color:chartT.border}}},
       tooltip:{trigger:'axis'},
       series:[{type:'line', data:trendPoints.map(p=>p[1]), smooth:true, areaStyle:{opacity:.1}, itemStyle:{color:chartT.blue}, lineStyle:{color:chartT.blue,width:1.5}, showSymbol:false}]
     }, true);
@@ -1421,8 +1449,8 @@ function openDistrictSidebar(distIdx){
       getChart('sbTrend').setOption({
         backgroundColor:'transparent',
         grid:{left:40,right:16,top:16,bottom:26},
-        xAxis:{type:'category', data:trendData.map(s=>thDate(s[0],'axis')), axisLabel:{color:t.dim, fontSize:9, rotate:40}},
-        yAxis:{type:'value', scale:true, axisLabel:{color:t.dim, fontSize:9}, splitLine:{lineStyle:{color:t.border}}},
+        xAxis:{type:'category', data:trendData.map(s=>thDate(s[0],'axis')), axisLabel:{color:t.dim, fontSize:SC(13), rotate:40}},
+        yAxis:{type:'value', scale:true, axisLabel:{color:t.dim, fontSize:SC(13)}, splitLine:{lineStyle:{color:t.border}}},
         tooltip:{trigger:'axis'},
         series:[{type:'line', data:trendData.map(s=>s[1]), smooth:true, areaStyle:{opacity:.15}, itemStyle:{color:t.blue}, lineStyle:{color:t.blue,width:2}}]
       }, true);
@@ -1438,7 +1466,7 @@ function barAxisRange(vals){
   const lo = Math.min(...vals), hi = Math.max(...vals);
   // fixed padding (not proportional to the data spread) so a real 0.2 บาท difference
   // still looks like a small difference instead of being stretched to fill the whole bar
-  const pad = 3;
+  const pad = 1.5;
   return {min:Math.floor(lo-pad), max:Math.ceil(hi+pad)};
 }
 function renderTopBottom(){
@@ -1452,13 +1480,13 @@ function renderTopBottom(){
   getChart('topBottomChart').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    legend:{data:['สูงสุด','ต่ำสุด'], textStyle:{color:t.dim, fontSize:10}, top:0},
+    legend:{data:['สูงสุด','ต่ำสุด'], textStyle:{color:t.dim, fontSize:SC(14)}, top:0},
     grid:{left:70,right:36,top:30,bottom:20},
-    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:9}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:[...top5.map(x=>x.prov),...bottom5.map(x=>x.prov)].reverse(), axisLabel:{color:t.text,fontSize:10}},
+    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:SC(15)}, splitLine:{lineStyle:{color:t.border}}},
+    yAxis:{type:'category', data:[...top5.map(x=>x.prov),...bottom5.map(x=>x.prov)].reverse(), axisLabel:{color:t.text,fontSize:SC(16)}},
     series:[{
       type:'bar', barMaxWidth:22, data:[...top5.map(x=>({value:x.avg,itemStyle:{color:t.up}})),...bottom5.map(x=>({value:x.avg,itemStyle:{color:t.down}}))].reverse(),
-      label:{show:true, position:'right', color:t.text, fontSize:9, formatter:p=>p.value.toFixed(2)}
+      label:{show:true, position:'right', color:t.text, fontSize:SC(15), formatter:p=>p.value.toFixed(2)}
     }]
   }, true);
 }
@@ -1474,12 +1502,12 @@ function renderRegionPie(){
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, formatter:p=>`${p[0].name}: ${p[0].value.toFixed(2)} ฿`},
     grid:{left:70,right:36,top:10,bottom:20},
-    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:9}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:data.map(x=>'ภาค'+x.name).reverse(), axisLabel:{color:t.text, fontSize:10}},
+    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:SC(15)}, splitLine:{lineStyle:{color:t.border}}},
+    yAxis:{type:'category', data:data.map(x=>'ภาค'+x.name).reverse(), axisLabel:{color:t.text, fontSize:SC(16)}},
     series:[{
       type:'bar', barMaxWidth:22,
       data:data.map(x=>({value:x.value, itemStyle:{color:REGION_COLORS[x.name]||'#94a3b8'}})).reverse(),
-      label:{show:true, position:'right', color:t.text, fontSize:9, formatter:p=>p.value.toFixed(2)}
+      label:{show:true, position:'right', color:t.text, fontSize:SC(15), formatter:p=>p.value.toFixed(2)}
     }]
   }, true);
 }
@@ -1510,7 +1538,7 @@ function renderTrend(){
     legend:{data:provs, textStyle:{color:t.dim}, top:0},
     grid:{left:50,right:20,top:40,bottom:70},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
-    xAxis:{type:'category', axisLabel:{color:t.dim, fontSize:9, rotate:30}},
+    xAxis:{type:'category', axisLabel:{color:t.dim, fontSize:SC(13), rotate:30}},
     yAxis:{type:'value', scale:true, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
     series
   }, true);
@@ -1558,10 +1586,10 @@ function renderProductMonthlyTrend(){
   getChart('productMonthlyTrend').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis'},
-    legend:{data:d.products, textStyle:{color:t.dim, fontSize:10}, top:0, type:'scroll'},
+    legend:{data:d.products, textStyle:{color:t.dim, fontSize:SC(14)}, top:0, type:'scroll'},
     grid:{left:50,right:20,top:50,bottom:70},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
-    xAxis:{type:'category', data:allMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:9, rotate:30}},
+    xAxis:{type:'category', data:allMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:SC(13), rotate:30}},
     yAxis:{type:'value', scale:true, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
     series
   }, true);
@@ -1636,17 +1664,17 @@ function renderTransport(){
       const c = p.data;
       if(c.total===0) return `${regionNames[p.value[1]]} / ${d.products[p.value[0]]}<br>ไม่มีข้อมูลในตัวกรองปัจจุบัน`;
       return `${regionNames[p.value[1]]} / ${d.products[p.value[0]]}<br>`
-        + `ไม่ตรงตามสนพ.: ${c.nonCompliant} / ${c.total} อำเภอ (${c.value[2]}%)<br>`
+        + `ไม่ปฏิบัติตาม สนพ.: ${c.nonCompliant} / ${c.total} อำเภอ (${c.value[2]}%)<br>`
         + (c.nonCompliant? `ส่วนต่างเฉลี่ยของอำเภอที่ไม่ตรง: ${c.avgNonCompliantDiff>0?'+':''}${c.avgNonCompliantDiff} ฿` : 'ตรงตามราคาอ้างอิง สนพ. ทั้งหมด');
     }},
-    grid:{left:80,right:20,top:20,bottom:70},
-    xAxis:{type:'category', data:d.products, axisLabel:{color:t.dim, fontSize:11, rotate:40, interval:0}, splitArea:{show:true}},
-    yAxis:{type:'category', data:regionNames, axisLabel:{color:t.text, fontSize:13}, splitArea:{show:true}},
+    grid:{left:80,right:20,top:70,bottom:110},
+    xAxis:{type:'category', data:d.products, axisLabel:{color:t.dim, fontSize:SC(13), rotate:40, interval:0, margin:14}, splitArea:{show:true}},
+    yAxis:{type:'category', data:regionNames, axisLabel:{color:t.text, fontSize:SC(14)}, splitArea:{show:true}},
     visualMap:{
-      show:true, min:0, max:100, orient:'horizontal', left:'center', bottom:0, type:'piecewise',
-      text:['ไม่ตรงตามสนพ.มาก','ตรงตามสนพ.ทั้งหมด'], textStyle:{color:t.dim, fontSize:11},
+      show:true, min:0, max:100, orient:'horizontal', left:'center', top:10, type:'piecewise',
+      text:['ไม่ปฏิบัติตาม สนพ.','ปฏิบัติตาม สนพ.'], textStyle:{color:t.dim, fontSize:SC(13)},
       pieces:[
-        {min:0, max:0, color:'#1ea672', label:'0% (ตรงทั้งหมด)'},
+        {min:0, max:0, color:'#1ea672', label:'0% (ปฏิบัติตามทั้งหมด)'},
         {min:0.001, max:5, color:'#8bc98a', label:'0–5%'},
         {min:5, max:15, color:'#f6c453', label:'5–15%'},
         {min:15, max:30, color:'#f0983f', label:'15–30%'},
@@ -1656,7 +1684,7 @@ function renderTransport(){
     },
     series:[{
       type:'heatmap', data:cells,
-      label:{show:true, color:'#fff', fontSize:16, fontWeight:700, formatter:p=>p.data.total? p.data.value[2]+'%' : '–',
+      label:{show:true, color:'#fff', fontSize:SC(13), fontWeight:700, formatter:p=>p.data.total? p.data.value[2]+'%' : '–',
         textBorderColor:'rgba(0,0,0,.65)', textBorderWidth:2.5},
       itemStyle:{ borderColor:t.border, borderWidth:1,
         color: p=> p.data.total===0 ? '#9aa7bb' : undefined }
@@ -1719,49 +1747,178 @@ function renderRanking(){
     backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
     grid:{left:90,right:36,top:10,bottom:20},
     xAxis:{type:'value', min:topRange.min, max:topRange.max, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:top20.map(x=>x.prov), axisLabel:{color:t.text, fontSize:10}},
-    series:[{type:'bar', barMaxWidth:16, data:top20.map(x=>x.avg), itemStyle:{color:t.up}, label:{show:true,position:'right',color:t.text,fontSize:9,formatter:p=>p.value.toFixed(2)}}]
+    yAxis:{type:'category', data:top20.map(x=>x.prov), axisLabel:{color:t.text, fontSize:SC(14)}},
+    series:[{type:'bar', barMaxWidth:16, data:top20.map(x=>x.avg), itemStyle:{color:t.up}, label:{show:true,position:'right',color:t.text,fontSize:SC(13),formatter:p=>p.value.toFixed(2)}}]
   }, true);
   getChart('rankBottom').setOption({
     backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
     grid:{left:90,right:36,top:10,bottom:20},
     xAxis:{type:'value', min:bottomRange.min, max:bottomRange.max, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:bottom20.map(x=>x.prov).reverse(), axisLabel:{color:t.text, fontSize:10}},
-    series:[{type:'bar', barMaxWidth:16, data:bottom20.map(x=>x.avg).reverse(), itemStyle:{color:t.down}, label:{show:true,position:'right',color:t.text,fontSize:9,formatter:p=>p.value.toFixed(2)}}]
+    yAxis:{type:'category', data:bottom20.map(x=>x.prov).reverse(), axisLabel:{color:t.text, fontSize:SC(14)}},
+    series:[{type:'bar', barMaxWidth:16, data:bottom20.map(x=>x.avg).reverse(), itemStyle:{color:t.down}, label:{show:true,position:'right',color:t.text,fontSize:SC(13),formatter:p=>p.value.toFixed(2)}}]
   }, true);
 }
 
 // ---------- DISTRICT HEATMAP ----------
-// ---------- COMPARE 2 PROVINCES ----------
+// ---------- COMPARE N PROVINCES/DISTRICTS ----------
+const compareColors = ['#2563c9','#e0483e','#1ea672','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#84cc16','#f97316','#c026d3','#0ea5e9','#a3a3a3'];
+// each item: {key, label, distIdxs:[...]}  (province item = all districts in province; district item = single distIdx)
+state.compareItems = [];
+state.compareProdSel = null; // null = all products selected
+
+function initCompareControls(){
+  const d = state.data;
+  const provSel = $('compareAddProv'), distSel = $('compareAddDist');
+  const searchInput = $('compareAddSearch'), results = $('compareSearchResults');
+  const sortedProvs = [...d.provinces].sort((a,b)=>a.localeCompare(b,'th'));
+  sortedProvs.forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; provSel.appendChild(o); });
+
+  const refreshDistOptions = ()=>{
+    distSel.innerHTML = '<option value="">ทั้งหมด</option>';
+    const provIdx = d.provinces.indexOf(provSel.value);
+    if(provIdx<0) return;
+    const distIdxs = (d._provDists[provIdx] || []).slice().sort((a,b)=>d.districts[a][1].localeCompare(d.districts[b][1],'th'));
+    distIdxs.forEach(i=>{ const o=document.createElement('option'); o.value=i; o.textContent=d.districts[i][1]; distSel.appendChild(o); });
+  };
+  provSel.onchange = refreshDistOptions;
+  refreshDistOptions();
+
+  // search autocomplete -> sets the two dropdowns above, like the main filter bar
+  searchInput.oninput = ()=>{
+    const q = searchInput.value.trim();
+    if(!q){ results.style.display='none'; return; }
+    const matches = [];
+    d.provinces.forEach(p=>{ if(p.includes(q)) matches.push({type:'prov', label:p, prov:p}); });
+    d.districts.forEach((dd,i)=>{ if(dd[1].includes(q)) matches.push({type:'dist', label:d.provinces[dd[0]]+' / '+dd[1], distIdx:i}); });
+    results.innerHTML = '';
+    matches.slice(0,15).forEach(m=>{
+      const div = document.createElement('div'); div.textContent = m.label;
+      div.onclick = ()=>{
+        results.style.display='none'; searchInput.value='';
+        if(m.type==='prov'){ provSel.value = m.prov; refreshDistOptions(); distSel.value=''; }
+        else {
+          const provName = d.provinces[d.districts[m.distIdx][0]];
+          provSel.value = provName; refreshDistOptions(); distSel.value = String(m.distIdx);
+        }
+      };
+      results.appendChild(div);
+    });
+    results.style.display = matches.length? 'block':'none';
+  };
+  document.addEventListener('click', e=>{ if(!e.target.closest('#page-compare .search-wrap')) results.style.display='none'; });
+
+  $('compareAddBtn').onclick = ()=>{
+    const provIdx = d.provinces.indexOf(provSel.value);
+    if(provIdx<0) return;
+    if(distSel.value===''){
+      const key = 'P:'+provIdx;
+      if(state.compareItems.some(it=>it.key===key)) return;
+      state.compareItems.push({key, label:d.provinces[provIdx], distIdxs: d._provDists[provIdx]||[]});
+    } else {
+      const distIdx = +distSel.value;
+      const key = 'D:'+distIdx;
+      if(state.compareItems.some(it=>it.key===key)) return;
+      state.compareItems.push({key, label:d.provinces[provIdx]+' / '+d.districts[distIdx][1], distIdxs:[distIdx]});
+    }
+    renderCompareItemsUI(); renderCompare();
+  };
+
+  // default starting items
+  const defA = d.provinces.includes('เชียงใหม่') ? 'เชียงใหม่' : d.provinces[0];
+  const defB = d.provinces.includes('ภูเก็ต') ? 'ภูเก็ต' : d.provinces[1];
+  [defA, defB].forEach(prov=>{
+    if(!prov) return;
+    const provIdx = d.provinces.indexOf(prov);
+    const key = 'P:'+provIdx;
+    if(!state.compareItems.some(it=>it.key===key)){
+      state.compareItems.push({key, label:prov, distIdxs: d._provDists[provIdx]||[]});
+    }
+  });
+  renderCompareItemsUI();
+  renderCompareProductPicker();
+}
+
+function renderCompareItemsUI(){
+  const wrap = $('compareItemsList');
+  wrap.innerHTML = '';
+  state.compareItems.forEach((it,i)=>{
+    const chip = document.createElement('div');
+    chip.className = 'compare-item';
+    const color = compareColors[i % compareColors.length];
+    chip.innerHTML = `<span class="swatch" style="background:${color}"></span><span>${it.label}</span><button class="rm" type="button">×</button>`;
+    chip.querySelector('.rm').onclick = ()=>{
+      state.compareItems.splice(i,1);
+      renderCompareItemsUI(); renderCompare();
+    };
+    wrap.appendChild(chip);
+  });
+  if(!state.compareItems.length){
+    wrap.innerHTML = '<span class="hint">ยังไม่ได้เลือกจังหวัด/อำเภอ — เพิ่มรายการด้านบนเพื่อเริ่มเปรียบเทียบ</span>';
+  }
+}
+
+function renderCompareProductPicker(){
+  const d = state.data;
+  const wrap = $('compareProductPicker');
+  wrap.innerHTML = '';
+  const allBtn = document.createElement('button');
+  allBtn.type='button'; allBtn.className='product-chip'+(state.compareProdSel===null?' active':'');
+  allBtn.textContent = 'ทุกผลิตภัณฑ์';
+  allBtn.onclick = ()=>{ state.compareProdSel=null; renderCompareProductPicker(); renderCompare(); };
+  wrap.appendChild(allBtn);
+  d.products.forEach((p,pi)=>{
+    const btn = document.createElement('button');
+    btn.type='button';
+    const active = state.compareProdSel!==null && state.compareProdSel.has(pi);
+    btn.className = 'product-chip'+(active?' active':'');
+    btn.textContent = p;
+    btn.onclick = ()=>{
+      if(state.compareProdSel===null) state.compareProdSel = new Set(d.products.map((_,x)=>x));
+      if(state.compareProdSel.has(pi)) state.compareProdSel.delete(pi); else state.compareProdSel.add(pi);
+      if(state.compareProdSel.size===d.products.length) state.compareProdSel = null; // เลือกครบ = กลับเป็น "ทุกผลิตภัณฑ์"
+      if(state.compareProdSel && state.compareProdSel.size===0) state.compareProdSel = new Set([pi]); // กันเลือกว่างเปล่า
+      renderCompareProductPicker(); renderCompare();
+    };
+    wrap.appendChild(btn);
+  });
+}
+
 function renderCompare(){
   const d = state.data, t = chartTheme();
-  const provA = $('compareProvA')?.value, provB = $('compareProvB')?.value;
-  if(!provA || !provB) return;
   const yearStr = currentYearStr();
+  const chart = getChart('compareBar');
+  if(!state.compareItems.length){ chart.clear(); return; }
 
-  // ---- grouped bar: ราคาเฉลี่ยรายผลิตภัณฑ์ ของ 2 จังหวัด เทียบกับราคากลาง กทม. (ปีที่เลือก) ----
-  const provAIdx = d.provinces.indexOf(provA), provBIdx = d.provinces.indexOf(provB);
-  const distA = d._provDists[provAIdx] || [], distB = d._provDists[provBIdx] || [];
+  const prodIdxs = state.compareProdSel===null ? d.products.map((_,pi)=>pi) : [...state.compareProdSel].sort((a,b)=>a-b);
+  const prodNames = prodIdxs.map(pi=>d.products[pi]);
+
   const avgOf = (distIdxs, pi) => {
     const vals = distIdxs.map(i=>yearAvgPrice(i,pi,yearStr)).filter(v=>v!=null);
     return vals.length? +(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : 0; // ไม่มีข้อมูล = 0
   };
-  const seriesA = d.products.map((p,pi)=>avgOf(distA,pi));
-  const seriesB = d.products.map((p,pi)=>avgOf(distB,pi));
-  const seriesBkk = d.products.map((p,pi)=>yearAvgBkk(pi,yearStr) ?? 0);
 
-  getChart('compareBar').setOption({
+  const itemSeries = state.compareItems.map((it,i)=>({
+    name: it.label, type:'bar',
+    data: prodIdxs.map(pi=>avgOf(it.distIdxs, pi)),
+    itemStyle:{color: compareColors[i % compareColors.length]},
+    label:{show:true, position:'top', color:t.text, fontSize:SC(16), rotate:90, align:'left', verticalAlign:'middle', formatter:p=>p.value.toFixed(2)}
+  }));
+  const bkkSeries = {
+    name:'ราคากลาง กทม.และปริมณฑล', type:'bar',
+    data: prodIdxs.map(pi=>yearAvgBkk(pi,yearStr) ?? 0),
+    itemStyle:{color:t.dim},
+    label:{show:true, position:'top', color:t.text, fontSize:SC(16), rotate:90, align:'left', verticalAlign:'middle', formatter:p=>p.value.toFixed(2)}
+  };
+  const allSeries = [...itemSeries, bkkSeries];
+
+  chart.setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    legend:{data:[provA, provB, 'ราคากลาง กทม.'], textStyle:{color:t.dim, fontSize:10}, top:0},
-    grid:{left:50,right:20,top:40,bottom:70},
-    xAxis:{type:'category', data:d.products, axisLabel:{color:t.dim, fontSize:9, rotate:40, interval:0}},
-    yAxis:{type:'value', scale:true, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
-    series:[
-      {name:provA, type:'bar', data:seriesA, itemStyle:{color:t.blue}, label:{show:true, position:'top', color:t.text, fontSize:8, rotate:90, align:'left', verticalAlign:'middle', formatter:p=>p.value.toFixed(2)}},
-      {name:provB, type:'bar', data:seriesB, itemStyle:{color:t.up}, label:{show:true, position:'top', color:t.text, fontSize:8, rotate:90, align:'left', verticalAlign:'middle', formatter:p=>p.value.toFixed(2)}},
-      {name:'ราคากลาง กทม.', type:'bar', data:seriesBkk, itemStyle:{color:t.dim}, label:{show:true, position:'top', color:t.text, fontSize:8, rotate:90, align:'left', verticalAlign:'middle', formatter:p=>p.value.toFixed(2)}}
-    ]
+    legend:{data:allSeries.map(s=>s.name), textStyle:{color:t.dim, fontSize:SC(14)}, top:0, type:'scroll'},
+    grid:{left:50,right:20,top:44,bottom:130},
+    xAxis:{type:'category', data:prodNames, axisLabel:{color:t.dim, fontSize:SC(14), rotate:40, interval:0}},
+    yAxis:{type:'value', scale:true, axisLabel:{color:t.dim, fontSize:SC(13)}, splitLine:{lineStyle:{color:t.border}}},
+    series:allSeries
   }, true);
 }
 
@@ -1817,12 +1974,12 @@ function renderMomChart(){
       });
       return s;
     }},
-    legend:{ data:d.products, textStyle:{color:t.dim, fontSize:10}, top:0, type:'scroll' },
+    legend:{ data:d.products, textStyle:{color:t.dim, fontSize:SC(14)}, top:0, type:'scroll' },
     grid:{left:50,right:20,top:50,bottom:70},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
-    xAxis:{ type:'category', data:momMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:9, rotate:30} },
+    xAxis:{ type:'category', data:momMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:SC(13), rotate:30} },
     yAxis:{ type:'value', axisLabel:{color:t.dim, formatter:v=>(v>=0?'+':'')+v+' ฿'}, splitLine:{lineStyle:{color:t.border}},
-      name:'เปลี่ยนแปลง (฿)', nameTextStyle:{color:t.dim, fontSize:10} },
+      name:'เปลี่ยนแปลง (฿)', nameTextStyle:{color:t.dim, fontSize:SC(14)} },
     series
   }, true);
 }
