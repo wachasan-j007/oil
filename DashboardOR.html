@@ -17,7 +17,6 @@
   --text:#0e2038; --text-dim:#5b7291; --border:rgba(20,50,100,.10);
   --up:#e0483e; --down:#1ea672; --neutral:#8a97a8;
   --radius:16px; --shadow: 0 8px 30px rgba(15,40,90,.08);
-  --ui-scale:1;
 }
 html[data-theme="dark"]{
   --bg:#060c1a; --surface:rgba(20,32,58,.6); --surface-solid:#101b33;
@@ -26,16 +25,16 @@ html[data-theme="dark"]{
   --blue-100:#132446;
 }
 *{box-sizing:border-box; margin:0; padding:0;}
+:root{ --ui-scale:1; }
 body.size-small{--ui-scale:0.88;}
 body.size-medium{--ui-scale:1;}
 body.size-large{--ui-scale:1.32;}
-body.zoom-mode{zoom:1.3;}
+.size-switch{display:flex; gap:4px; align-items:center;}
 .size-btn{
   font-family:inherit; font-size:12px; padding:6px 12px; border-radius:8px; border:1px solid var(--border);
   background:var(--surface-solid); color:var(--text-dim); cursor:pointer;
 }
 .size-btn.active{background:var(--blue-600); color:#fff; border-color:var(--blue-600);}
-.size-switch{display:flex; gap:4px; align-items:center;}
 body{
   font-family:'Kanit',sans-serif; background:var(--bg); color:var(--text);
   transition:background .3s, color .3s; min-height:100vh;
@@ -52,18 +51,20 @@ body::before{
 
 /* ---------- Top bar ---------- */
 .topbar{
-  position:sticky; top:0; z-index:50; display:flex; align-items:center; gap:16px;
+  position:sticky; top:0; z-index:50; display:flex; flex-direction:column; gap:10px;
   padding:12px 22px; background:var(--surface); backdrop-filter:blur(16px);
   border-bottom:1px solid var(--border);
 }
-.brand{display:flex; align-items:center; gap:10px; font-weight:600; font-size:calc(23px * var(--ui-scale)); white-space:nowrap;}
+.topbar-row1{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+.topbar-row2{display:flex; align-items:center;}
+.brand{display:flex; align-items:center; gap:10px; font-weight:600; font-size:calc(17px * var(--ui-scale)); white-space:nowrap;}
 .brand .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(135deg,var(--blue-500),var(--blue-300)); box-shadow:0 0 12px var(--blue-400);}
 .brand .logo-mark{flex-shrink:0;}
-.brand small{display:block; font-weight:300; font-size:calc(15px * var(--ui-scale)); color:var(--text-dim);}
+.brand small{display:block; font-weight:300; font-size:11px; color:var(--text-dim);}
 .tabs{display:flex; gap:4px; overflow-x:auto; flex:1;}
 .tab-btn{
   border:none; background:transparent; color:var(--text-dim); font-family:inherit;
-  font-size:calc(13.5px * var(--ui-scale)); padding:8px 14px; border-radius:10px; cursor:pointer; white-space:nowrap;
+  font-size:13.5px; padding:8px 14px; border-radius:10px; cursor:pointer; white-space:nowrap;
   transition:all .2s;
 }
 .tab-btn:hover{background:var(--blue-100); color:var(--text);}
@@ -71,14 +72,14 @@ body::before{
 .topbar-actions{display:flex; align-items:center; gap:8px;}
 .icon-btn{
   width:36px; height:36px; border-radius:10px; border:1px solid var(--border); background:var(--surface-solid);
-  color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:calc(20px * var(--ui-scale));
+  color:var(--text); cursor:pointer; display:flex; align-items:center; justify-content:center; font-size:15px;
 }
 .icon-btn:hover{background:var(--blue-100);}
 .page-nav{display:flex; align-items:center; gap:8px; white-space:nowrap;}
 .page-nav a{
   display:inline-flex; align-items:center; gap:6px; text-decoration:none;
   border:1px solid var(--border); background:var(--surface-solid); color:var(--text-dim);
-  font-size:calc(12.5px * var(--ui-scale)); font-weight:500; padding:7px 14px; border-radius:20px; transition:all .2s;
+  font-size:12.5px; font-weight:500; padding:7px 14px; border-radius:20px; transition:all .2s;
 }
 .page-nav a:hover{background:var(--blue-100); color:var(--text); border-color:var(--blue-300);}
 
@@ -92,36 +93,21 @@ body::before{
   font-family:inherit; font-size:calc(12.5px * var(--ui-scale)); padding:7px 10px; border-radius:9px; border:1px solid var(--border);
   background:var(--surface-solid); color:var(--text); outline:none; min-width:100px;
 }
-.filterbar label{font-size:calc(15px * var(--ui-scale)); color:var(--text-dim); display:flex; flex-direction:column; gap:3px;}
+.filterbar label{font-size:calc(11px * var(--ui-scale)); color:var(--text-dim); display:flex; flex-direction:column; gap:3px;}
 .search-wrap{position:relative;}
 .search-results{
   position:absolute; top:100%; left:0; margin-top:4px; width:220px; max-height:220px; overflow:auto;
   background:var(--surface-solid); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow);
   z-index:60; display:none;
 }
-.search-results div{padding:7px 12px; font-size:calc(12.5px * var(--ui-scale)); cursor:pointer;}
+.search-results div{padding:7px 12px; font-size:12.5px; cursor:pointer;}
 .search-results div:hover{background:var(--blue-100);}
 .chip{
-  font-size:calc(15px * var(--ui-scale)); padding:6px 12px; border-radius:20px; border:1px solid var(--blue-500); color:var(--blue-500);
+  font-size:11px; padding:6px 12px; border-radius:20px; border:1px solid var(--blue-500); color:var(--blue-500);
   background:transparent; cursor:pointer; font-family:inherit;
 }
 .chip.active{background:var(--blue-600); color:#fff; border-color:var(--blue-600);}
-.reset-btn{margin-left:auto; font-size:calc(16px * var(--ui-scale)); color:var(--text-dim); background:none; border:none; cursor:pointer; text-decoration:underline;}
-.compare-item{
-  display:flex; align-items:center; gap:6px; font-size:calc(16px * var(--ui-scale)); padding:6px 6px 6px 12px; border-radius:20px;
-  border:1px solid var(--border); background:var(--surface-solid); color:var(--text);
-}
-.compare-item .swatch{width:10px; height:10px; border-radius:50%; flex-shrink:0;}
-.compare-item .rm{
-  border:none; background:var(--border); color:var(--text-dim); width:18px; height:18px; border-radius:50%;
-  cursor:pointer; font-size:calc(16px * var(--ui-scale)); line-height:1; display:flex; align-items:center; justify-content:center;
-}
-.compare-item .rm:hover{background:var(--down); color:#fff;}
-.product-chip{
-  font-size:calc(15px * var(--ui-scale)); padding:5px 12px; border-radius:20px; border:1px solid var(--border); color:var(--text-dim);
-  background:transparent; cursor:pointer; font-family:inherit;
-}
-.product-chip.active{background:var(--blue-100); color:var(--blue-600); border-color:var(--blue-500);}
+.reset-btn{margin-left:auto; font-size:12px; color:var(--text-dim); background:none; border:none; cursor:pointer; text-decoration:underline;}
 
 /* ---------- Layout ---------- */
 .page{display:none; padding:18px 22px 60px;}
@@ -135,13 +121,30 @@ body::before{
   cursor:pointer; transition:transform .15s ease, box-shadow .15s ease, border-color .15s ease;
 }
 .region-card:hover{transform:translateY(-2px); box-shadow:var(--shadow); border-color:var(--blue-400);}
-.region-card .region-name{font-size:calc(12.5px * var(--ui-scale)); font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
+.region-card .region-name{font-size:12.5px; font-weight:600; margin-bottom:8px; display:flex; align-items:center; gap:6px;}
 .region-card .region-dot{width:9px; height:9px; border-radius:50%; flex:none;}
 .region-card .region-stats{display:flex; gap:8px;}
 .region-card .region-stats > div{flex:1; text-align:center; background:var(--blue-100); border-radius:8px; padding:6px 2px;}
-.region-card .region-stats .l{display:block; font-size:calc(14px * var(--ui-scale)); color:var(--text-dim);}
-.region-card .region-stats .v{display:block; font-size:calc(13.5px * var(--ui-scale)); font-weight:600; margin-top:2px;}
+.region-card .region-stats .l{display:block; font-size:10px; color:var(--text-dim);}
+.region-card .region-stats .v{display:block; font-size:13.5px; font-weight:600; margin-top:2px;}
 .region-card .region-stats .v.hl{color:var(--blue-400);}
+.map-legend-wrap{display:flex; gap:18px; align-items:flex-start; flex-wrap:wrap;}
+.map-legend-wrap .map-col{flex:1 1 54%; min-width:280px; position:relative;}
+.map-legend-wrap .legend-col{flex:1 1 40%; min-width:230px;}
+.legend-list-item{display:flex; gap:10px; align-items:flex-start; padding:8px 6px; border-radius:8px; cursor:pointer; transition:background .15s;}
+.legend-list-item:hover{background:var(--blue-100);}
+.legend-list-item .dot{width:11px; height:11px; border-radius:50%; margin-top:4px; flex:none;}
+.legend-list-item .body{flex:1; min-width:0;}
+.legend-list-item .name{font-size:calc(12.5px * var(--ui-scale)); font-weight:600; margin-bottom:5px;}
+.legend-list-item .stats{display:flex; gap:16px;}
+.legend-list-item .stats .l{font-size:calc(10px * var(--ui-scale)); color:var(--text-dim); display:block;}
+.legend-list-item .stats .v{font-size:calc(14px * var(--ui-scale)); font-weight:700; margin-top:1px; display:block;}
+.legend-list-item .stats .v.hl{color:var(--blue-400);}
+.product-icon-row{display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;}
+.product-icon{width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; cursor:pointer; opacity:.5; border:2px solid transparent; transition:all .15s; text-align:center; line-height:1.15; padding:4px; overflow:hidden;}
+.product-icon:hover{opacity:.85;}
+.product-icon.active{opacity:1; border-color:#fff; box-shadow:0 0 0 2px var(--blue-400), var(--shadow);}
+.map-region-bubble{position:absolute; pointer-events:none; background:#fff; color:#1a1a1a; padding:5px 14px; border-radius:16px; font-size:12.5px; font-weight:700; box-shadow:0 3px 10px rgba(0,0,0,.3); border:3px solid #4caf50; display:none; z-index:30; white-space:nowrap; transform:translate(-50%,-130%);}
 #regionOverview .back-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
 #regionOverview .back-row h3{margin:0;}
 
@@ -149,12 +152,12 @@ body::before{
   background:var(--surface); border:1px solid var(--border); border-radius:var(--radius); padding:14px 16px;
   backdrop-filter:blur(10px); box-shadow:var(--shadow); position:relative; overflow:hidden;
 }
-.kpi-card .label{font-size:calc(15px * var(--ui-scale)); color:var(--text-dim); margin-bottom:6px;}
-.kpi-card .value{font-size:calc(28px * var(--ui-scale)); font-weight:600; line-height:1.15;}
+.kpi-card .label{font-size:calc(11px * var(--ui-scale)); color:var(--text-dim); margin-bottom:6px;}
+.kpi-card .value{font-size:calc(21px * var(--ui-scale)); font-weight:600; line-height:1.15;}
 .kpi-card .sub{font-size:calc(10.5px * var(--ui-scale)); color:var(--text-dim); margin-top:4px;}
 .kpi-card.accent{border-color:var(--blue-400);}
 
-.grid-2{display:grid; grid-template-columns:8fr 2fr; gap:14px;}
+.grid-2{display:grid; grid-template-columns:7fr 3fr; gap:14px;}
 .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
 @media(max-width:980px){.grid-2,.grid-3{grid-template-columns:1fr;}}
 
@@ -163,10 +166,10 @@ body::before{
   backdrop-filter:blur(10px); box-shadow:var(--shadow); margin-bottom:14px;
 }
 .card h3{font-size:calc(14.5px * var(--ui-scale)); font-weight:500; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;}
-.card h3 .hint{font-size:calc(15px * var(--ui-scale)); color:var(--text-dim); font-weight:300;}
-.echart{width:100%; height:calc(460px * var(--ui-scale));}
-.echart.tall{height:calc(680px * var(--ui-scale));}
-.echart.map-xl{height:calc(940px * var(--ui-scale));}
+.card h3 .hint{font-size:calc(11px * var(--ui-scale)); color:var(--text-dim); font-weight:300;}
+.echart{width:100%; height:calc(420px * var(--ui-scale));}
+.echart.tall{height:calc(640px * var(--ui-scale));}
+.echart.map-xl{height:calc(860px * var(--ui-scale));}
 #page-overview .grid-2{align-items:start;}
 .echart.short{height:calc(280px * var(--ui-scale));}
 
@@ -177,9 +180,9 @@ body::before{
   transition:right .35s ease; overflow-y:auto; padding:18px;
 }
 #sidebar.open{right:0;}
-#sidebar .close-btn{float:right; cursor:pointer; font-size:calc(27px * var(--ui-scale)); color:var(--text-dim);}
+#sidebar .close-btn{float:right; cursor:pointer; font-size:20px; color:var(--text-dim);}
 .district-row{display:flex; justify-content:space-between; padding:7px 0; border-bottom:1px dashed var(--border); font-size:calc(12.5px * var(--ui-scale));}
-.badge{padding:2px 8px; border-radius:20px; font-size:calc(10.5px * var(--ui-scale)); font-weight:500;}
+.badge{padding:2px 8px; border-radius:20px; font-size:10.5px; font-weight:500;}
 .badge.up{background:rgba(224,72,62,.12); color:var(--up);}
 .badge.down{background:rgba(30,166,114,.12); color:var(--down);}
 .badge.flat{background:rgba(138,151,168,.12); color:var(--neutral);}
@@ -198,11 +201,11 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 
 .insight-item{
   display:flex; gap:10px; padding:10px 12px; border-radius:12px; background:var(--blue-100); margin-bottom:8px;
-  font-size:calc(18px * var(--ui-scale)); align-items:flex-start;
+  font-size:13px; align-items:flex-start;
 }
-.insight-item .ic{font-size:calc(22px * var(--ui-scale));}
+.insight-item .ic{font-size:16px;}
 .small-btn{
-  font-size:calc(11.5px * var(--ui-scale)); padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface-solid);
+  font-size:11.5px; padding:6px 12px; border-radius:8px; border:1px solid var(--border); background:var(--surface-solid);
   color:var(--text); cursor:pointer;
 }
 .small-btn:hover{background:var(--blue-100);}
@@ -212,10 +215,10 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 }
 .spinner{width:44px; height:44px; border-radius:50%; border:4px solid var(--blue-100); border-top-color:var(--blue-500); animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
-.footer-note{text-align:center; font-size:calc(15px * var(--ui-scale)); color:var(--text-dim); margin-top:24px;}
+.footer-note{text-align:center; font-size:11px; color:var(--text-dim); margin-top:24px;}
 </style>
 </head>
-<body class="size-medium">
+<body>
 
 <div class="loading-overlay" id="loadingOverlay">
   <div class="spinner"></div>
@@ -223,33 +226,36 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 </div>
 
 <div class="topbar">
-  <div class="brand">
-    <div class="logo-mark">
-      <img src="assets/picture/or-logo-sm.png" alt="OR Logo" style="height:36px; width:auto;">
+  <div class="topbar-row1">
+    <div class="brand">
+      <div class="logo-mark">
+        <img src="assets/picture/or-logo-sm.png" alt="OR Logo" style="height:36px; width:auto;">
+      </div>
+      <div>PTTOR Dashboard<br><small>Retail Fuel Price Dashboard · สนพ.</small></div>
     </div>
-    <div>PTTOR Dashboard<br><small>Retail Fuel Price Dashboard · สนพ.</small></div>
-  </div>
-  <div class="page-nav">
-    <a href="index.html">Value Chain</a>
-    <a href="Companies.html">บริษัทที่เกี่ยวข้อง</a>
-  </div>
-  <div class="tabs" id="tabs">
-    <button class="tab-btn active" data-page="overview">ภาพรวม/แผนที่</button>
-    <button class="tab-btn" data-page="trend">แนวโน้มราคา</button>
-    <button class="tab-btn" data-page="transport">วิเคราะห์ค่าขนส่ง</button>
-    <button class="tab-btn" data-page="ranking">จัดอันดับจังหวัด</button>
-    <button class="tab-btn" data-page="compare">เปรียบเทียบจังหวัด</button>
-  </div>
-  <div class="topbar-actions">
-    <button class="icon-btn" id="themeToggle" title="สลับโหมดสี">🌙</button>
-    <div class="size-switch" title="ขนาดตัวอักษร (ทั้งเว็บ)">
-      <button class="size-btn" data-size="small">เล็ก</button>
-      <button class="size-btn active" data-size="medium">กลาง</button>
-      <button class="size-btn" data-size="large">ใหญ่</button>
+    <div class="page-nav">
+      <a href="index.html">Value Chain</a>
+      <a href="Companies.html">บริษัทที่เกี่ยวข้อง</a>
     </div>
-    <button class="icon-btn" id="zoomToggle" title="โหมดแว่นขยาย (ซูมทั้งหน้าจอ ไม่ใช่แค่ตัวอักษร)">🔍</button>
-    <button class="icon-btn" id="refreshData" title="โหลดข้อมูลใหม่จาก Excel (ล้างแคช)">↻</button>
-    <button class="icon-btn" id="exportCsv" title="Export CSV">⬇</button>
+    <div class="topbar-actions" style="margin-left:auto;">
+      <div class="size-switch" title="ขนาดตัวอักษร (ทั้งเว็บ)">
+        <button class="size-btn" data-size="small">เล็ก</button>
+        <button class="size-btn active" data-size="medium">กลาง</button>
+        <button class="size-btn" data-size="large">ใหญ่</button>
+      </div>
+      <button class="icon-btn" id="themeToggle" title="สลับโหมดสี">🌙</button>
+      <button class="icon-btn" id="refreshData" title="โหลดข้อมูลใหม่จาก Excel (ล้างแคช)">↻</button>
+      <button class="icon-btn" id="exportCsv" title="Export CSV">⬇</button>
+    </div>
+  </div>
+  <div class="topbar-row2">
+    <div class="tabs" id="tabs">
+      <button class="tab-btn active" data-page="overview">ภาพรวม/แผนที่</button>
+      <button class="tab-btn" data-page="trend">แนวโน้มราคา</button>
+      <button class="tab-btn" data-page="transport">วิเคราะห์ค่าขนส่ง</button>
+      <button class="tab-btn" data-page="ranking">จัดอันดับจังหวัด</button>
+      <button class="tab-btn" data-page="compare">เปรียบเทียบจังหวัด</button>
+    </div>
   </div>
 </div>
 
@@ -271,22 +277,26 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 <!-- ============ PAGE: OVERVIEW / MAP ============ -->
 <div class="page active" id="page-overview">
   <div class="kpi-row" id="kpiRow"></div>
-  <div class="card">
-    <h3>แผนที่ราคาขายปลีกน้ำมันรายจังหวัด <span class="hint">คลิกภาค/จังหวัดบนแผนที่เพื่อซูมเข้าไปดู · กรอบทอง = จังหวัดที่เลือกอยู่</span></h3>
-    <div class="layer-switch" id="mapColorSwitch">
-      <button class="chip active" data-mode="diff">แบ่งสีตามส่วนต่างราคา</button>
-      <button class="chip" data-mode="region">แบ่งสีตามภูมิภาค</button>
+  <div class="grid-2">
+    <div class="card">
+      <h3>แผนที่ราคาขายปลีกน้ำมันรายจังหวัด <span class="hint">คลิกภาค/จังหวัดบนแผนที่เพื่อซูมเข้าไปดู · กรอบทอง = จังหวัดที่เลือกอยู่</span></h3>
+      <div class="layer-switch" id="mapColorSwitch">
+        <button class="chip active" data-mode="diff">แบ่งสีตามส่วนต่างราคา</button>
+        <button class="chip" data-mode="region">แบ่งสีตามภูมิภาค</button>
+      </div>
+      <div class="product-icon-row" id="productIconRow"></div>
+      <div class="map-legend-wrap">
+        <div class="map-col">
+          <div id="mapChart" class="echart map-xl"></div>
+          <div class="map-region-bubble" id="mapRegionBubble"></div>
+        </div>
+        <div class="legend-col" id="regionOverview"></div>
+      </div>
     </div>
-    <div id="mapChart" class="echart map-xl"></div>
-    <div class="card" id="regionOverview" style="margin-top:14px;"></div>
-  </div>
-  <div class="grid-2" style="margin-top:14px;">
     <div class="card">
       <h3>Top 5 / Bottom 5 จังหวัด</h3>
       <div id="topBottomChart" class="echart" style="height:250px"></div>
-    </div>
-    <div class="card">
-      <h3>สัดส่วนตามภาค</h3>
+      <h3 style="margin-top:14px">สัดส่วนตามภาค</h3>
       <div id="regionPie" class="echart" style="height:250px"></div>
     </div>
   </div>
@@ -317,14 +327,14 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 <!-- ============ PAGE: TRANSPORT ============ -->
 <div class="page" id="page-transport">
   <div class="card">
-    <h3>Heatmap: สัดส่วนอำเภอที่ไม่ปฏิบัติตามราคาอ้างอิง สนพ. (ตามภาค x ผลิตภัณฑ์) <span class="hint">สีเข้ม/แดง = พบอำเภอไม่ปฏิบัติตาม สนพ. เยอะ · สีอ่อน = ปฏิบัติตามเกือบทั้งหมด · ช่องเทา = ไม่มีข้อมูลผลิตภัณฑ์นี้ในตัวกรอง</span></h3>
-    <div id="transportHeatmap" class="echart tall" style="height:calc(760px * var(--ui-scale));"></div>
+    <h3>Heatmap: สัดส่วนอำเภอที่ไม่ตรงตามราคาอ้างอิง สนพ. (ตามภาค x ผลิตภัณฑ์) <span class="hint">สีเข้ม/แดง = พบอำเภอไม่ตรงตามสนพ.เยอะ · สีอ่อน = ตรงเกือบทั้งหมด · ช่องเทา = ไม่มีข้อมูลผลิตภัณฑ์นี้ในตัวกรอง</span></h3>
+    <div id="transportHeatmap" class="echart tall"></div>
   </div>
   <div class="card">
     <h3>จังหวัดผิดปกติ (Outlier: ค่าขนส่งสูง-ราคาต่ำ หรือ ค่าขนส่งต่ำ-ราคาสูง) <span class="hint">ค่าความคลาดเคลื่อน = ส่วนต่างเฉลี่ยที่พบ (ปลายทาง−ต้นทาง) ลบด้วยค่าขนส่ง สนพ. ที่ควรจะเป็น · ถ้าราคาปลายทาง=ต้นทางเป๊ะ แต่ค่าขนส่ง สนพ. &gt; 0 จะติดลบ เพราะราคาที่ขายจริง "ไม่ได้บวกค่าขนส่งตามที่ควรจะเป็น" เท่ากับขายถูกกว่าที่ควร</span></h3>
     <div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
-      <input type="text" id="outlierSearch" placeholder="พิมพ์ค้นหา จังหวัด / อำเภอ / ผลิตภัณฑ์..." style="flex:1; min-width:220px; max-width:340px; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-solid); color:var(--text); font-size:calc(12.5px * var(--ui-scale));">
-      <label style="display:flex; align-items:center; gap:6px; font-size:calc(12.5px * var(--ui-scale)); color:var(--text-dim); cursor:pointer;">
+      <input type="text" id="outlierSearch" placeholder="พิมพ์ค้นหา จังหวัด / อำเภอ / ผลิตภัณฑ์..." style="flex:1; min-width:220px; max-width:340px; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-solid); color:var(--text); font-size:12.5px;">
+      <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim); cursor:pointer;">
         <input type="checkbox" id="outlierShowAll"> แสดงทั้งหมด (รวมอำเภอที่ตรงตามสนพ.)
       </label>
     </div>
@@ -347,19 +357,13 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 <!-- ============ PAGE: COMPARE ============ -->
 <div class="page" id="page-compare">
   <div class="card">
-    <h3>เปรียบเทียบจังหวัด/อำเภอ <span class="hint">เพิ่มได้กี่จังหวัด/อำเภอก็ได้ เทียบราคาเฉลี่ยแยกตามชนิดน้ำมันที่เลือก ตามปีที่เลือกอยู่ในตัวกรอง เทียบกับราคากลาง กทม.และปริมณฑล สนพ.</span></h3>
-    <div class="filterbar" style="position:static; padding:0; border:none; background:transparent; backdrop-filter:none; margin-bottom:10px;">
-      <label>จังหวัด<select id="compareAddProv"><option value="">ทั้งหมด</option></select></label>
-      <label>อำเภอ<select id="compareAddDist"><option value="">ทั้งหมด</option></select></label>
-      <div class="search-wrap">
-        <label>ค้นหาจังหวัด/อำเภอ<input id="compareAddSearch" placeholder="พิมพ์ชื่อ..." autocomplete="off"></label>
-        <div class="search-results" id="compareSearchResults"></div>
-      </div>
-      <button class="chip active" id="compareAddBtn" type="button" style="border-radius:9px;">+ เพิ่มรายการเปรียบเทียบ</button>
+    <h3>เปรียบเทียบจังหวัด/อำเภอ <span class="hint">พิมพ์ค้นหาแล้วเลือกจังหวัดหรืออำเภอ เพิ่มได้หลายรายการ เทียบราคาเฉลี่ยแยกตามชนิดน้ำมัน ตามปีที่เลือกอยู่ในตัวกรอง เทียบกับราคากลาง สนพ.</span></h3>
+    <div style="position:relative; max-width:320px; margin-bottom:10px;">
+      <input type="text" id="compareSearch" placeholder="พิมพ์ชื่อจังหวัด หรือ อำเภอ..." style="width:100%; font-family:inherit; font-size:calc(12.5px * var(--ui-scale)); padding:8px 12px; border-radius:9px; border:1px solid var(--border); background:var(--surface-solid); color:var(--text); outline:none;">
+      <div id="compareSearchResults" class="search-results" style="width:100%;"></div>
     </div>
-    <div id="compareItemsList" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;"></div>
-    <div id="compareProductPicker" style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:12px;"></div>
-    <div id="compareBar" class="echart tall" style="height:calc(760px * var(--ui-scale));"></div>
+    <div id="compareChips" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;"></div>
+    <div id="compareBar" class="echart tall"></div>
   </div>
 </div>
 
@@ -465,26 +469,26 @@ $('themeToggle').onclick = ()=>{
   $('themeToggle').textContent = state.theme==='light' ? '🌙':'☀️';
   renderAll();
 };
-$('zoomToggle').onclick = ()=>{
-  document.body.classList.toggle('zoom-mode');
-  const on = document.body.classList.contains('zoom-mode');
-  $('zoomToggle').title = on ? 'ปิดโหมดแว่นขยาย' : 'โหมดแว่นขยาย (ซูมทั้งหน้าจอ ไม่ใช่แค่ตัวอักษร)';
-  $('zoomToggle').style.color = on ? 'var(--blue-600)' : '';
-  setTimeout(()=>Object.values(charts).forEach(c=>c.resize()), 150);
-};
-state.uiScale = 1; // 1 = medium; used to scale numeric fontSize values inside echarts options (canvas text doesn't inherit CSS)
-function SC(n){ return Math.round(n * state.uiScale); }
-document.querySelectorAll('.size-btn').forEach(btn=>{
-  btn.onclick = ()=>{
-    document.querySelectorAll('.size-btn').forEach(b=>b.classList.toggle('active', b===btn));
-    const size = btn.dataset.size;
+function SC(n){ return Math.round(n * (state.uiScale||1)); }
+state.uiScale = 1;
+(function initSizeSwitch(){
+  const saved = localStorage.getItem('or_ui_size') || 'medium';
+  const SCALE = {small:0.88, medium:1, large:1.32};
+  function apply(size, isUserClick){
     document.body.classList.remove('size-small','size-medium','size-large');
     document.body.classList.add('size-'+size);
-    state.uiScale = size==='small' ? 0.88 : size==='large' ? 1.32 : 1;
-    renderAll();
-    setTimeout(()=>Object.values(charts).forEach(c=>c.resize()), 150);
-  };
-});
+    state.uiScale = SCALE[size] || 1;
+    document.querySelectorAll('.size-btn').forEach(b=>b.classList.toggle('active', b.dataset.size===size));
+    localStorage.setItem('or_ui_size', size);
+    if(isUserClick){
+      setTimeout(()=>{ Object.values(charts).forEach(c=>c.resize()); if(typeof renderAll==='function') renderAll(); }, 60);
+    }
+  }
+  document.querySelectorAll('.size-btn').forEach(btn=>{
+    btn.onclick = ()=> apply(btn.dataset.size, true);
+  });
+  apply(saved, false); // set class/scale immediately without touching charts (not created yet at this point)
+})();
 
 // ---------- LOAD DATA ----------
 const charts = {};
@@ -665,10 +669,16 @@ function buildIndices(){
   });
 }
 // get price as-of ISO date cutoff (last known value <= cutoff, same year only — no carrying data from a different year)
+// if state.filterDay==='' (ทั้งเดือน) -> average every known value within that calendar month instead
 function priceAsOf(distIdx, prodIdx, cutoffISO){
   const arr = state.data._byDistProd[distIdx+'-'+prodIdx];
   if(!arr) return null;
   const d = state.data;
+  if(state.filterDay===''){
+    const ym = cutoffISO.slice(0,7);
+    const vals = arr.filter(([di])=>d.dates[di].slice(0,7)===ym).map(([,p])=>p);
+    return vals.length? +(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : null;
+  }
   const cutoffYear = cutoffISO.slice(0,4);
   let val=null, valDateISO=null;
   for(const [di,p] of arr){ if(d.dates[di]<=cutoffISO){ val=p; valDateISO=d.dates[di]; } else break; }
@@ -679,6 +689,11 @@ function bkkAsOf(prodIdx, cutoffISO){
   const arr = state.data._bkkByProd[prodIdx];
   if(!arr) return null;
   const d = state.data;
+  if(state.filterDay===''){
+    const ym = cutoffISO.slice(0,7);
+    const vals = arr.filter(([di])=>d.dates[di].slice(0,7)===ym).map(([,p])=>p);
+    return vals.length? +(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : null;
+  }
   const cutoffYear = cutoffISO.slice(0,4);
   let val=null, valDateISO=null;
   for(const [di,p] of arr){ if(d.dates[di]<=cutoffISO){ val=p; valDateISO=d.dates[di]; } else break; }
@@ -711,6 +726,43 @@ function initFilters(){
   const defaultProd = -1;
   prodSel.value = defaultProd; state.filterProduct = defaultProd;
 
+  // product icon row (mirrors #fProduct, click = quick select) — logo filenames mapped exactly to your assets/Logo/ files
+  const PROD_COLORS = ['#374151','#e8721c','#7cb342','#1e88e5','#f9a825','#8e24aa','#00897b','#c62828','#3949ab','#6d4c41'];
+  const LOGO_FILE = {
+    'ดีเซล B20':'B20.PNG',
+    'ดีเซล':'DIESEL.png',
+    'เบนซินแก๊สโซฮอล์ E20':'E20.png',
+    'เบนซินแก๊สโซฮอล์ E85':'E85.png',
+    'เบนซินแก๊สโซฮอล์ 91':'GASOHAL91.png',
+    'เบนซินแก๊สโซฮอล์ 95':'GASOHAL95.png',
+    'เบนซิน':'BENZIN.PNG',
+    'Super Power GSH95':'SPWGASOHAL95.png',
+    'Super Power Diesel':'SPWXDiesel.png',
+    'Super Power X99':'SPWX99.png'
+  };
+  const LOGO_ORDER = Object.keys(LOGO_FILE);
+  const iconRow = $('productIconRow');
+  if(iconRow){
+    const idxOf = name => d.products.indexOf(name);
+    const ordered = LOGO_ORDER.filter(name=>idxOf(name)!==-1).map(name=>({i:idxOf(name), label:name.length>6? name.slice(0,6):name, file:LOGO_FILE[name]}));
+    const leftover = d.products.map((p,i)=>({i, label:p.length>6? p.slice(0,6):p, file:LOGO_FILE[p]||null})).filter(it=>!LOGO_ORDER.includes(d.products[it.i]));
+    const items = [{i:-1, label:'ทุก', file:null}].concat(ordered, leftover);
+    iconRow.innerHTML = items.map((it,idx)=>`
+      <div class="product-icon${it.i===defaultProd?' active':''}" data-i="${it.i}" style="background:${PROD_COLORS[idx%PROD_COLORS.length]}">
+        ${it.file ? `<img src="assets/Logo/${it.file}" alt="" style="width:118%;height:118%;object-fit:cover;border-radius:50%;display:block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
+        <span style="display:${it.file?'none':'block'};">${it.label}</span>
+      </div>`).join('');
+    iconRow.querySelectorAll('.product-icon').forEach(el=>{
+      el.onclick = ()=>{
+        const v = el.dataset.i;
+        prodSel.value = v; state.filterProduct = +v;
+        iconRow.querySelectorAll('.product-icon').forEach(x=>x.classList.remove('active'));
+        el.classList.add('active');
+        renderAll();
+      };
+    });
+  }
+
   const yearSel = $('fYear');
   const years = [...new Set(d.dates.map(x=>x.slice(0,4)))].sort();
   years.forEach(y=>{ const o=document.createElement('option'); o.value=y; o.textContent=(+y+543)+' (พ.ศ.)'; yearSel.appendChild(o); });
@@ -719,15 +771,19 @@ function initFilters(){
   THAI_MONTHS_FULL.forEach((name,i)=>{ const o=document.createElement('option'); o.value=i+1; o.textContent=name; monthSel.appendChild(o); });
 
   const daySel = $('fDay');
+  const oAllDay = document.createElement('option'); oAllDay.value=''; oAllDay.textContent='ทั้งเดือน'; daySel.appendChild(oAllDay);
   for(let i=1;i<=31;i++){ const o=document.createElement('option'); o.value=i; o.textContent=i; daySel.appendChild(o); }
 
-  // initialize to the latest available date in the dataset
+  // initialize to the latest available date in the dataset, but default the day picker to "ทั้งเดือน"
+  // (shows the most recent price within that month instead of forcing one specific day)
   const lastISO = d.dates[d.dates.length-1];
-  const [initY, initM, initD] = lastISO.split('-').map(Number);
+  const [initY, initM] = lastISO.split('-').map(Number);
+  const initD = ''; // ทั้งเดือน by default
   yearSel.value = String(initY);
   monthSel.value = String(initM);
-  daySel.value = String(initD);
+  daySel.value = '';
   state.filterDateISO = lastISO;
+  state.filterDay = '';
 
   // Region filter
   const regionSel = $('fRegion');
@@ -790,14 +846,24 @@ function initFilters(){
 
   function updateDateFromPickers(){
     const yearBE = +yearSel.value + 543;
-    state.filterDateISO = buildISO(yearBE, +monthSel.value, +daySel.value);
+    state.filterDay = daySel.value;
+    if(daySel.value===''){
+      // ทั้งเดือน -> cutoff = สิ้นเดือน (ใช้เป็น year-month reference; priceAsOf/bkkAsOf จะเฉลี่ยทั้งเดือนให้เอง)
+      state.filterDateISO = buildISO(yearBE, +monthSel.value, 31);
+    } else {
+      state.filterDateISO = buildISO(yearBE, +monthSel.value, +daySel.value);
+    }
     renderAll();
   }
 
   window.refreshProvinceOptions = refreshProvinceOptions;
   window.refreshDistrictOptions = refreshDistrictOptions;
 
-  prodSel.onchange = ()=>{ state.filterProduct=+prodSel.value; renderAll(); };
+  prodSel.onchange = ()=>{
+    state.filterProduct=+prodSel.value; renderAll();
+    const row=$('productIconRow');
+    if(row){ row.querySelectorAll('.product-icon').forEach(x=>x.classList.toggle('active', x.dataset.i===prodSel.value)); }
+  };
   yearSel.onchange = updateDateFromPickers;
   monthSel.onchange = updateDateFromPickers;
   daySel.onchange = updateDateFromPickers;
@@ -806,7 +872,7 @@ function initFilters(){
   distSel.onchange = ()=>{ state.filterDistrictIdx = distSel.value; renderAll(); };
   $('resetFilters').onclick = ()=>{
     prodSel.value=defaultProd; state.filterProduct=defaultProd;
-    yearSel.value=String(initY); monthSel.value=String(initM); daySel.value=String(initD);
+    yearSel.value=String(initY); monthSel.value=String(initM); daySel.value=''; state.filterDay='';
     state.filterDateISO = lastISO; state.filterYear='';
     regionSel.value=''; state.filterRegion=''; refreshProvinceOptions();
     provSel.value=''; state.filterProvince=''; state.filterDistrictIdx=''; refreshDistrictOptions();
@@ -854,8 +920,56 @@ function initFilters(){
   $('trendProvA').value = d.provinces.includes('เชียงใหม่') ? 'เชียงใหม่' : d.provinces[0];
   $('trendProvB').value = d.provinces.includes('ภูเก็ต') ? 'ภูเก็ต' : d.provinces[1];
 
-  // compare page: add-province selector + dependent add-district selector
-  initCompareControls();
+  // compare page: multi-item (province หรือ อำเภอ) search + add chips (ไม่รวม กทม. เพราะไม่มีข้อมูลระดับอำเภอ)
+  // item shape: {key, label, type:'prov'|'dist', distIdxs:[...]}
+  function makeProvItem(prov){
+    const provIdx = d.provinces.indexOf(prov);
+    return {key:'prov:'+prov, label:prov, type:'prov', distIdxs: d._provDists[provIdx]||[]};
+  }
+  function makeDistItem(distIdx){
+    const dd = d.districts[distIdx]; const prov = d.provinces[dd[0]];
+    return {key:'dist:'+distIdx, label:`${dd[1]}, ${prov}`, type:'dist', distIdxs:[distIdx]};
+  }
+  const defP1 = d.provinces.includes('เชียงใหม่') ? 'เชียงใหม่' : d.provinces[0];
+  const defP2 = d.provinces.includes('ภูเก็ต') ? 'ภูเก็ต' : d.provinces[1];
+  state.compareItems = [defP1, defP2].filter(Boolean).map(makeProvItem);
+  const cmpInput = $('compareSearch'), cmpResults = $('compareSearchResults'), cmpChips = $('compareChips');
+  function renderCompareChips(){
+    const colors = ['#2563c9','#e0483e','#1ea672','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#84cc16'];
+    cmpChips.innerHTML = state.compareItems.map((it,i)=>`
+      <div class="chip" style="border-color:${colors[i%colors.length]}; color:${colors[i%colors.length]}; display:flex; align-items:center; gap:6px;">
+        ${it.type==='prov'?'📍':'📌'} ${it.label} <span data-k="${it.key}" class="cmp-remove" style="cursor:pointer; font-weight:700;">×</span>
+      </div>`).join('') || `<span class="hint" style="color:var(--text-dim)">ยังไม่ได้เลือก — พิมพ์ค้นหาด้านบน (จังหวัด หรือ อำเภอ)</span>`;
+    cmpChips.querySelectorAll('.cmp-remove').forEach(x=>{
+      x.onclick = ()=>{ state.compareItems = state.compareItems.filter(it=>it.key!==x.dataset.k); renderCompareChips(); renderCompare(); };
+    });
+  }
+  cmpInput.oninput = ()=>{
+    const q = cmpInput.value.trim();
+    if(!q){ cmpResults.style.display='none'; return; }
+    const haveKeys = new Set(state.compareItems.map(it=>it.key));
+    const provMatches = d.provinces.filter(p=>p.includes(q) && !haveKeys.has('prov:'+p)).slice(0,5).map(p=>({key:'prov:'+p, label:p, sub:'จังหวัด', add:()=>makeProvItem(p)}));
+    const distMatches = [];
+    d.districts.forEach((dd,i)=>{
+      if(distMatches.length>=6) return;
+      if(haveKeys.has('dist:'+i)) return;
+      if(dd[1].includes(q)){ distMatches.push({key:'dist:'+i, label:`${dd[1]}, ${d.provinces[dd[0]]}`, sub:'อำเภอ', add:()=>makeDistItem(i)}); }
+    });
+    const matches = [...provMatches, ...distMatches];
+    if(!matches.length){ cmpResults.style.display='none'; return; }
+    cmpResults.innerHTML = matches.map(m=>`<div data-k="${m.key}">${m.label} <span style="color:var(--text-dim); font-size:10px;">(${m.sub})</span></div>`).join('');
+    cmpResults.style.display='block';
+    cmpResults.querySelectorAll('div').forEach((el,i)=>{
+      el.onclick = ()=>{
+        if(state.compareItems.length>=8){ alert('เทียบได้สูงสุด 8 รายการ'); return; }
+        state.compareItems.push(matches[i].add());
+        cmpInput.value=''; cmpResults.style.display='none';
+        renderCompareChips(); renderCompare();
+      };
+    });
+  };
+  document.addEventListener('click', (e)=>{ if(!cmpInput.contains(e.target) && !cmpResults.contains(e.target)) cmpResults.style.display='none'; });
+  renderCompareChips();
 
   $('sidebarClose').onclick = ()=>{ $('sidebar').classList.remove('open'); state.sidebarState = {type:null, key:null}; };
   $('outlierSearch').oninput = renderOutlierTable;
@@ -948,7 +1062,8 @@ function latestSnapshot(){
   const isAll = prod === -1;
   const bkk = isAll ? avgBkkAll(cutoff) : bkkAsOf(prod, cutoff);
   d.districts.forEach((dd,i)=>{
-    const price = isAll ? avgPriceAll(i, cutoff) : (priceAsOf(i, prod, cutoff) ?? 0);
+    const price = isAll ? avgPriceAll(i, cutoff) : priceAsOf(i, prod, cutoff);
+    if(price==null) return; // ไม่มีข้อมูลราคาในช่วงที่เลือก -> ไม่แสดงอำเภอนี้
     const prov = d.provinces[dd[0]];
     if(state.filterRegion && regionOf(prov)!==state.filterRegion) return;
     if(state.filterProvince && prov!==state.filterProvince) return;
@@ -1033,17 +1148,19 @@ function renderRegionOverview(){
   const el = $('regionOverview'); if(!el) return;
   if(!state.filterRegion){
     const stats = computeRegionStats();
-    el.innerHTML = `<h3>ราคาน้ำมันขายปลีก (บาท/ลิตร) <span class="hint">คลิกภาคเพื่อดูรายจังหวัด</span></h3>
-      <div class="region-grid">` + stats.map(s=>`
-        <div class="region-card" data-region="${s.region}">
-          <div class="region-name"><span class="region-dot" style="background:${REGION_COLORS[s.region]||'#94a3b8'}"></span>ภาค${s.region} · ${s.provCount} จังหวัด</div>
-          <div class="region-stats">
-            <div><span class="l">ต่ำสุด</span><span class="v">${s.min??'-'}</span></div>
-            <div><span class="l">เฉลี่ย</span><span class="v hl">${s.avg??'-'}</span></div>
-            <div><span class="l">สูงสุด</span><span class="v">${s.max??'-'}</span></div>
+    el.innerHTML = `<h3 style="margin-top:0">ราคาน้ำมันขายปลีก <span class="hint">(บาท/ลิตร) · คลิกภาคเพื่อดูรายจังหวัด</span></h3>` + stats.map(s=>`
+        <div class="legend-list-item" data-region="${s.region}">
+          <span class="dot" style="background:${REGION_COLORS[s.region]||'#94a3b8'}"></span>
+          <div class="body">
+            <div class="name">ภาค${s.region} · ${s.provCount} จังหวัด</div>
+            <div class="stats">
+              <div><span class="l">ต่ำสุด</span><span class="v">${s.min??'-'}</span></div>
+              <div><span class="l">เฉลี่ย</span><span class="v hl">${s.avg??'-'}</span></div>
+              <div><span class="l">สูงสุด</span><span class="v">${s.max??'-'}</span></div>
+            </div>
           </div>
-        </div>`).join('') + `</div>`;
-    el.querySelectorAll('.region-card').forEach(c=>{
+        </div>`).join('');
+    el.querySelectorAll('.legend-list-item').forEach(c=>{
       c.onclick = ()=>{
         state.filterRegion = c.dataset.region; $('fRegion').value = state.filterRegion;
         state.filterProvince=''; state.filterDistrictIdx='';
@@ -1054,17 +1171,19 @@ function renderRegionOverview(){
     const provs = computeProvinceStatsForRegion(state.filterRegion);
     el.innerHTML = `<div class="back-row">
         <button class="small-btn" id="regionBackBtn">← ย้อนกลับ</button>
-        <h3>ภาค${state.filterRegion} — ราคารายจังหวัด (บาท/ลิตร) <span class="hint">คลิกจังหวัดเพื่อดูรายอำเภอ</span></h3>
-      </div>
-      <div class="region-grid">` + provs.map(p=>`
-        <div class="region-card province-card" data-prov="${p.prov}">
-          <div class="region-name">${p.prov} (${p.n})</div>
-          <div class="region-stats">
-            <div><span class="l">ต่ำสุด</span><span class="v">${p.min}</span></div>
-            <div><span class="l">เฉลี่ย</span><span class="v hl">${p.avg}</span></div>
-            <div><span class="l">สูงสุด</span><span class="v">${p.max}</span></div>
+        <h3 style="margin:0">ภาค${state.filterRegion} <span class="hint">(บาท/ลิตร) · คลิกจังหวัดเพื่อดูรายอำเภอ</span></h3>
+      </div>` + provs.map(p=>`
+        <div class="legend-list-item province-card" data-prov="${p.prov}">
+          <span class="dot" style="background:${REGION_COLORS[state.filterRegion]||'#94a3b8'}"></span>
+          <div class="body">
+            <div class="name">${p.prov} (${p.n})</div>
+            <div class="stats">
+              <div><span class="l">ต่ำสุด</span><span class="v">${p.min}</span></div>
+              <div><span class="l">เฉลี่ย</span><span class="v hl">${p.avg}</span></div>
+              <div><span class="l">สูงสุด</span><span class="v">${p.max}</span></div>
+            </div>
           </div>
-        </div>`).join('') + `</div>`;
+        </div>`).join('');
     $('regionBackBtn').onclick = ()=>{
       state.filterRegion=''; $('fRegion').value=''; state.filterProvince=''; state.filterDistrictIdx='';
       refreshProvinceOptions(); refreshDistrictOptions(); renderAll();
@@ -1199,7 +1318,7 @@ function renderMap(){
     backgroundColor:'transparent',
     tooltip:{ trigger:'item', formatter: tooltipFmt },
     series:[{
-      type:'map', map:'thailand', roam:'move', label:{show:false},
+      type:'map', map:'thailand', roam:true, label:{show:false},
       emphasis:{ label:{show:true, color:'#fff'}, itemStyle:{areaColor:t.blue} },
       itemStyle:{ borderColor:t.border, borderWidth:.6 },
       data: mapData,
@@ -1211,7 +1330,7 @@ function renderMap(){
     chart.setOption({
       ...baseOption,
       visualMap:{show:false},
-      legend:{ data:Object.keys(REGION_COLORS), bottom:10, left:10, textStyle:{color:t.dim, fontSize:SC(15)}, itemWidth:12, itemHeight:12, icon:'circle' }
+      legend:{ data:Object.keys(REGION_COLORS), bottom:10, left:10, textStyle:{color:t.dim, fontSize:SC(11)}, itemWidth:12, itemHeight:12, icon:'circle' }
     }, true);
   } else {
     const diffVals = mapData.map(x=>x.diff).filter(v=>v!=null);
@@ -1220,7 +1339,7 @@ function renderMap(){
       ...baseOption,
       legend:{show:false},
       visualMap:{
-        show:true, left:10, bottom:10, orient:'horizontal', type:'piecewise',
+        show:false, left:10, bottom:10, orient:'horizontal', type:'piecewise',
         text:['แพง (+)','ถูก (-)'], showLabel:false,
         pieces:[
           {min:0.56, max:maxAbs+1, color:'#7A0000', label:'แพงที่สุด'},
@@ -1228,16 +1347,44 @@ function renderMap(){
           {min:0.10, max:0.20, color:'#D32F2F', label:'แพง'},
           {min:0.05, max:0.10, color:'#E53935', label:'แพงเล็กน้อย'},
           {min:0.001, max:0.05, color:'#EF5350', label:'แพงนิดหน่อย'},
-          {min:-0.001, max:0.001, color:'#bdbdbd', label:'ปกติ'},
+          {min:-0.001, max:0.001, color:'#757575', label:'ปกติ'},
           {min:-0.05, max:-0.001, color:'#43A047', label:'ถูกนิดหน่อย'},
           {min:-0.10, max:-0.05, color:'#388E3C', label:'ถูกเล็กน้อย'},
           {min:-0.20, max:-0.10, color:'#2E7D32', label:'ถูก'},
           {min:-0.56, max:-0.20, color:'#1B5E20', label:'ถูกมาก'},
           {min:-maxAbs-1, max:-0.56, color:'#0B3D0B', label:'ถูกที่สุด'}
         ],
-        textStyle:{color:t.dim, fontSize:SC(15), fontWeight:500}
+        textStyle:{color:t.dim, fontSize:SC(11), fontWeight:500}
       }
     }, true);
+  }
+
+  // region hover bubble ("ภาคกลาง" style pin) — follows cursor, only in region-color mode
+  const bubble = $('mapRegionBubble');
+  if(bubble){
+    chart.off('mouseover', chart.__regionBubbleOver);
+    chart.off('mousemove', chart.__regionBubbleMove);
+    chart.off('mouseout', chart.__regionBubbleOut);
+    chart.off('globalout', chart.__regionBubbleOut);
+    chart.__regionBubbleOver = (params)=>{
+      if(mode!=='region' || !params.data) { bubble.style.display='none'; return; }
+      bubble.textContent = 'ภาค'+params.data.region;
+      bubble.style.borderColor = REGION_COLORS[params.data.region]||'#4caf50';
+      bubble.style.display='block';
+    };
+    chart.__regionBubbleMove = (params)=>{
+      if(mode!=='region' || bubble.style.display==='none') return;
+      const ev = params.event?.event;
+      if(!ev) return;
+      const rect = bubble.parentElement.getBoundingClientRect();
+      bubble.style.left = (ev.clientX - rect.left) + 'px';
+      bubble.style.top = (ev.clientY - rect.top) + 'px';
+    };
+    chart.__regionBubbleOut = ()=>{ bubble.style.display='none'; };
+    chart.on('mouseover', chart.__regionBubbleOver);
+    chart.on('mousemove', chart.__regionBubbleMove);
+    chart.on('mouseout', chart.__regionBubbleOut);
+    chart.on('globalout', chart.__regionBubbleOut);
   }
 
   // zoom the map to the selected region's bounding box; otherwise restore default view
@@ -1313,7 +1460,7 @@ function openProvinceSidebar(prov){
 
   $('sbTitle').textContent = 'จังหวัด'+prov;
   let html = `<div style="font-size:12px;color:var(--text-dim);margin-bottom:4px;">${region} · ${rows.length} อำเภอ · ณ ${thDate(state.filterDateISO,'full')}</div>`;
-  html += `<div style="font-size:calc(11.5px * var(--ui-scale));color:var(--text-dim);margin-bottom:10px;">${isAllProd?'ทุกผลิตภัณฑ์ (เฉลี่ย)':d.products[prod]} · ราคากลาง กทม.: <b style="color:var(--text)">${bkk!=null? bkk.toFixed(2)+' ฿':'-'}</b></div>`;
+  html += `<div style="font-size:11.5px;color:var(--text-dim);margin-bottom:10px;">${isAllProd?'ทุกผลิตภัณฑ์ (เฉลี่ย)':d.products[prod]} · ราคากลาง กทม.: <b style="color:var(--text)">${bkk!=null? bkk.toFixed(2)+' ฿':'-'}</b></div>`;
 
   // Summary cards
   html += `<div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:10px;">`;
@@ -1324,7 +1471,7 @@ function openProvinceSidebar(prov){
   html += `</div>`;
 
   if(d._zeroTransportProvinces.has(prov)){
-    html += `<div style="font-size:calc(11.5px * var(--ui-scale));color:var(--blue-600);margin-bottom:10px;">ℹ ค่าขนส่ง สนพ. = 0 บาททุกอำเภอ (ราคาเท่า กทม.)</div>`;
+    html += `<div style="font-size:11.5px;color:var(--blue-600);margin-bottom:10px;">ℹ ค่าขนส่ง สนพ. = 0 บาททุกอำเภอ (ราคาเท่า กทม.)</div>`;
   }
   if(rows.length){
     const maxRow = rows[0], minRow = rows[rows.length-1];
@@ -1379,9 +1526,9 @@ function openProvinceSidebar(prov){
     const chartT = chartTheme();
     getChart('sbProvTrend').setOption({
       backgroundColor:'transparent',
-      grid:{left:40,right:10,top:10,bottom:24},
-      xAxis:{type:'category', data:trendPoints.map(p=>thDate(p[0],'axis')), axisLabel:{color:chartT.dim,fontSize:SC(11),rotate:30}},
-      yAxis:{type:'value', scale:true, axisLabel:{color:chartT.dim,fontSize:SC(11)}, splitLine:{lineStyle:{color:chartT.border}}},
+      grid:{left:40,right:10,top:10,bottom:60},
+      xAxis:{type:'category', data:trendPoints.map(p=>thDate(p[0],'axis')), axisLabel:{color:chartT.dim,fontSize:SC(10),rotate:35, margin:14}},
+      yAxis:{type:'value', scale:true, axisLabel:{color:chartT.dim,fontSize:SC(8)}, splitLine:{lineStyle:{color:chartT.border}}},
       tooltip:{trigger:'axis'},
       series:[{type:'line', data:trendPoints.map(p=>p[1]), smooth:true, areaStyle:{opacity:.1}, itemStyle:{color:chartT.blue}, lineStyle:{color:chartT.blue,width:1.5}, showSymbol:false}]
     }, true);
@@ -1448,9 +1595,9 @@ function openDistrictSidebar(distIdx){
     if(trendData.length){
       getChart('sbTrend').setOption({
         backgroundColor:'transparent',
-        grid:{left:40,right:16,top:16,bottom:26},
-        xAxis:{type:'category', data:trendData.map(s=>thDate(s[0],'axis')), axisLabel:{color:t.dim, fontSize:SC(13), rotate:40}},
-        yAxis:{type:'value', scale:true, axisLabel:{color:t.dim, fontSize:SC(13)}, splitLine:{lineStyle:{color:t.border}}},
+        grid:{left:40,right:16,top:16,bottom:60},
+        xAxis:{type:'category', data:trendData.map(s=>thDate(s[0],'axis')), axisLabel:{color:t.dim, fontSize:SC(10), rotate:45, margin:14}},
+        yAxis:{type:'value', scale:true, axisLabel:{color:t.dim, fontSize:SC(9)}, splitLine:{lineStyle:{color:t.border}}},
         tooltip:{trigger:'axis'},
         series:[{type:'line', data:trendData.map(s=>s[1]), smooth:true, areaStyle:{opacity:.15}, itemStyle:{color:t.blue}, lineStyle:{color:t.blue,width:2}}]
       }, true);
@@ -1466,7 +1613,7 @@ function barAxisRange(vals){
   const lo = Math.min(...vals), hi = Math.max(...vals);
   // fixed padding (not proportional to the data spread) so a real 0.2 บาท difference
   // still looks like a small difference instead of being stretched to fill the whole bar
-  const pad = 1.5;
+  const pad = 3;
   return {min:Math.floor(lo-pad), max:Math.ceil(hi+pad)};
 }
 function renderTopBottom(){
@@ -1480,13 +1627,13 @@ function renderTopBottom(){
   getChart('topBottomChart').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    legend:{data:['สูงสุด','ต่ำสุด'], textStyle:{color:t.dim, fontSize:SC(14)}, top:0},
+    legend:{data:['สูงสุด','ต่ำสุด'], textStyle:{color:t.dim, fontSize:SC(10)}, top:0},
     grid:{left:70,right:36,top:30,bottom:20},
-    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:SC(15)}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:[...top5.map(x=>x.prov),...bottom5.map(x=>x.prov)].reverse(), axisLabel:{color:t.text,fontSize:SC(16)}},
+    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:SC(9)}, splitLine:{lineStyle:{color:t.border}}},
+    yAxis:{type:'category', data:[...top5.map(x=>x.prov),...bottom5.map(x=>x.prov)].reverse(), axisLabel:{color:t.text,fontSize:SC(10)}},
     series:[{
       type:'bar', barMaxWidth:22, data:[...top5.map(x=>({value:x.avg,itemStyle:{color:t.up}})),...bottom5.map(x=>({value:x.avg,itemStyle:{color:t.down}}))].reverse(),
-      label:{show:true, position:'right', color:t.text, fontSize:SC(15), formatter:p=>p.value.toFixed(2)}
+      label:{show:true, position:'right', color:t.text, fontSize:SC(9), formatter:p=>p.value.toFixed(2)}
     }]
   }, true);
 }
@@ -1502,12 +1649,12 @@ function renderRegionPie(){
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, formatter:p=>`${p[0].name}: ${p[0].value.toFixed(2)} ฿`},
     grid:{left:70,right:36,top:10,bottom:20},
-    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:SC(15)}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:data.map(x=>'ภาค'+x.name).reverse(), axisLabel:{color:t.text, fontSize:SC(16)}},
+    xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:SC(9)}, splitLine:{lineStyle:{color:t.border}}},
+    yAxis:{type:'category', data:data.map(x=>'ภาค'+x.name).reverse(), axisLabel:{color:t.text, fontSize:SC(10)}},
     series:[{
       type:'bar', barMaxWidth:22,
       data:data.map(x=>({value:x.value, itemStyle:{color:REGION_COLORS[x.name]||'#94a3b8'}})).reverse(),
-      label:{show:true, position:'right', color:t.text, fontSize:SC(15), formatter:p=>p.value.toFixed(2)}
+      label:{show:true, position:'right', color:t.text, fontSize:SC(9), formatter:p=>p.value.toFixed(2)}
     }]
   }, true);
 }
@@ -1536,9 +1683,9 @@ function renderTrend(){
     backgroundColor:'transparent',
     tooltip:{trigger:'axis'},
     legend:{data:provs, textStyle:{color:t.dim}, top:0},
-    grid:{left:50,right:20,top:40,bottom:70},
+    grid:{left:50,right:20,top:40,bottom:85},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
-    xAxis:{type:'category', axisLabel:{color:t.dim, fontSize:SC(13), rotate:30}},
+    xAxis:{type:'category', axisLabel:{color:t.dim, fontSize:SC(10), rotate:35, margin:14}},
     yAxis:{type:'value', scale:true, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
     series
   }, true);
@@ -1586,10 +1733,10 @@ function renderProductMonthlyTrend(){
   getChart('productMonthlyTrend').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis'},
-    legend:{data:d.products, textStyle:{color:t.dim, fontSize:SC(14)}, top:0, type:'scroll'},
-    grid:{left:50,right:20,top:50,bottom:70},
+    legend:{data:d.products, textStyle:{color:t.dim, fontSize:SC(10)}, top:0, type:'scroll'},
+    grid:{left:50,right:20,top:50,bottom:85},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
-    xAxis:{type:'category', data:allMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:SC(13), rotate:30}},
+    xAxis:{type:'category', data:allMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:SC(10), rotate:35, margin:14}},
     yAxis:{type:'value', scale:true, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
     series
   }, true);
@@ -1664,17 +1811,17 @@ function renderTransport(){
       const c = p.data;
       if(c.total===0) return `${regionNames[p.value[1]]} / ${d.products[p.value[0]]}<br>ไม่มีข้อมูลในตัวกรองปัจจุบัน`;
       return `${regionNames[p.value[1]]} / ${d.products[p.value[0]]}<br>`
-        + `ไม่ปฏิบัติตาม สนพ.: ${c.nonCompliant} / ${c.total} อำเภอ (${c.value[2]}%)<br>`
+        + `ไม่ตรงตามสนพ.: ${c.nonCompliant} / ${c.total} อำเภอ (${c.value[2]}%)<br>`
         + (c.nonCompliant? `ส่วนต่างเฉลี่ยของอำเภอที่ไม่ตรง: ${c.avgNonCompliantDiff>0?'+':''}${c.avgNonCompliantDiff} ฿` : 'ตรงตามราคาอ้างอิง สนพ. ทั้งหมด');
     }},
-    grid:{left:80,right:20,top:70,bottom:110},
-    xAxis:{type:'category', data:d.products, axisLabel:{color:t.dim, fontSize:SC(13), rotate:40, interval:0, margin:14}, splitArea:{show:true}},
-    yAxis:{type:'category', data:regionNames, axisLabel:{color:t.text, fontSize:SC(14)}, splitArea:{show:true}},
+    grid:{left:80,right:20,top:20,bottom:85},
+    xAxis:{type:'category', data:d.products, axisLabel:{color:t.dim, fontSize:SC(11), rotate:45, interval:0, margin:16}, splitArea:{show:true}},
+    yAxis:{type:'category', data:regionNames, axisLabel:{color:t.text, fontSize:SC(13)}, splitArea:{show:true}},
     visualMap:{
-      show:true, min:0, max:100, orient:'horizontal', left:'center', top:10, type:'piecewise',
-      text:['ไม่ปฏิบัติตาม สนพ.','ปฏิบัติตาม สนพ.'], textStyle:{color:t.dim, fontSize:SC(13)},
+      show:true, min:0, max:100, orient:'horizontal', left:'center', bottom:0, type:'piecewise',
+      text:['ไม่ตรงตามสนพ.มาก','ตรงตามสนพ.ทั้งหมด'], textStyle:{color:t.dim, fontSize:SC(11)},
       pieces:[
-        {min:0, max:0, color:'#1ea672', label:'0% (ปฏิบัติตามทั้งหมด)'},
+        {min:0, max:0, color:'#1ea672', label:'0% (ตรงทั้งหมด)'},
         {min:0.001, max:5, color:'#8bc98a', label:'0–5%'},
         {min:5, max:15, color:'#f6c453', label:'5–15%'},
         {min:15, max:30, color:'#f0983f', label:'15–30%'},
@@ -1684,7 +1831,7 @@ function renderTransport(){
     },
     series:[{
       type:'heatmap', data:cells,
-      label:{show:true, color:'#fff', fontSize:SC(13), fontWeight:700, formatter:p=>p.data.total? p.data.value[2]+'%' : '–',
+      label:{show:true, color:'#fff', fontSize:SC(16), fontWeight:700, formatter:p=>p.data.total? p.data.value[2]+'%' : '–',
         textBorderColor:'rgba(0,0,0,.65)', textBorderWidth:2.5},
       itemStyle:{ borderColor:t.border, borderWidth:1,
         color: p=> p.data.total===0 ? '#9aa7bb' : undefined }
@@ -1747,178 +1894,48 @@ function renderRanking(){
     backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
     grid:{left:90,right:36,top:10,bottom:20},
     xAxis:{type:'value', min:topRange.min, max:topRange.max, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:top20.map(x=>x.prov), axisLabel:{color:t.text, fontSize:SC(14)}},
-    series:[{type:'bar', barMaxWidth:16, data:top20.map(x=>x.avg), itemStyle:{color:t.up}, label:{show:true,position:'right',color:t.text,fontSize:SC(13),formatter:p=>p.value.toFixed(2)}}]
+    yAxis:{type:'category', data:top20.map(x=>x.prov), axisLabel:{color:t.text, fontSize:SC(10)}},
+    series:[{type:'bar', barMaxWidth:16, data:top20.map(x=>x.avg), itemStyle:{color:t.up}, label:{show:true,position:'right',color:t.text,fontSize:SC(9),formatter:p=>p.value.toFixed(2)}}]
   }, true);
   getChart('rankBottom').setOption({
     backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
     grid:{left:90,right:36,top:10,bottom:20},
     xAxis:{type:'value', min:bottomRange.min, max:bottomRange.max, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:bottom20.map(x=>x.prov).reverse(), axisLabel:{color:t.text, fontSize:SC(14)}},
-    series:[{type:'bar', barMaxWidth:16, data:bottom20.map(x=>x.avg).reverse(), itemStyle:{color:t.down}, label:{show:true,position:'right',color:t.text,fontSize:SC(13),formatter:p=>p.value.toFixed(2)}}]
+    yAxis:{type:'category', data:bottom20.map(x=>x.prov).reverse(), axisLabel:{color:t.text, fontSize:SC(10)}},
+    series:[{type:'bar', barMaxWidth:16, data:bottom20.map(x=>x.avg).reverse(), itemStyle:{color:t.down}, label:{show:true,position:'right',color:t.text,fontSize:SC(9),formatter:p=>p.value.toFixed(2)}}]
   }, true);
 }
 
 // ---------- DISTRICT HEATMAP ----------
-// ---------- COMPARE N PROVINCES/DISTRICTS ----------
-const compareColors = ['#2563c9','#e0483e','#1ea672','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#84cc16','#f97316','#c026d3','#0ea5e9','#a3a3a3'];
-// each item: {key, label, distIdxs:[...]}  (province item = all districts in province; district item = single distIdx)
-state.compareItems = [];
-state.compareProdSel = null; // null = all products selected
-
-function initCompareControls(){
-  const d = state.data;
-  const provSel = $('compareAddProv'), distSel = $('compareAddDist');
-  const searchInput = $('compareAddSearch'), results = $('compareSearchResults');
-  const sortedProvs = [...d.provinces].sort((a,b)=>a.localeCompare(b,'th'));
-  sortedProvs.forEach(p=>{ const o=document.createElement('option'); o.value=p; o.textContent=p; provSel.appendChild(o); });
-
-  const refreshDistOptions = ()=>{
-    distSel.innerHTML = '<option value="">ทั้งหมด</option>';
-    const provIdx = d.provinces.indexOf(provSel.value);
-    if(provIdx<0) return;
-    const distIdxs = (d._provDists[provIdx] || []).slice().sort((a,b)=>d.districts[a][1].localeCompare(d.districts[b][1],'th'));
-    distIdxs.forEach(i=>{ const o=document.createElement('option'); o.value=i; o.textContent=d.districts[i][1]; distSel.appendChild(o); });
-  };
-  provSel.onchange = refreshDistOptions;
-  refreshDistOptions();
-
-  // search autocomplete -> sets the two dropdowns above, like the main filter bar
-  searchInput.oninput = ()=>{
-    const q = searchInput.value.trim();
-    if(!q){ results.style.display='none'; return; }
-    const matches = [];
-    d.provinces.forEach(p=>{ if(p.includes(q)) matches.push({type:'prov', label:p, prov:p}); });
-    d.districts.forEach((dd,i)=>{ if(dd[1].includes(q)) matches.push({type:'dist', label:d.provinces[dd[0]]+' / '+dd[1], distIdx:i}); });
-    results.innerHTML = '';
-    matches.slice(0,15).forEach(m=>{
-      const div = document.createElement('div'); div.textContent = m.label;
-      div.onclick = ()=>{
-        results.style.display='none'; searchInput.value='';
-        if(m.type==='prov'){ provSel.value = m.prov; refreshDistOptions(); distSel.value=''; }
-        else {
-          const provName = d.provinces[d.districts[m.distIdx][0]];
-          provSel.value = provName; refreshDistOptions(); distSel.value = String(m.distIdx);
-        }
-      };
-      results.appendChild(div);
-    });
-    results.style.display = matches.length? 'block':'none';
-  };
-  document.addEventListener('click', e=>{ if(!e.target.closest('#page-compare .search-wrap')) results.style.display='none'; });
-
-  $('compareAddBtn').onclick = ()=>{
-    const provIdx = d.provinces.indexOf(provSel.value);
-    if(provIdx<0) return;
-    if(distSel.value===''){
-      const key = 'P:'+provIdx;
-      if(state.compareItems.some(it=>it.key===key)) return;
-      state.compareItems.push({key, label:d.provinces[provIdx], distIdxs: d._provDists[provIdx]||[]});
-    } else {
-      const distIdx = +distSel.value;
-      const key = 'D:'+distIdx;
-      if(state.compareItems.some(it=>it.key===key)) return;
-      state.compareItems.push({key, label:d.provinces[provIdx]+' / '+d.districts[distIdx][1], distIdxs:[distIdx]});
-    }
-    renderCompareItemsUI(); renderCompare();
-  };
-
-  // default starting items
-  const defA = d.provinces.includes('เชียงใหม่') ? 'เชียงใหม่' : d.provinces[0];
-  const defB = d.provinces.includes('ภูเก็ต') ? 'ภูเก็ต' : d.provinces[1];
-  [defA, defB].forEach(prov=>{
-    if(!prov) return;
-    const provIdx = d.provinces.indexOf(prov);
-    const key = 'P:'+provIdx;
-    if(!state.compareItems.some(it=>it.key===key)){
-      state.compareItems.push({key, label:prov, distIdxs: d._provDists[provIdx]||[]});
-    }
-  });
-  renderCompareItemsUI();
-  renderCompareProductPicker();
-}
-
-function renderCompareItemsUI(){
-  const wrap = $('compareItemsList');
-  wrap.innerHTML = '';
-  state.compareItems.forEach((it,i)=>{
-    const chip = document.createElement('div');
-    chip.className = 'compare-item';
-    const color = compareColors[i % compareColors.length];
-    chip.innerHTML = `<span class="swatch" style="background:${color}"></span><span>${it.label}</span><button class="rm" type="button">×</button>`;
-    chip.querySelector('.rm').onclick = ()=>{
-      state.compareItems.splice(i,1);
-      renderCompareItemsUI(); renderCompare();
-    };
-    wrap.appendChild(chip);
-  });
-  if(!state.compareItems.length){
-    wrap.innerHTML = '<span class="hint">ยังไม่ได้เลือกจังหวัด/อำเภอ — เพิ่มรายการด้านบนเพื่อเริ่มเปรียบเทียบ</span>';
-  }
-}
-
-function renderCompareProductPicker(){
-  const d = state.data;
-  const wrap = $('compareProductPicker');
-  wrap.innerHTML = '';
-  const allBtn = document.createElement('button');
-  allBtn.type='button'; allBtn.className='product-chip'+(state.compareProdSel===null?' active':'');
-  allBtn.textContent = 'ทุกผลิตภัณฑ์';
-  allBtn.onclick = ()=>{ state.compareProdSel=null; renderCompareProductPicker(); renderCompare(); };
-  wrap.appendChild(allBtn);
-  d.products.forEach((p,pi)=>{
-    const btn = document.createElement('button');
-    btn.type='button';
-    const active = state.compareProdSel!==null && state.compareProdSel.has(pi);
-    btn.className = 'product-chip'+(active?' active':'');
-    btn.textContent = p;
-    btn.onclick = ()=>{
-      if(state.compareProdSel===null) state.compareProdSel = new Set(d.products.map((_,x)=>x));
-      if(state.compareProdSel.has(pi)) state.compareProdSel.delete(pi); else state.compareProdSel.add(pi);
-      if(state.compareProdSel.size===d.products.length) state.compareProdSel = null; // เลือกครบ = กลับเป็น "ทุกผลิตภัณฑ์"
-      if(state.compareProdSel && state.compareProdSel.size===0) state.compareProdSel = new Set([pi]); // กันเลือกว่างเปล่า
-      renderCompareProductPicker(); renderCompare();
-    };
-    wrap.appendChild(btn);
-  });
-}
-
+// ---------- COMPARE 2 PROVINCES ----------
 function renderCompare(){
   const d = state.data, t = chartTheme();
+  const items = state.compareItems || [];
+  if(!items.length) { getChart('compareBar').clear(); return; }
   const yearStr = currentYearStr();
-  const chart = getChart('compareBar');
-  if(!state.compareItems.length){ chart.clear(); return; }
-
-  const prodIdxs = state.compareProdSel===null ? d.products.map((_,pi)=>pi) : [...state.compareProdSel].sort((a,b)=>a-b);
-  const prodNames = prodIdxs.map(pi=>d.products[pi]);
+  const colors = ['#2563c9','#e0483e','#1ea672','#f59e0b','#8b5cf6','#ec4899','#06b6d4','#84cc16'];
 
   const avgOf = (distIdxs, pi) => {
     const vals = distIdxs.map(i=>yearAvgPrice(i,pi,yearStr)).filter(v=>v!=null);
     return vals.length? +(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : 0; // ไม่มีข้อมูล = 0
   };
+  const seriesBkk = d.products.map((p,pi)=>yearAvgBkk(pi,yearStr) ?? 0);
 
-  const itemSeries = state.compareItems.map((it,i)=>({
-    name: it.label, type:'bar',
-    data: prodIdxs.map(pi=>avgOf(it.distIdxs, pi)),
-    itemStyle:{color: compareColors[i % compareColors.length]},
-    label:{show:true, position:'top', color:t.text, fontSize:SC(16), rotate:90, align:'left', verticalAlign:'middle', formatter:p=>p.value.toFixed(2)}
+  const series = items.map((it,i)=>({
+    name:it.label, type:'bar', data:d.products.map((p,pi)=>avgOf(it.distIdxs,pi)),
+    itemStyle:{color:colors[i%colors.length]},
+    label:{show:true, position:'top', color:t.text, fontSize:SC(8), rotate:90, align:'left', verticalAlign:'middle', formatter:p=>p.value.toFixed(2)}
   }));
-  const bkkSeries = {
-    name:'ราคากลาง กทม.และปริมณฑล', type:'bar',
-    data: prodIdxs.map(pi=>yearAvgBkk(pi,yearStr) ?? 0),
-    itemStyle:{color:t.dim},
-    label:{show:true, position:'top', color:t.text, fontSize:SC(16), rotate:90, align:'left', verticalAlign:'middle', formatter:p=>p.value.toFixed(2)}
-  };
-  const allSeries = [...itemSeries, bkkSeries];
+  series.push({name:'ราคากลาง กทม.', type:'bar', data:seriesBkk, itemStyle:{color:t.dim}, label:{show:true, position:'top', color:t.text, fontSize:SC(8), rotate:90, align:'left', verticalAlign:'middle', formatter:p=>p.value.toFixed(2)}});
 
-  chart.setOption({
+  getChart('compareBar').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    legend:{data:allSeries.map(s=>s.name), textStyle:{color:t.dim, fontSize:SC(14)}, top:0, type:'scroll'},
-    grid:{left:50,right:20,top:44,bottom:130},
-    xAxis:{type:'category', data:prodNames, axisLabel:{color:t.dim, fontSize:SC(14), rotate:40, interval:0}},
-    yAxis:{type:'value', scale:true, axisLabel:{color:t.dim, fontSize:SC(13)}, splitLine:{lineStyle:{color:t.border}}},
-    series:allSeries
+    legend:{data:[...items.map(it=>it.label),'ราคากลาง กทม.'], textStyle:{color:t.dim, fontSize:SC(10)}, top:0, type:'scroll'},
+    grid:{left:50,right:20,top:44,bottom:85},
+    xAxis:{type:'category', data:d.products, axisLabel:{color:t.dim, fontSize:SC(10), rotate:45, interval:0, margin:16}},
+    yAxis:{type:'value', scale:true, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
+    series
   }, true);
 }
 
@@ -1974,12 +1991,12 @@ function renderMomChart(){
       });
       return s;
     }},
-    legend:{ data:d.products, textStyle:{color:t.dim, fontSize:SC(14)}, top:0, type:'scroll' },
-    grid:{left:50,right:20,top:50,bottom:70},
+    legend:{ data:d.products, textStyle:{color:t.dim, fontSize:SC(10)}, top:0, type:'scroll' },
+    grid:{left:50,right:20,top:50,bottom:85},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
-    xAxis:{ type:'category', data:momMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:SC(13), rotate:30} },
+    xAxis:{ type:'category', data:momMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:SC(10), rotate:35, margin:14} },
     yAxis:{ type:'value', axisLabel:{color:t.dim, formatter:v=>(v>=0?'+':'')+v+' ฿'}, splitLine:{lineStyle:{color:t.border}},
-      name:'เปลี่ยนแปลง (฿)', nameTextStyle:{color:t.dim, fontSize:SC(14)} },
+      name:'เปลี่ยนแปลง (฿)', nameTextStyle:{color:t.dim, fontSize:SC(10)} },
     series
   }, true);
 }
