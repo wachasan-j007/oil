@@ -144,6 +144,8 @@ body::before{
 .product-icon{width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; cursor:pointer; opacity:.5; border:2px solid transparent; transition:all .15s; text-align:center; line-height:1.15; padding:4px; overflow:hidden;}
 .product-icon:hover{opacity:.85;}
 .product-icon.active{opacity:1; border-color:#fff; box-shadow:0 0 0 2px var(--blue-400), var(--shadow);}
+.product-icon.small{width:34px; height:34px; font-size:8px;}
+.product-icon.dimmed{opacity:.25;}
 .map-region-bubble{position:absolute; pointer-events:none; background:#fff; color:#1a1a1a; padding:5px 14px; border-radius:16px; font-size:12.5px; font-weight:700; box-shadow:0 3px 10px rgba(0,0,0,.3); border:3px solid #4caf50; display:none; z-index:30; white-space:nowrap; transform:translate(-50%,-130%);}
 #regionOverview .back-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
 #regionOverview .back-row h3{margin:0;}
@@ -156,6 +158,25 @@ body::before{
 .kpi-card .value{font-size:calc(21px * var(--ui-scale)); font-weight:600; line-height:1.15;}
 .kpi-card .sub{font-size:calc(10.5px * var(--ui-scale)); color:var(--text-dim); margin-top:4px;}
 .kpi-card.accent{border-color:var(--blue-400);}
+.kpi-hero{
+  grid-column:span 2; display:flex; align-items:center; gap:18px;
+  background:linear-gradient(135deg, var(--blue-600), var(--blue-500));
+  color:#fff; border:none;
+}
+.kpi-hero .label{color:rgba(255,255,255,.85);}
+.kpi-hero .value{font-size:calc(38px * var(--ui-scale)); font-weight:700;}
+.kpi-hero .sub{color:rgba(255,255,255,.85);}
+.kpi-hero .hero-badge{
+  font-size:calc(12px * var(--ui-scale)); padding:3px 10px; border-radius:20px;
+  background:rgba(255,255,255,.22); font-weight:600; white-space:nowrap;
+}
+.kpi-hero.status-bad{background:linear-gradient(135deg, #7a2a24, var(--up));}
+.data-freshness{
+  display:flex; align-items:center; gap:6px; font-size:calc(12px * var(--ui-scale));
+  color:var(--text-dim); margin-bottom:10px;
+}
+.data-freshness .dot{width:8px; height:8px; border-radius:50%; background:var(--down); display:inline-block;}
+@media (max-width:720px){ .kpi-hero{grid-column:1 / -1;} }
 
 .grid-2{display:grid; grid-template-columns:7fr 3fr; gap:14px;}
 .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px;}
@@ -276,6 +297,7 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 
 <!-- ============ PAGE: OVERVIEW / MAP ============ -->
 <div class="page active" id="page-overview">
+  <div class="data-freshness" id="dataFreshness"></div>
   <div class="kpi-row" id="kpiRow"></div>
   <div class="grid-2">
     <div class="card">
@@ -286,9 +308,10 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
       </div>
       <div class="product-icon-row" id="productIconRow"></div>
       <div class="map-legend-wrap">
-        <div class="map-col">
+        <div class="map-col" style="position:relative;">
           <div id="mapChart" class="echart map-xl"></div>
           <div class="map-region-bubble" id="mapRegionBubble"></div>
+          <button id="mapResetBtn" style="position:absolute;left:10px;bottom:10px;z-index:5;padding:6px 12px;border-radius:8px;border:none;background:#e0483e;color:#fff;font-size:12px;font-weight:600;cursor:pointer;">รีเซ็ตแผนที่</button>
         </div>
         <div class="legend-col" id="regionOverview"></div>
       </div>
@@ -306,6 +329,7 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 <div class="page" id="page-trend">
   <div class="card">
     <h3>แนวโน้มราคารายเดือน ทุกผลิตภัณฑ์ <span class="hint">ค่าเฉลี่ยทั่วประเทศรายเดือน แยกเส้นครบทุกชนิดน้ำมัน</span></h3>
+    <div id="productTrendLegend" class="product-icon-row" style="gap:8px;"></div>
     <div id="productMonthlyTrend" class="echart tall"></div>
   </div>
   <div class="card">
@@ -717,6 +741,20 @@ function yearAvgBkk(prodIdx, yearStr){
 }
 function currentYearStr(){ return (state.filterDateISO||'').slice(0,4); }
 
+const PROD_COLORS = ['#374151','#e8721c','#7cb342','#1e88e5','#f9a825','#8e24aa','#00897b','#c62828','#3949ab','#6d4c41'];
+const LOGO_FILE = {
+  'ดีเซล B20':'B20.png',
+  'ดีเซล':'DIESEL.png',
+  'เบนซินแก๊สโซฮอล์ E20':'E20.png',
+  'เบนซินแก๊สโซฮอล์ E85':'E85.png',
+  'เบนซินแก๊สโซฮอล์ 91':'GASOHAL91.png',
+  'เบนซินแก๊สโซฮอล์ 95':'GASOHAL95.png',
+  'เบนซิน':'BENZIN.PNG',
+  'Super Power GSH95':'SPWGASOHAL95.png',
+  'Super Power Diesel':'SPWXDiesel.png',
+  'Super Power X99':'SPWX99.png'
+};
+
 // ---------- FILTERS UI ----------
 function initFilters(){
   const d = state.data;
@@ -727,26 +765,13 @@ function initFilters(){
   prodSel.value = defaultProd; state.filterProduct = defaultProd;
 
   // product icon row (mirrors #fProduct, click = quick select) — logo filenames mapped exactly to your assets/Logo/ files
-  const PROD_COLORS = ['#374151','#e8721c','#7cb342','#1e88e5','#f9a825','#8e24aa','#00897b','#c62828','#3949ab','#6d4c41'];
-  const LOGO_FILE = {
-    'ดีเซล B20':'B20.PNG',
-    'ดีเซล':'DIESEL.png',
-    'เบนซินแก๊สโซฮอล์ E20':'E20.png',
-    'เบนซินแก๊สโซฮอล์ E85':'E85.png',
-    'เบนซินแก๊สโซฮอล์ 91':'GASOHAL91.png',
-    'เบนซินแก๊สโซฮอล์ 95':'GASOHAL95.png',
-    'เบนซิน':'BENZIN.PNG',
-    'Super Power GSH95':'SPWGASOHAL95.png',
-    'Super Power Diesel':'SPWXDiesel.png',
-    'Super Power X99':'SPWX99.png'
-  };
   const LOGO_ORDER = Object.keys(LOGO_FILE);
   const iconRow = $('productIconRow');
   if(iconRow){
     const idxOf = name => d.products.indexOf(name);
     const ordered = LOGO_ORDER.filter(name=>idxOf(name)!==-1).map(name=>({i:idxOf(name), label:name.length>6? name.slice(0,6):name, file:LOGO_FILE[name]}));
     const leftover = d.products.map((p,i)=>({i, label:p.length>6? p.slice(0,6):p, file:LOGO_FILE[p]||null})).filter(it=>!LOGO_ORDER.includes(d.products[it.i]));
-    const items = [{i:-1, label:'ทุก', file:null}].concat(ordered, leftover);
+    const items = [{i:-1, label:'ทั้งหมด', file:null}].concat(ordered, leftover);
     iconRow.innerHTML = items.map((it,idx)=>`
       <div class="product-icon${it.i===defaultProd?' active':''}" data-i="${it.i}" style="background:${PROD_COLORS[idx%PROD_COLORS.length]}">
         ${it.file ? `<img src="assets/Logo/${it.file}" alt="" style="width:118%;height:118%;object-fit:cover;border-radius:50%;display:block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
@@ -878,6 +903,16 @@ function initFilters(){
     provSel.value=''; state.filterProvince=''; state.filterDistrictIdx=''; refreshDistrictOptions();
     $('fSearch').value='';
     state.sidebarState = {type:null, key:null}; $('sidebar').classList.remove('open');
+    renderAll();
+  };
+
+  $('mapResetBtn').onclick = ()=>{
+    state.filterRegion='';
+    state.filterProvince='';
+    state.filterDistrictIdx='';
+    if(typeof regionSel!=='undefined'){ regionSel.value=''; refreshProvinceOptions(); }
+    if(typeof provSel!=='undefined'){ provSel.value=''; refreshDistrictOptions(); }
+    getChart('mapChart').dispatchAction({type:'restore'});
     renderAll();
   };
 
@@ -1137,12 +1172,19 @@ function computeProvinceStatsForRegion(region){
   const snap = latestSnapshot();
   state.filterRegion=savedR; state.filterProvince=savedP; state.filterDistrictIdx=savedD;
   const byProv = {};
-  snap.forEach(r=>{ (byProv[r.prov] ||= []).push(r.price); });
-  return Object.entries(byProv).map(([prov,arr])=>({
-    prov, n:arr.length,
-    min:Math.min(...arr).toFixed(2), max:Math.max(...arr).toFixed(2),
-    avg:(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2)
-  })).sort((a,b)=>a.prov.localeCompare(b.prov,'th'));
+  snap.forEach(r=>{ (byProv[r.prov] ||= []).push(r); });
+  return Object.entries(byProv).map(([prov,rows])=>{
+    const arr = rows.map(r=>r.price);
+    const transports = rows.filter(r=>r.transport!=null).map(r=>r.transport);
+    const compliantN = rows.filter(r=>r.compliant).length;
+    return {
+      prov, n:arr.length,
+      min:Math.min(...arr).toFixed(2), max:Math.max(...arr).toFixed(2),
+      avg:(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(2),
+      avgTransport: transports.length? (transports.reduce((a,b)=>a+b,0)/transports.length).toFixed(2): null,
+      compliantN, total: rows.length
+    };
+  }).sort((a,b)=>a.prov.localeCompare(b.prov,'th'));
 }
 function renderRegionOverview(){
   const el = $('regionOverview'); if(!el) return;
@@ -1182,6 +1224,10 @@ function renderRegionOverview(){
               <div><span class="l">เฉลี่ย</span><span class="v hl">${p.avg}</span></div>
               <div><span class="l">สูงสุด</span><span class="v">${p.max}</span></div>
             </div>
+            <div class="stats" style="margin-top:4px;">
+              <div><span class="l">ค่าขนส่งเฉลี่ย</span><span class="v">${p.avgTransport??'-'}</span></div>
+              <div><span class="l">ตรงสนพ.</span><span class="v" style="color:${p.compliantN===p.total?'var(--down)':'var(--up)'}">${p.compliantN}/${p.total}</span></div>
+            </div>
           </div>
         </div>`).join('');
     $('regionBackBtn').onclick = ()=>{
@@ -1200,7 +1246,8 @@ function renderRegionOverview(){
 // ---------- KPI ----------
 function renderKPI(){
   const snap = latestSnapshot();
-  if(!snap.length){ $('kpiRow').innerHTML = '<div class="kpi-card">ไม่มีข้อมูลตามตัวกรอง</div>'; return; }
+  if(!snap.length){ $('kpiRow').innerHTML = '<div class="kpi-card">ไม่มีข้อมูลตามตัวกรอง</div>'; $('dataFreshness').innerHTML=''; return; }
+  $('dataFreshness').innerHTML = `<span class="dot"></span>ข้อมูลล่าสุด ณ ${thDate(state.filterDateISO,'full')}`;
   const stationSnap = snap.filter(r=>!r.isBangkokBaseline); // real retail stations only (exclude the กทม. reference row)
   const prices = stationSnap.map(r=>r.price);
   const avg = prices.length ? prices.reduce((a,b)=>a+b,0)/prices.length : null;
@@ -1219,6 +1266,7 @@ function renderKPI(){
   const scopeIsStation = state.filterDistrictIdx !== '' && stationSnap.length===1;
   const scopeIsProvince = !scopeIsStation && !!state.filterProvince;
   const cards = [];
+  let heroHtml = '';
 
   if(scopeIsStation){
     const r = stationSnap[0];
@@ -1245,8 +1293,19 @@ function renderKPI(){
     cards.push(['ส่วนต่างเฉลี่ยจากราคากลาง', avgDiff!=null? `<span style="color:${avgDiff>=0?'var(--up)':'var(--down)'}">${avgDiff>=0?'+':''}${avgDiff.toFixed(2)} ฿</span>`:'-', `▲${aboveCountTop} สูงกว่า · ▼${belowCountTop} ต่ำกว่า`]);
     cards.push(['อำเภอที่ราคาตรงตามสนพ.', compliantCount+' / '+stationSnap.length, ((compliantCount/stationSnap.length*100)||0).toFixed(0)+'% ของอำเภอในตัวกรอง']);
     cards.push(['จำนวนจังหวัด/อำเภอ', provinceCount+' / '+stationSnap.length, 'ในตัวกรองปัจจุบัน']);
+
+    const pct = (compliantCount/stationSnap.length*100)||0;
+    const statusClass = pct>=90 ? '' : 'status-bad';
+    heroHtml = `<div class="kpi-card kpi-hero ${statusClass}">
+      <div style="flex:1;">
+        <div class="label">% ความสอดคล้องราคากับสนพ.${scopeIsProvince?' · '+state.filterProvince:'ทั่วประเทศ'}</div>
+        <div class="value">${pct.toFixed(1)}%</div>
+        <div class="sub">${compliantCount} / ${stationSnap.length} อำเภอตรงตามสูตรอ้างอิง · ไม่ตรง ${stationSnap.length-compliantCount} อำเภอ</div>
+      </div>
+      <div class="hero-badge">${pct>=90?'✓ ปกติ':'⚠ ต้องตรวจสอบ'}</div>
+    </div>`;
   }
-  $('kpiRow').innerHTML = cards.map(([l,v,s])=>`<div class="kpi-card"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${s}</div></div>`).join('');
+  $('kpiRow').innerHTML = heroHtml + cards.map(([l,v,s])=>`<div class="kpi-card"><div class="label">${l}</div><div class="value">${v}</div><div class="sub">${s}</div></div>`).join('');
 }
 
 // ---------- MAP ----------
@@ -1342,17 +1401,13 @@ function renderMap(){
         show:false, left:10, bottom:10, orient:'horizontal', type:'piecewise',
         text:['แพง (+)','ถูก (-)'], showLabel:false,
         pieces:[
-          {min:0.56, max:maxAbs+1, color:'#7A0000', label:'แพงที่สุด'},
-          {min:0.20, max:0.56, color:'#B71C1C', label:'แพงมาก'},
-          {min:0.10, max:0.20, color:'#D32F2F', label:'แพง'},
-          {min:0.05, max:0.10, color:'#E53935', label:'แพงเล็กน้อย'},
-          {min:0.001, max:0.05, color:'#EF5350', label:'แพงนิดหน่อย'},
-          {min:-0.001, max:0.001, color:'#757575', label:'ปกติ'},
-          {min:-0.05, max:-0.001, color:'#43A047', label:'ถูกนิดหน่อย'},
-          {min:-0.10, max:-0.05, color:'#388E3C', label:'ถูกเล็กน้อย'},
-          {min:-0.20, max:-0.10, color:'#2E7D32', label:'ถูก'},
-          {min:-0.56, max:-0.20, color:'#1B5E20', label:'ถูกมาก'},
-          {min:-maxAbs-1, max:-0.56, color:'#0B3D0B', label:'ถูกที่สุด'}
+          {min:0.20, max:maxAbs+1, color:'#B71C1C', label:'แพงมาก'},
+          {min:0.05, max:0.20, color:'#EF5350', label:'แพง'},
+          {min:0.001, max:0.05, color:'#FFAB91', label:'แพงนิดหน่อย'},
+          {min:-0.001, max:0.001, color:'#1E88E5', label:'ตรงสนพ.'},
+          {min:-0.05, max:-0.001, color:'#A5D6A7', label:'ถูกนิดหน่อย'},
+          {min:-0.20, max:-0.05, color:'#66BB6A', label:'ถูก'},
+          {min:-maxAbs-1, max:-0.20, color:'#1B5E20', label:'ถูกมาก'}
         ],
         textStyle:{color:t.dim, fontSize:SC(11), fontWeight:500}
       }
@@ -1485,7 +1540,7 @@ function openProvinceSidebar(prov){
   html += `<div id="sbProvTrend" class="echart" style="height:160px;margin-bottom:10px;"></div>`;
 
   // All products summary
-  html += `<h4 style="font-size:12px;margin-bottom:6px;">ราคาทุกผลิตภัณฑ์ล่าสุด (อำเภอเฉลี่ย)</h4>`;
+  html += `<h4 style="font-size:12px;margin-bottom:6px;">ราคาทุกผลิตภัณฑ์ล่าสุด (อำเภอเฉลี่ย) <span style="color:var(--text-dim);font-weight:400;">— ตัวเลข +/- คือส่วนต่างจากราคาอ้างอิงสนพ.</span></h4>`;
   d.products.forEach((p,pi)=>{
     const prodDiffs = distIdxs.map(i=>{
       const price = priceAsOf(i, pi, cutoff);
@@ -1613,7 +1668,7 @@ function barAxisRange(vals){
   const lo = Math.min(...vals), hi = Math.max(...vals);
   // fixed padding (not proportional to the data spread) so a real 0.2 บาท difference
   // still looks like a small difference instead of being stretched to fill the whole bar
-  const pad = 3;
+  const pad = Math.max(1, (hi-lo)*0.15);
   return {min:Math.floor(lo-pad), max:Math.ceil(hi+pad)};
 }
 function renderTopBottom(){
@@ -1627,7 +1682,7 @@ function renderTopBottom(){
   getChart('topBottomChart').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    legend:{data:['สูงสุด','ต่ำสุด'], textStyle:{color:t.dim, fontSize:SC(10)}, top:0},
+    legend:{data:['สูงสุด','ต่ำสุด'], textStyle:{color:t.dim, fontSize:SC(14)}, itemWidth:22, itemHeight:14, itemGap:20, top:0},
     grid:{left:70,right:36,top:30,bottom:20},
     xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:SC(9)}, splitLine:{lineStyle:{color:t.border}}},
     yAxis:{type:'category', data:[...top5.map(x=>x.prov),...bottom5.map(x=>x.prov)].reverse(), axisLabel:{color:t.text,fontSize:SC(10)}},
@@ -1682,7 +1737,7 @@ function renderTrend(){
   getChart('trendChart').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis'},
-    legend:{data:provs, textStyle:{color:t.dim}, top:0},
+    legend:{data:provs, textStyle:{color:t.dim, fontSize:SC(14)}, itemWidth:22, itemHeight:14, itemGap:20, top:0},
     grid:{left:50,right:20,top:40,bottom:85},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
     xAxis:{type:'category', axisLabel:{color:t.dim, fontSize:SC(10), rotate:35, margin:14}},
@@ -1730,16 +1785,34 @@ function renderProductMonthlyTrend(){
       data:actual
     });
   });
-  getChart('productMonthlyTrend').setOption({
+  const chart = getChart('productMonthlyTrend');
+  chart.setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis'},
-    legend:{data:d.products, textStyle:{color:t.dim, fontSize:SC(10)}, top:0, type:'scroll'},
-    grid:{left:50,right:20,top:50,bottom:85},
+    legend:{show:false},
+    grid:{left:50,right:20,top:20,bottom:85},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
     xAxis:{type:'category', data:allMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:SC(10), rotate:35, margin:14}},
     yAxis:{type:'value', scale:true, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
     series
   }, true);
+
+  // custom badge legend (logo circles) — click toggles that product's line
+  const legendEl = $('productTrendLegend');
+  if(legendEl){
+    legendEl.innerHTML = d.products.map((p,pi)=>`
+      <div class="product-icon small" data-name="${p}" style="background:${PROD_COLORS[pi%PROD_COLORS.length]}">
+        ${LOGO_FILE[p] ? `<img src="assets/Logo/${LOGO_FILE[p]}" alt="" style="width:118%;height:118%;object-fit:cover;border-radius:50%;display:block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
+        <span style="display:${LOGO_FILE[p]?'none':'block'};">${p.length>6?p.slice(0,6):p}</span>
+      </div>`).join('');
+    legendEl.querySelectorAll('.product-icon').forEach(el=>{
+      el.classList.add('active');
+      el.onclick = ()=>{
+        el.classList.toggle('dimmed');
+        chart.dispatchAction({type:'legendToggleSelect', name:el.dataset.name});
+      };
+    });
+  }
 }
 
 // ---------- TRANSPORT ANALYSIS ----------
@@ -1931,7 +2004,7 @@ function renderCompare(){
   getChart('compareBar').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    legend:{data:[...items.map(it=>it.label),'ราคากลาง กทม.'], textStyle:{color:t.dim, fontSize:SC(10)}, top:0, type:'scroll'},
+    legend:{data:[...items.map(it=>it.label),'ราคากลาง กทม.'], textStyle:{color:t.dim, fontSize:SC(14)}, itemWidth:22, itemHeight:14, itemGap:20, top:0, type:'scroll'},
     grid:{left:50,right:20,top:44,bottom:85},
     xAxis:{type:'category', data:d.products, axisLabel:{color:t.dim, fontSize:SC(10), rotate:45, interval:0, margin:16}},
     yAxis:{type:'value', scale:true, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
@@ -1991,7 +2064,7 @@ function renderMomChart(){
       });
       return s;
     }},
-    legend:{ data:d.products, textStyle:{color:t.dim, fontSize:SC(10)}, top:0, type:'scroll' },
+    legend:{ data:d.products, textStyle:{color:t.dim, fontSize:SC(14)}, itemWidth:22, itemHeight:14, itemGap:20, top:0, type:'scroll' },
     grid:{left:50,right:20,top:50,bottom:85},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
     xAxis:{ type:'category', data:momMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:SC(10), rotate:35, margin:14} },
