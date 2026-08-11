@@ -1,199 +1,343 @@
 <!DOCTYPE html>
 <html lang="th">
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fuel Retail Dashboard</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-<style>
-:root{
-  --bg:#0f172a;
-  --border:rgba(148,163,184,.2);
-  --text:#e2e8f0;
-  --muted:#94a3b8;
-  --accent:#38bdf8;
-  --brand:#0ea5e9;
-  --radius:16px;
-}
-*{box-sizing:border-box}
-body{
-  margin:0;
-  min-height:100vh;
-  font-family:"Prompt",sans-serif;
-  color:var(--text);
-  background:
-    radial-gradient(circle at 12% 0%,rgba(56,189,248,.16),transparent 30%),
-    radial-gradient(circle at 92% 12%,rgba(14,165,233,.12),transparent 28%),
-    var(--bg);
-}
-a{color:inherit;text-decoration:none}
-.shell{width:min(1500px,calc(100% - 40px));margin:0 auto;padding:32px 0 44px}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:14px}
-.back{
-  display:inline-flex;align-items:center;gap:8px;
-  color:var(--muted);font-size:18px;
-  padding:14px 20px;border:1px solid var(--border);border-radius:14px;
-  background:rgba(255,255,255,.035);
-}
-.back:hover{color:var(--text);border-color:rgba(56,189,248,.45)}
-.hero{padding:6px 0 16px}
-.eyebrow{font-size:15px;color:var(--accent);letter-spacing:3px;text-transform:uppercase;font-weight:700}
-h1{font-size:clamp(42px,7.5vw,88px);line-height:1.02;margin:14px 0 16px;font-weight:700}
-.hero p{max-width:900px;color:var(--muted);font-size:19px;line-height:1.65;margin:8px 0 0}
-.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px}
-.company-card{
-  min-height:0;
-  display:flex;flex-direction:column;justify-content:space-between;
-  padding:32px;
-  border:1px solid var(--border);
-  border-radius:22px;
-  background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.03));
-  box-shadow:0 32px 70px -30px rgba(14,165,233,1);
-  transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease;
-  overflow:visible;
-  position:relative;
-}
-.company-card:hover{
-  transform:translateY(-8px) scale(1.015);
-  border-color:rgba(56,189,248,.75);
-  box-shadow:0 36px 78px -28px rgba(14,165,233,1);
-}
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fuel Retail Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f172a;
+      --border: rgba(148, 163, 184, .2);
+      --text: #e2e8f0;
+      --muted: #94a3b8;
+      --accent: #38bdf8;
+      --brand: #0ea5e9;
+      --radius: 16px;
+    }
 
-/* ปรับปรุง Logo ให้เป็นทรงกลม มีพื้นหลัง */
-.logo-wrapper {
-  position: relative;
-  width: 132px;
-  height: 132px;
-  margin-bottom: 20px;
-}
+    * {
+      box-sizing: border-box
+    }
 
-.logo {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%; /* ทำให้เป็นวงกลม */
-  background:radial-gradient(circle at top,#eef2f7 0%,#c7d2e0 100%);
-  border: 1px solid rgba(56,189,248,.35);
-  box-shadow: 0 8px 18px rgba(56,189,248,.18), inset 0 0 0 1px rgba(255,255,255,.15);
-  position: relative;
-  z-index: 1;
-}
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "Prompt", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at 12% 0%, rgba(56, 189, 248, .16), transparent 30%),
+        radial-gradient(circle at 92% 12%, rgba(14, 165, 233, .12), transparent 28%),
+        var(--bg);
+    }
 
-.logo img {
-  width: 80%; /* ให้รูปอยู่ตรงกลางแบบมีขอบว่าง */
-  height: 80%;
-  object-fit: contain;
-  filter: drop-shadow(0 6px 16px rgba(14,165,233,.45));
-  transition: transform .3s ease, filter .3s ease;
-}
+    a {
+      color: inherit;
+      text-decoration: none
+    }
 
-.logo:hover img {
-  transform: scale(1.12);
-  filter: drop-shadow(0 8px 18px rgba(14,165,233,.35));
-}
+    .shell {
+      width: min(1500px, calc(100% - 40px));
+      margin: 0 auto;
+      padding: 32px 0 44px
+    }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 14px
+    }
+
+    .back {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 18px;
+      padding: 14px 20px;
+      border: 1px solid var(--border);
+      border-radius: 14px;
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .back:hover {
+      color: var(--text);
+      border-color: rgba(56, 189, 248, .45)
+    }
+
+    .hero {
+      padding: 6px 0 16px
+    }
+
+    .eyebrow {
+      font-size: 15px;
+      color: var(--accent);
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      font-weight: 700
+    }
+
+    h1 {
+      font-size: clamp(42px, 7.5vw, 88px);
+      line-height: 1.02;
+      margin: 14px 0 16px;
+      font-weight: 700
+    }
+
+    .hero p {
+      max-width: 900px;
+      color: var(--muted);
+      font-size: 19px;
+      line-height: 1.65;
+      margin: 8px 0 0
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 26px
+    }
+
+    .company-card {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 32px;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: linear-gradient(160deg, rgba(255, 255, 255, .12), rgba(255, 255, 255, .03));
+      box-shadow: 0 32px 70px -30px rgba(14, 165, 233, 1);
+      transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+      overflow: visible;
+      position: relative;
+    }
+
+    .company-card:hover {
+      transform: translateY(-8px) scale(1.015);
+      border-color: rgba(56, 189, 248, .75);
+      box-shadow: 0 36px 78px -28px rgba(14, 165, 233, 1);
+    }
+
+    /* ปรับปรุง Logo ให้เป็นทรงกลม มีพื้นหลัง */
+    .logo-wrapper {
+      position: relative;
+      width: 132px;
+      height: 132px;
+      margin-bottom: 20px;
+    }
+
+    .logo {
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      /* ทำให้เป็นวงกลม */
+      background: radial-gradient(circle at top, #eef2f7 0%, #c7d2e0 100%);
+      border: 1px solid rgba(56, 189, 248, .35);
+      box-shadow: 0 8px 18px rgba(56, 189, 248, .18), inset 0 0 0 1px rgba(255, 255, 255, .15);
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo img {
+      width: 80%;
+      /* ให้รูปอยู่ตรงกลางแบบมีขอบว่าง */
+      height: 80%;
+      object-fit: contain;
+      filter: drop-shadow(0 6px 16px rgba(14, 165, 233, .45));
+      transition: transform .3s ease, filter .3s ease;
+    }
+
+    .logo:hover img {
+      transform: scale(1.12);
+      filter: drop-shadow(0 8px 18px rgba(14, 165, 233, .35));
+    }
 
 
-.company-card h2{font-size:28px;margin:0 0 8px;font-weight:700}
-.company-card p{
-  margin:0;color:var(--muted);font-size:16px;line-height:1.6;
-  display:-webkit-box;-webkit-line-clamp:2;line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-}
-.metric{display:flex;align-items:center;justify-content:space-between;margin-top:18px;color:var(--muted);font-size:14.5px}
-.metric strong{font-size:21px;color:var(--text)}
-.cta{display:inline-flex;align-items:center;gap:10px;color:var(--text);font-size:16.5px;font-weight:700;margin-top:14px}
-@media(max-width:900px){
-  .grid{grid-template-columns:repeat(2,minmax(0,1fr))}
-}
-@media(max-width:520px){
-  .shell{width:min(100% - 28px,980px)}
-  .topbar{align-items:flex-start;flex-direction:column}
-  .grid{grid-template-columns:1fr}
-}
+    .company-card h2 {
+      font-size: 28px;
+      margin: 0 0 8px;
+      font-weight: 700
+    }
 
-.company-card.disabled{
-  cursor:default;
-  opacity:.55;
-  filter:grayscale(.3);
-}
-.company-card.disabled .cta{color:var(--muted)}
-</style>
+    .company-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.6;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .metric {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 14.5px
+    }
+
+    .metric strong {
+      font-size: 21px;
+      color: var(--text)
+    }
+
+    .cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text);
+      font-size: 16.5px;
+      font-weight: 700;
+      margin-top: 14px
+    }
+
+    @media(max-width:900px) {
+      .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr))
+      }
+    }
+
+    @media(max-width:520px) {
+      .shell {
+        width: min(100% - 28px, 980px)
+      }
+
+      .topbar {
+        align-items: flex-start;
+        flex-direction: column
+      }
+
+      .grid {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .company-card.disabled {
+      cursor: default;
+      opacity: .55;
+      filter: grayscale(.3);
+    }
+
+    .company-card.disabled .cta {
+      color: var(--muted)
+    }
+  </style>
 </head>
+
 <body>
-<main class="shell">
-  <nav class="topbar" aria-label="Page navigation">
-    <a class="back" href="index.html">← Fuel Value Chain</a>
-  </nav>
+  <main class="shell">
+    <nav class="topbar" aria-label="Page navigation">
+      <a class="back" href="index.html">← Fuel Value Chain</a>
+    </nav>
 
-  <section class="hero">
-    <div class="eyebrow">Retail Operator</div>
-    <p>เลือกผู้ค้าน้ำมันเพื่อเข้าสู่ Dashboard วิเคราะห์ข้อมูลราคาขายปลีกของแต่ละบริษัท</p>
-  </section>
+    <section class="hero">
+      <div class="eyebrow">Retail Operator</div>
+      <p>เลือกผู้ค้าน้ำมันเพื่อเข้าสู่ Dashboard วิเคราะห์ข้อมูลราคาขายปลีกของแต่ละบริษัท</p>
+    </section>
 
- <section class="grid" aria-label="Fuel retailer companies">
+    <section class="grid" aria-label="Fuel retailer companies">
 
-  <!-- มีข้อมูลจริงจาก Excel แล้ว -->
-  <a class="company-card" href="DashboardOR.html">
-    <div>
-      <div class="logo-wrapper">
-        <div class="logo"><img src="assets/picture/or-logo-sm.png" alt="OR Logo"></div>
+      <!-- มีข้อมูลจริงจาก Excel แล้ว -->
+      <a class="company-card" href="DashboardOR.html">
+        <div>
+          <div class="logo-wrapper">
+            <div class="logo"><img src="assets/picture/or-logo-sm.png" alt="OR Logo"></div>
+          </div>
+          <h2>OR</h2>
+          <p>บริษัท ปตท. น้ำมันและการค้าปลีก จำกัด (มหาชน) (OR) เครือข่ายสถานีบริการ PTT Station ทั่วประเทศ</p>
+        </div>
+        <div>
+          <div class="metric"><span>Data source</span></div>
+          <span class="cta">เปิด Dashboard →</span>
+        </div>
+      </a>
+
+      <!-- PT -->
+      <div class="company-card disabled" aria-disabled="true">
+        <div>
+          <div class="logo-wrapper">
+            <div class="logo">
+              <img src="assets/picture/pt-logo-sm.png" alt="PT Logo">
+            </div>
+          </div>
+
+          <h2>พีที</h2>
+          <p>บริษัท พีทีจี เอ็นเนอยี จำกัด (มหาชน) เครือข่ายสถานีบริการ PT</p>
+        </div>
+
+        <div>
+          <div class="metric">
+            <span>Data source</span>
+          </div>
+          <span class="cta">Not Available</span>
+        </div>
       </div>
-      <h2>OR</h2>
-      <p>บริษัท ปตท. น้ำมันและการค้าปลีก จำกัด (มหาชน) (OR) เครือข่ายสถานีบริการ PTT Station ทั่วประเทศ</p>
-    </div>
-    <div>
-      <div class="metric"><span>Data source</span></div>
-      <span class="cta">เปิด Dashboard →</span>
-    </div>
-  </a>
 
-  <a class="company-card" href="DashboardPT.html">
-    <div>
-      <div class="logo-wrapper">
-        <div class="logo"><img src="assets/picture/pt-logo-sm.png" alt="PT Logo"></div>
+
+      <!-- บางจาก -->
+      <div class="company-card disabled" aria-disabled="true">
+        <div>
+          <div class="logo-wrapper">
+            <div class="logo">
+              <img src="assets/picture/bangchak-logo-sm.png" alt="Bangchak Logo">
+            </div>
+          </div>
+
+          <h2>บางจาก</h2>
+          <p>บริษัท บางจาก คอร์ปอเรชั่น จำกัด (มหาชน) เครือข่ายสถานีบริการบางจากทั่วประเทศ</p>
+        </div>
+
+        <div>
+          <div class="metric">
+            <span>Data source</span>
+          </div>
+          <span class="cta">Not Available</span>
+        </div>
       </div>
-      <h2>พีที</h2>
-      <p>บริษัท พีทีจี เอ็นเนอยี จำกัด (มหาชน) เครือข่ายสถานีบริการ PT</p>
-    </div>
-    <div>
-      <div class="metric"><span>Data source</span></div>
-      <span class="cta">เปิด Dashboard →</span>
-    </div>
-  </a>
 
-  <!-- มีข้อมูลจริงจากไฟล์ CSV แล้ว (ราคาระดับประเทศ ไม่แยกจังหวัด/อำเภอ) -->
-  <a class="company-card" href="DashboardBANGCHAK.html">
-    <div>
-      <div class="logo-wrapper">
-        <div class="logo"><img src="assets/picture/bangchak-logo-sm.png" alt="Bangchak Logo"></div>
+      <!-- เชลล์ -->
+      <div class="company-card disabled" aria-disabled="true">
+        <div>
+          <div class="logo-wrapper">
+            <div class="logo"><img src="assets/picture/shell-logo-sm.png" alt="Shell Logo"></div>
+          </div>
+          <h2>เชลล์</h2>
+          <p>บริษัท เชลล์แห่งประเทศไทย จำกัด เครือข่ายสถานีบริการเชลล์</p>
+        </div>
+        <div>
+          <div class="metric"><span>Data source</span></div>
+          <span class="cta">Not Available</span>
+        </div>
       </div>
-      <h2>บางจาก</h2>
-      <p>บริษัท บางจาก คอร์ปอเรชั่น จำกัด (มหาชน) เครือข่ายสถานีบริการบางจากทั่วประเทศ</p>
-    </div>
-    <div>
-      <div class="metric"><span>Data source</span></div>
-      <span class="cta">เปิด Dashboard →</span>
-    </div>
-  </a>
 
-  <!-- คิดอยู่ว่าทำอะไรต่อดี-->
-  <div class="company-card disabled" aria-disabled="true">
-    <div>
-      <div class="logo-wrapper">
-        <div class="logo"><img src="assets/picture/shell-logo-sm.png" alt="Shell Logo"></div>
+      <!-- คาลเท็กซ์ -->
+      <div class="company-card disabled" aria-disabled="true">
+        <div>
+          <div class="logo-wrapper">
+            <div class="logo"><img src="assets/picture/caltek-logo-sm.png" alt="CalTEX Logo"></div>
+          </div>
+          <h2>คาลเท็กซ์</h2>
+          <p>บริษัท คาลเท็กซ์ จำกัด เครือข่ายสถานีบริการคาลเท็กซ์</p>
+        </div>
+        <div>
+          <div class="metric"><span>Data source</span></div>
+          <span class="cta">Not Available</span>
+        </div>
       </div>
-      <h2>เชลล์</h2>
-      <p>บริษัท เชลล์แห่งประเทศไทย จำกัด เครือข่ายสถานีบริการเชลล์</p>
-    </div>
-    <div>
-      <div class="metric"><span>Data source</span></div>
-      <span class="cta">เร็วๆ นี้</span>
-    </div>
-  </div>
-
-</section>
+    </section>
 </body>
+
 </html>
