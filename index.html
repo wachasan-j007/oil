@@ -205,7 +205,7 @@
        ========================================================== */
     .chain-wrap {
       padding: 20px 16px 30px;
-      overflow-x: hidden;
+      overflow-x: auto;
       -webkit-overflow-scrolling: touch;
     }
 
@@ -216,9 +216,52 @@
       margin: 0 auto;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 900px) and (min-width: 761px) {
       .flow-wrap {
         min-width: 900px;
+      }
+    }
+
+    /* มือถือ: จัดเรียงเป็นคอลัมน์เดียว ไม่ทับกัน ไม่ต้องพึ่งตำแหน่งแบบเดสก์ท็อป */
+    @media (max-width: 760px) {
+      .chain-wrap {
+        overflow-x: hidden;
+      }
+
+      .flow-wrap {
+        min-width: 0;
+      }
+
+      .flow-svg {
+        display: none;
+      }
+
+      .flow-grid,
+      .section-title-row {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .section-title-row {
+        display: none;
+      }
+
+      .stage-col {
+        padding-top: 0;
+        gap: 14px;
+      }
+
+      .block-i1,
+      .block-i2,
+      .block-d1,
+      .block-e2 {
+        margin-top: 0 !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      .group-label--export {
+        left: 0;
       }
     }
 
@@ -874,7 +917,8 @@
             </div>
           </a>
 
-          <a class="block link-node block-i2" data-id="I2" data-enabled="true" href="https://sivakorn16w-droid.github.io/Web-Dashboard1/">
+          <a class="block link-node block-i2" data-id="I2" data-enabled="true"
+            href="https://sivakorn16w-droid.github.io/Web-Dashboard1/">
             <div class="block-top">
               <div style="flex-grow:1">
                 <div class="block-name">เอทานอลหรือไบโอดีเซล</div>
@@ -1038,8 +1082,11 @@
         else if (fromId === "I2" && toId === "D1") {
           x1 = fr.left + (fr.width * 0.85) - wrapRect.left;
           y1 = fr.top - wrapRect.top;
+          x2 = tr.left + (tr.width * 0.2) - wrapRect.left; // อ้างอิงจุดกึ่งกลางของ D1 (คลังน้ำมัน)
           y2 = tr.bottom - wrapRect.top;
-          d = `M ${x1} ${y1} L ${x1} ${y2}`;
+
+          // เปลี่ยนเป็น L ${x2} ${y2} เพื่อให้ปลายเส้นล็อกติดกับ D1 เสมอไม่ว่าจะซูมเท่าใด
+          d = `M ${x1} ${y1} L ${x2} ${y2}`;
         }
         else if (fromId === "U1" && toId === "E1") {
           d = `M ${x1} ${y1} L ${x2} ${y2}`;
@@ -1088,8 +1135,25 @@
     });
 
     window.addEventListener("load", drawConnections);
-    window.addEventListener("resize", () => requestAnimationFrame(drawConnections));
     setTimeout(drawConnections, 150);
+
+    // รวมทุกตัวกระตุ้น (resize / ResizeObserver / visualViewport) ให้เรียก
+    // ผ่านตัวหน่วงเดียวกัน (debounce) กันไม่ให้หลายตัวยิงซ้อนกันจนวาดเส้นค้าง
+    // เป็นเส้นเกินตอนกำลังซูมเข้า-ออก
+    let redrawTimer = null;
+    function scheduleRedraw() {
+      if (redrawTimer) clearTimeout(redrawTimer);
+      redrawTimer = setTimeout(() => requestAnimationFrame(drawConnections), 60);
+    }
+
+    window.addEventListener("resize", scheduleRedraw);
+    if (window.ResizeObserver) {
+      new ResizeObserver(scheduleRedraw).observe(flowWrap);
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", scheduleRedraw);
+      window.visualViewport.addEventListener("scroll", scheduleRedraw);
+    }
   </script>
 </body>
 
