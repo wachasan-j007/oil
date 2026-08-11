@@ -216,85 +216,87 @@
       margin: 0 auto;
     }
 
-    /* มือถือ/แท็บเล็ตแนวตั้ง: จัดเรียงเป็นคอลัมน์เดียว ไม่ทับกัน ไม่ต้องพึ่งตำแหน่งแบบเดสก์ท็อป */
-    @media (max-width: 900px) {
-      .chain-wrap {
-        overflow-x: hidden;
-      }
+   @media (max-width: 900px) {
+  html,
+  body {
+    width: 100%;
+    overflow-x: hidden;
+  }
 
-      .flow-wrap {
-        min-width: 0;
-      }
+  .chain-wrap {
+    width: 100%;
+    overflow: hidden;
+    padding: 12px 8px 30px;
+  }
 
-      .flow-svg {
-        display: none;
-      }
+  .flow-wrap {
+    width: 100%;
+    min-width: 0;
+  }
 
-      .flow-grid,
-      .section-title-row {
-        grid-template-columns: 1fr;
-        gap: 14px;
-      }
+  /* คง Layout แบบคอม 4 ช่อง */
+  .section-title-row {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px;
+  }
 
-      .section-title-row {
-        display: none;
-      }
+  .flow-grid {
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    gap: 8px;
+    min-height: 600px;
+  }
 
-      .stage-col {
-        padding-top: 0;
-        gap: 14px;
-      }
+  /* เส้นยังแสดง */
+  .flow-svg {
+    display: block !important;
+  }
 
-      .block-i1,
-      .block-i2,
-      .block-d1,
-      .block-e2 {
-        margin-top: 0 !important;
-        margin-left: 0 !important;
-        width: 100% !important;
-      }
+  .stage-col {
+    min-width: 0;
+    width: 100%;
+  }
 
-      .group-label--export {
-        left: 0;
-      }
+  /* ยกเลิกขนาดที่ดันออก */
+  .block-i1,
+  .block-i2,
+  .block-d1 {
+    max-width: 100%;
+  }
 
-      .group-label {
-        font-size: calc(22px * var(--scale));
-      }
+  .block-i1 {
+    margin-left: 0;
+  }
 
-      .block-i2 .block-name {
-        white-space: normal;
-        overflow: visible;
-        text-align: left;
-      }
+  .block-i2 {
+    margin-left: 0;
+  }
 
-      .page-header {
-        padding-top: 64px;
-      }
+  .block-d1 {
+    margin-left: 0;
+  }
 
-      .text-size-control {
-        top: 12px;
-        right: 12px;
-        height: 40px;
-        padding: 4px;
-      }
+  /* ลดตัวหนังสือให้เหมาะกับมือถือ */
+  .block-name {
+    font-size: 12px !important;
+  }
 
-      .size-btn {
-        padding: 0 9px;
-      }
+  .block-icon {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 16px !important;
+  }
 
-      .size-btn[data-size="small"] {
-        font-size: 11px;
-      }
+  .group-label {
+    font-size: 18px !important;
+  }
 
-      .size-btn[data-size="medium"] {
-        font-size: 13px;
-      }
-
-      .size-btn[data-size="large"] {
-        font-size: 15px;
-      }
-    }
+  .section-title {
+    font-size: 10px !important;
+    padding: 7px 2px;
+  }
+}
 
     .flow-grid,
     .section-title-row {
