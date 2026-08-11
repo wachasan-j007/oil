@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fuel Value Chain</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ==========================================================
+       0) BASE / ตัวแปรกลาง — ใช้แค่สี/ฟอนต์พื้นฐานของทั้งหน้า
+       ========================================================== */
+    :root {
+      --scale: 1;
+      --bg: #0f172a;
+      --panel-border: rgba(148, 163, 184, .2);
+      --text-hi: #e2e8f0;
+      --text-lo: #94a3b8;
+      --radius: 16px;
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      margin: 0;
+      min-height: 100%;
+      background:
+        radial-gradient(circle at 18% -10%, rgba(56, 189, 248, .13), transparent 38%),
+        radial-gradient(circle at 86% 6%, rgba(251, 191, 36, .11), transparent 28%),
+        var(--bg);
+      color: var(--text-hi);
+      font-family: "Prompt", sans-serif;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    /* ==========================================================
+       1) HEADER
+       ========================================================== */
+    .page-header {
+      text-align: center;
+      padding: 18px 20px 6px
+    }
+
+    .eyebrow {
+      font-size: calc(14px * var(--scale));
+      color: var(--text-lo);
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .page-header h1 {
+      font-size: calc(clamp(28px, 4.6vw, 50px) * var(--scale));
+      font-weight: 700;
+      margin: 8px 0 8px;
+    }
+
+    .page-header p {
+      margin: 0;
+      color: var(--text-lo);
+      font-size: calc(16px * var(--scale));
+    }
+
+    /* ==========================================================
+       2) LEGEND (คำอธิบายสีด้านบน) — แต่ละอันปรับสีแยกอิสระ
+       ========================================================== */
+    .legend {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 10px 22px;
+      margin: 14px auto 0;
+      max-width: 900px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: calc(15px * var(--scale));
+    }
+
+    .legend-dot {
+      width: calc(13px * var(--scale));
+      height: calc(13px * var(--scale));
+      border-radius: 4px;
+      flex: 0 0 auto;
+    }
+
+    .legend-domestic {
+      color: #f97316;
+    }
+
+    .legend-domestic .legend-dot {
+      background: #f97316;
+    }
+
+    .legend-import {
+      color: #06b6d4;
+    }
+
+    .legend-import .legend-dot {
+      background: #06b6d4;
+    }
+
+    .legend-export {
+      color: #ef4444;
+    }
+
+    .legend-export .legend-dot {
+      background: #ef4444;
+    }
+
+    .legend-local {
+      color: #34d399;
+    }
+
+    .legend-local .legend-dot {
+      background: #34d399;
+    }
+
+    /* ==========================================================
+       3) ปุ่มปรับขนาดตัวอักษร
+       ========================================================== */
+    .text-size-control {
+      position: fixed;
+      top: 20px;
+      right: 24px;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      height: 52px;
+      border-radius: 26px;
+      border: 2px solid rgba(56, 189, 248, .6);
+      background: rgba(15, 23, 42, .95);
+      backdrop-filter: blur(8px);
+      padding: 6px;
+      box-shadow: 0 4px 24px rgba(56, 189, 248, .3);
+      animation: pulse-glow 2.5s ease-in-out infinite;
+    }
+
+    @keyframes pulse-glow {
+
+      0%,
+      100% {
+        box-shadow: 0 4px 24px rgba(56, 189, 248, .2);
+      }
+
+      50% {
+        box-shadow: 0 4px 32px rgba(56, 189, 248, .45);
+      }
+    }
+
+    .text-size-control:hover {
+      animation: none;
+      box-shadow: 0 4px 28px rgba(56, 189, 248, .5);
+    }
+
+    .size-btn {
+      border: none;
+      background: transparent;
+      color: var(--text-lo);
+      font-family: "Prompt", sans-serif;
+      font-weight: 600;
+      cursor: pointer;
+      border-radius: 20px;
+      padding: 0 14px;
+      height: 100%;
+      transition: all .2s ease;
+    }
+
+    .size-btn[data-size="small"] {
+      font-size: 12px;
+    }
+
+    .size-btn[data-size="medium"] {
+      font-size: 15px;
+    }
+
+    .size-btn[data-size="large"] {
+      font-size: 18px;
+    }
+
+    .size-btn:hover {
+      color: var(--text-hi);
+    }
+
+    .size-btn.active {
+      background: rgba(56, 189, 248, .18);
+      color: #38bdf8;
+      box-shadow: inset 0 0 0 1px rgba(56, 189, 248, .5);
+    }
+
+    /* ==========================================================
+       4) โครงหลักของผังงาน (grid 4 คอลัมน์)
+       ========================================================== */
+    .chain-wrap {
+      padding: 20px 16px 30px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .flow-wrap {
+      position: relative;
+      width: 100%;
+      max-width: 100%;
+      margin: 0 auto;
+    }
+
+    @media (max-width: 900px) and (min-width: 761px) {
+      .flow-wrap {
+        min-width: 900px;
+      }
+    }
+
+    /* มือถือ: จัดเรียงเป็นคอลัมน์เดียว ไม่ทับกัน ไม่ต้องพึ่งตำแหน่งแบบเดสก์ท็อป */
+    @media (max-width: 760px) {
+      .chain-wrap {
+        overflow-x: hidden;
+      }
+
+      .flow-wrap {
+        min-width: 0;
+      }
+
+      .flow-svg {
+        display: none;
+      }
+
+      .flow-grid,
+      .section-title-row {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+
+      .section-title-row {
+        display: none;
+      }
+
+      .stage-col {
+        padding-top: 0;
+        gap: 14px;
+      }
+
+      .block-i1,
+      .block-i2,
+      .block-d1,
+      .block-e2 {
+        margin-top: 0 !important;
+        margin-left: 0 !important;
+        width: 100% !important;
+      }
+
+      .group-label--export {
+        left: 0;
+      }
+
+      .group-label {
+        font-size: calc(22px * var(--scale));
+      }
+
+      .block-i2 .block-name {
+        white-space: normal;
+        overflow: visible;
+        text-align: left;
+      }
+
+      .page-header {
+        padding-top: 64px;
+      }
+
+      .text-size-control {
+        top: 12px;
+        right: 12px;
+        height: 40px;
+        padding: 4px;
+      }
+
+      .size-btn {
+        padding: 0 9px;
+      }
+
+      .size-btn[data-size="small"] {
+        font-size: 11px;
+      }
+
+      .size-btn[data-size="medium"] {
+        font-size: 13px;
+      }
+
+      .size-btn[data-size="large"] {
+        font-size: 15px;
+      }
+    }
+
+    .flow-grid,
+    .section-title-row {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: clamp(30px, 2.6vw, 48px);
+      margin-bottom: 14px;
+    }
+
+    .section-title {
+      text-align: center;
+      font-size: calc(clamp(13px, 1.3vw, 18px) * var(--scale));
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      font-weight: 600;
+      padding: 10px 4px;
+      border-radius: 12px;
+      border: 1px solid var(--panel-border);
+      background: rgba(255, 255, 255, .035);
+    }
+
+    .section-title--upstream {
+      color: #38bdf8;
+      background: rgba(56, 189, 248, .14);
+      box-shadow: inset 0 0 0 1px rgba(56, 189, 248, .4);
+    }
+
+    .section-title--intermediate {
+      color: #a78bfa;
+      background: rgba(167, 139, 250, .14);
+      box-shadow: inset 0 0 0 1px rgba(167, 139, 250, .4);
+    }
+
+    .section-title--downstream {
+      color: #fbbf24;
+      background: rgba(251, 191, 36, .14);
+      box-shadow: inset 0 0 0 1px rgba(251, 191, 36, .4);
+    }
+
+    .section-title--endcustomer {
+      color: #34d399;
+      background: rgba(52, 211, 153, .14);
+      box-shadow: inset 0 0 0 1px rgba(52, 211, 153, .4);
+    }
+
+    .flow-grid {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: clamp(30px, 2.6vw, 48px);
+      min-height: 700px;
+    }
+
+    .stage-col {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: clamp(10px, 1.6vw, 22px);
+      position: relative;
+      z-index: 2;
+      padding-top: 16px;
+      min-width: 0;
+    }
+
+    .group-label {
+      font-size: calc(clamp(26px, 3vw, 40px) * var(--scale));
+      text-align: center;
+      color: var(--text-hi);
+      font-weight: 700;
+      letter-spacing: .5px;
+      padding: 8px 0;
+      margin-bottom: 4px;
+    }
+
+    .group-label--domestic {
+      color: #f97316;
+      white-space: nowrap;
+    }
+
+    .group-label--import {
+      color: #06b6d4;
+      white-space: nowrap;
+    }
+
+    .group-label--export {
+      color: #ef4444;
+      white-space: nowrap;
+      position: relative;
+      left: -18px;
+    }
+
+    .group-label--local {
+      color: #34d399;
+    }
+
+    .group-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--panel-border), transparent);
+      margin: 8px 0;
+    }
+
+    .flow-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    .flow-line {
+      fill: none;
+      stroke-width: 2.2;
+      stroke-linecap: round;
+      stroke-dasharray: 10 8;
+      animation: flowDash 6s linear infinite;
+      opacity: .86;
+    }
+
+    @keyframes flowDash {
+      to {
+        stroke-dashoffset: -180
+      }
+    }
+
+    /* ==========================================================
+       5) BLOCK พื้นฐาน (โครงร่าง/อนิเมชันร่วม — ไม่เกี่ยวกับสี/ตำแหน่ง)
+       แต่ละบล็อคด้านล่างประกาศสี ขนาด ตำแหน่งของตัวเองทั้งหมด
+       ไม่ต้องพึ่งกฎอื่นร่วมกัน แก้บล็อคไหนก็ไม่กระทบบล็อคอื่น
+       ========================================================== */
+    .block {
+      position: relative;
+      border-radius: var(--radius);
+      backdrop-filter: blur(8px);
+      transition: transform .22s ease, box-shadow .22s ease, border-color .22s ease, background .22s ease;
+      opacity: 0;
+      animation: fadeIn .55s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      to {
+        opacity: 1;
+      }
+    }
+
+
+    .block.link-node[data-enabled="true"]:hover,
+    .block.link-node[data-enabled="true"]:focus-visible {
+      transform: scale(1.06) translateY(-4px);
+      box-shadow: 0 0 25px rgba(56, 189, 248, .35);
+      z-index: 20;
+    }
+
+    .block.link-node {
+      cursor: pointer;
+      display: block;
+    }
+
+    .link-node {
+      color: inherit;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+    }
+
+    .link-node[data-enabled="true"]:hover {
+      transform: scale(1.06) translateY(-4px);
+      box-shadow: 0 0 25px rgba(56, 189, 248, .35);
+      z-index: 20;
+    }
+
+    .block-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .block-name {
+      font-weight: 500;
+      line-height: 1.4;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .block-icon {
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 0 0 auto;
+    }
+
+    /* ==========================================================
+       6) UPSTREAM — U1, U2, U3, U4  (แก้สี/ขนาด/ระยะ ของแต่ละอันได้อิสระ)
+       ========================================================== */
+    .block-u1 {
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #f97316;
+      background: linear-gradient(160deg, rgba(249, 115, 22, .14), rgba(249, 115, 22, .02));
+    }
+
+    .block-u1:hover {
+      box-shadow: 0 18px 38px -15px rgba(249, 115, 22, .45);
+      border-color: #f97316;
+    }
+
+    .block-u1 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-u1 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(249, 115, 22, .18);
+      border: 1px solid rgba(249, 115, 22, .4);
+      color: #f97316;
+    }
+
+    .block-u2 {
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #f97316;
+      background: linear-gradient(160deg, rgba(249, 115, 22, .14), rgba(249, 115, 22, .02));
+    }
+
+    .block-u2:hover {
+      box-shadow: 0 18px 38px -15px rgba(249, 115, 22, .45);
+      border-color: #f97316;
+    }
+
+    .block-u2 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-u2 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(249, 115, 22, .18);
+      border: 1px solid rgba(249, 115, 22, .4);
+      color: #f97316;
+    }
+
+    .block-u3 {
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #06b6d4;
+      background: linear-gradient(160deg, rgba(6, 182, 212, .14), rgba(6, 182, 212, .02));
+    }
+
+    .block-u3:hover {
+      box-shadow: 0 18px 38px -15px rgba(6, 182, 212, .45);
+      border-color: #06b6d4;
+    }
+
+    .block-u3 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-u3 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(6, 182, 212, .18);
+      border: 1px solid rgba(6, 182, 212, .4);
+      color: #06b6d4;
+    }
+
+    .block-u4 {
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #06b6d4;
+      background: linear-gradient(160deg, rgba(6, 182, 212, .14), rgba(6, 182, 212, .02));
+    }
+
+    .block-u4:hover {
+      box-shadow: 0 18px 38px -15px rgba(6, 182, 212, .45);
+      border-color: #06b6d4;
+    }
+
+    .block-u4 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-u4 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(6, 182, 212, .18);
+      border: 1px solid rgba(6, 182, 212, .4);
+      color: #06b6d4;
+    }
+
+    /* ==========================================================
+       7) INTERMEDIATE — I1 (โรงกลั่น), I2 (เอทานอล/ไบโอดีเซล)
+       ========================================================== */
+    .block-i1 {
+      margin-top: calc(200px * var(--scale));
+      width: 270px;
+      margin-left: 15px;
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #a78bfa;
+      background: linear-gradient(160deg, rgba(167, 139, 250, .12), rgba(167, 139, 250, .02));
+    }
+
+    .block-i1:hover {
+      box-shadow: 0 18px 38px -15px rgba(167, 139, 250, .45);
+      border-color: #a78bfa;
+    }
+
+    .block-i1 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-i1 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(167, 139, 250, .16);
+      border: 1px solid rgba(167, 139, 250, .35);
+      color: #a78bfa;
+    }
+
+    .block-i2 {
+      margin-top: calc(120px * var(--scale));
+      margin-left: 150px;
+      width: 320px;
+      max-width: 100%;
+      z-index: 10;
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #a78bfa;
+      background: linear-gradient(160deg, rgba(167, 139, 250, .12), rgba(167, 139, 250, .02));
+      cursor: pointer;
+    }
+
+    .block-i2:hover {
+      box-shadow: 0 18px 38px -15px rgba(167, 139, 250, .45);
+      border-color: #a78bfa;
+    }
+
+    .block-i2 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+      text-align: center;
+      white-space: nowrap;
+      overflow: hidden;
+    }
+
+    .block-i2 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(167, 139, 250, .16);
+      border: 1px solid rgba(167, 139, 250, .35);
+      color: #a78bfa;
+    }
+
+    /* ==========================================================
+       8) DOWNSTREAM — D1 (คลังน้ำมันเชื้อเพลิง)
+       ========================================================== */
+    .block-d1 {
+      margin-top: calc(200px * var(--scale));
+      margin-left: 10px;
+      width: 270px;
+      max-width: 100%;
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #fbbf24;
+      background: linear-gradient(160deg, rgba(251, 191, 36, .12), rgba(251, 191, 36, .02));
+    }
+
+    .block-d1:hover {
+      box-shadow: 0 18px 38px -15px rgba(251, 191, 36, .45);
+      border-color: #fbbf24;
+    }
+
+    .block-d1 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-d1 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(251, 191, 36, .16);
+      border: 1px solid rgba(251, 191, 36, .35);
+      color: #fbbf24;
+    }
+
+    /* ==========================================================
+       9) END CUSTOMER — E1..E6
+       ========================================================== */
+    .block-e1 {
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #ef4444;
+      background: linear-gradient(160deg, rgba(239, 68, 68, .14), rgba(239, 68, 68, .02));
+    }
+
+    .block-e1:hover {
+      box-shadow: 0 18px 38px -15px rgba(239, 68, 68, .45);
+      border-color: #ef4444;
+    }
+
+    .block-e1 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-e1 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(239, 68, 68, .18);
+      border: 1px solid rgba(239, 68, 68, .4);
+      color: #ef4444;
+    }
+
+    .block-e2 {
+      margin-top: calc(-5px * var(--scale));
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #ef4444;
+      background: linear-gradient(160deg, rgba(239, 68, 68, .14), rgba(239, 68, 68, .02));
+    }
+
+    .block-e2:hover {
+      box-shadow: 0 18px 38px -15px rgba(239, 68, 68, .45);
+      border-color: #ef4444;
+    }
+
+    .block-e2 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-e2 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(239, 68, 68, .18);
+      border: 1px solid rgba(239, 68, 68, .4);
+      color: #ef4444;
+    }
+
+    .block-e3 {
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #34d399;
+      background: linear-gradient(160deg, rgba(52, 211, 153, .12), rgba(52, 211, 153, .02));
+    }
+
+    .block-e3:hover {
+      box-shadow: 0 18px 38px -15px rgba(52, 211, 153, .45);
+      border-color: #34d399;
+    }
+
+    .block-e3 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+      white-space: nowrap;
+    }
+
+    .block-e3 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(52, 211, 153, .16);
+      border: 1px solid rgba(52, 211, 153, .35);
+      color: #34d399;
+    }
+
+    .block-e4 {
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #34d399;
+      background: linear-gradient(160deg, rgba(52, 211, 153, .12), rgba(52, 211, 153, .02));
+    }
+
+    .block-e4:hover {
+      box-shadow: 0 18px 38px -15px rgba(52, 211, 153, .45);
+      border-color: #34d399;
+    }
+
+    .block-e4 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-e4 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(52, 211, 153, .16);
+      border: 1px solid rgba(52, 211, 153, .35);
+      color: #34d399;
+    }
+
+    .block-e5 {
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #34d399;
+      background: linear-gradient(160deg, rgba(52, 211, 153, .12), rgba(52, 211, 153, .02));
+    }
+
+    .block-e5:hover {
+      box-shadow: 0 18px 38px -15px rgba(52, 211, 153, .45);
+      border-color: #34d399;
+    }
+
+    .block-e5 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-e5 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(52, 211, 153, .16);
+      border: 1px solid rgba(52, 211, 153, .35);
+      color: #34d399;
+    }
+
+    .block-e6 {
+      padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
+      border: 1px solid var(--panel-border);
+      border-left: 5px solid #34d399;
+      background: linear-gradient(160deg, rgba(52, 211, 153, .12), rgba(52, 211, 153, .02));
+    }
+
+    .block-e6:hover {
+      box-shadow: 0 18px 38px -15px rgba(52, 211, 153, .45);
+      border-color: #34d399;
+    }
+
+    .block-e6 .block-name {
+      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+    }
+
+    .block-e6 .block-icon {
+      width: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      height: calc(clamp(30px, 3vw, 42px) * var(--scale));
+      font-size: calc(clamp(16px, 1.7vw, 22px) * var(--scale));
+      background: rgba(52, 211, 153, .16);
+      border: 1px solid rgba(52, 211, 153, .35);
+      color: #34d399;
+    }
+
+    @media(max-width:1024px) {
+      .chain-wrap {
+        padding: 20px 14px 50px
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="page-header">
+    <div class="eyebrow">Value Chain Overview</div>
+    <h1>Fuel Value Chain</h1>
+    <p>ห่วงโซ่อุปทานน้ำมันเชื้อเพลิง จากต้นน้ำสู่ผู้ใช้ปลายทาง</p>
+    <div class="legend">
+      <div class="legend-item legend-domestic"><span class="legend-dot"></span>ผลิตในประเทศ</div>
+      <div class="legend-item legend-import"><span class="legend-dot"></span>นำเข้าต่างประเทศ</div>
+      <div class="legend-item legend-export"><span class="legend-dot"></span>ส่งออกต่างประเทศ</div>
+      <div class="legend-item legend-local"><span class="legend-dot"></span>ใช้ในประเทศ</div>
+    </div>
+  </header>
+
+  <main class="chain-wrap">
+    <section class="flow-wrap" aria-label="Fuel value chain">
+      <div class="section-title-row">
+        <div class="section-title section-title--upstream">Upstream</div>
+        <div class="section-title section-title--intermediate">Intermediate</div>
+        <div class="section-title section-title--downstream">Downstream</div>
+        <div class="section-title section-title--endcustomer">End Customer</div>
+      </div>
+
+      <svg class="flow-svg" id="flow-svg">
+        <defs>
+          <marker id="arrow-upstream" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6"
+            orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#38bdf8"></path>
+          </marker>
+          <marker id="arrow-intermediate" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6"
+            orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#a78bfa"></path>
+          </marker>
+          <marker id="arrow-downstream" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6"
+            orient="auto">
+            <path d="M0,0 L10,5 L0,10 Z" fill="#fbbf24"></path>
+          </marker>
+        </defs>
+      </svg>
+
+      <div class="flow-grid" id="flow-grid">
+
+        <!-- ===================== UPSTREAM ===================== -->
+        <div class="stage-col" id="col-upstream">
+          <div class="group-label group-label--domestic">ผลิตในประเทศ</div>
+
+          <a class="block link-node block-u1" data-id="U1" href="U1.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">แหล่งผลิตน้ำมันดิบอ่าวไทย</div>
+              </div>
+              <div class="block-icon">🛢️</div>
+            </div>
+          </a>
+
+          <a class="block link-node block-u2" data-id="U2" href="U2.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">แหล่งผลิตน้ำมันดิบบนบก</div>
+              </div>
+              <div class="block-icon">🏗️</div>
+            </div>
+          </a>
+
+          <div class="group-divider"></div>
+          <div class="group-label group-label--import">นำเข้าต่างประเทศ</div>
+
+          <a class="block link-node block-u3" data-id="U3" href="U3.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">นำเข้าน้ำมันดิบ</div>
+              </div>
+              <div class="block-icon">🚢</div>
+            </div>
+          </a>
+
+          <a class="block link-node block-u4" data-id="U4" href="U4.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">นำเข้าน้ำมันสำเร็จรูป</div>
+              </div>
+              <div class="block-icon">📦</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- ===================== INTERMEDIATE ===================== -->
+        <div class="stage-col" id="col-intermediate">
+          <a class="block link-node block-i1" data-id="I1" href="I1.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">โรงกลั่นน้ำมัน</div>
+              </div>
+              <div class="block-icon">🏭</div>
+            </div>
+          </a>
+
+          <a class="block link-node block-i2" data-id="I2" data-enabled="true"
+            href="https://sivakorn16w-droid.github.io/Web-Dashboard1/">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">เอทานอลหรือไบโอดีเซล</div>
+              </div>
+              <div class="block-icon">🧪</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- ===================== DOWNSTREAM ===================== -->
+        <div class="stage-col" id="col-downstream">
+          <a class="block link-node block-d1" data-id="D1" href="D1.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">คลังน้ำมันเชื้อเพลิง</div>
+              </div>
+              <div class="block-icon">🏬</div>
+            </div>
+          </a>
+        </div>
+
+        <!-- ===================== END CUSTOMER ===================== -->
+        <div class="stage-col" id="col-endcustomer">
+          <div class="group-label group-label--export">ส่งออกต่างประเทศ</div>
+
+          <a class="block link-node block-e1" data-id="E1" href="E1.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">ส่งออกน้ำมันดิบ</div>
+              </div>
+              <div class="block-icon">🌍</div>
+            </div>
+          </a>
+
+          <a class="block link-node block-e2" data-id="E2" href="E2.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">ส่งออกน้ำมันสำเร็จรูป</div>
+              </div>
+              <div class="block-icon">✈️</div>
+            </div>
+          </a>
+
+          <div class="group-divider"></div>
+          <div class="group-label group-label--local">ใช้ในประเทศ</div>
+
+          <a class="block link-node block-e3" data-id="E3" data-enabled="true" href="Companies.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">สถานีบริการน้ำมันเชื้อเพลิง</div>
+              </div>
+              <div class="block-icon">⛽</div>
+            </div>
+          </a>
+
+          <a class="block link-node block-e4" data-id="E4" href="E4.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">น้ำมันอากาศยาน</div>
+              </div>
+              <div class="block-icon">🛫</div>
+            </div>
+          </a>
+
+          <a class="block link-node block-e5" data-id="E5" href="E5.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">โรงไฟฟ้า และ โรงงานอุตสาหกรรม</div>
+              </div>
+              <div class="block-icon">⚡</div>
+            </div>
+          </a>
+
+          <a class="block link-node block-e6" data-id="E6" href="E6.html">
+            <div class="block-top">
+              <div style="flex-grow:1">
+                <div class="block-name">กิจกรรมอื่นๆ</div>
+              </div>
+              <div class="block-icon">🏭</div>
+            </div>
+          </a>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // เส้นเชื่อมทั้งหมด: [จาก, ไป] — ยังอ้างอิงด้วย data-id เหมือนเดิม
+    const CONNECTIONS = [
+      ["U1", "E1"],
+      ["U1", "I1"],
+      ["U2", "I1"],
+      ["U3", "I1"],
+      ["U4", "I1"],
+      ["U4", "D1"],
+      ["I1", "D1"],
+      ["I2", "I1"],
+      ["I2", "D1"],
+      ["D1", "E2"],
+      ["D1", "E3"],
+      ["D1", "E4"],
+      ["D1", "E5"],
+      ["D1", "E6"]
+    ];
+
+    const STAGE_COLOR = {
+      U1: "upstream", U2: "upstream", U3: "upstream", U4: "upstream",
+      I1: "intermediate", I2: "intermediate",
+      D1: "downstream",
+      E1: "downstream", E2: "downstream"
+    };
+
+    const svg = document.getElementById("flow-svg");
+    const flowWrap = document.querySelector(".flow-wrap");
+
+    function drawConnections() {
+      svg.querySelectorAll(".flow-line").forEach(el => el.remove());
+      const wrapRect = flowWrap.getBoundingClientRect();
+      svg.setAttribute("viewBox", `0 0 ${wrapRect.width} ${wrapRect.height}`);
+
+      const upstreamIds = ["U1", "U2", "U3"];
+
+      const upstreamRects = upstreamIds
+        .map(id => document.querySelector(`.block[data-id="${id}"]`)?.getBoundingClientRect())
+        .filter(Boolean);
+
+      const upstreamMergeX = upstreamRects.length
+        ? Math.max(...upstreamRects.map(r => r.right - wrapRect.left)) + 15
+        : 0;
+
+
+      CONNECTIONS.forEach(([fromId, toId]) => {
+        const fromEl = document.querySelector(`.block[data-id="${fromId}"]`);
+        const toEl = document.querySelector(`.block[data-id="${toId}"]`);
+        if (!fromEl || !toEl) return;
+
+        const fr = fromEl.getBoundingClientRect();
+        const tr = toEl.getBoundingClientRect();
+
+        let x1 = fr.right - wrapRect.left;
+        let y1 = fr.top - wrapRect.top + fr.height / 2;
+        let x2 = tr.left - wrapRect.left;
+        let y2 = tr.top - wrapRect.top + tr.height / 2;
+
+        let d = "";
+
+        if (toId === "I1" && ["U1", "U2", "U3"].includes(fromId)) {
+          d = `M ${x1} ${y1} L ${upstreamMergeX} ${y1} L ${upstreamMergeX} ${y2} L ${x2} ${y2}`;
+        }
+        else if (fromId === "D1" && ["E2", "E3", "E4", "E5", "E6"].includes(toId)) {
+          const forkX = x1 + 18;
+          d = `M ${x1} ${y1} L ${forkX} ${y1} L ${forkX} ${y2} L ${x2} ${y2}`;
+        }
+        else if (fromId === "I2" && toId === "I1") {
+          x1 = fr.left + (fr.width * 0.15) - wrapRect.left;
+          y1 = fr.top - wrapRect.top;
+          y2 = tr.bottom - wrapRect.top;
+          d = `M ${x1} ${y1} L ${x1} ${y2}`;
+        }
+        else if (fromId === "I2" && toId === "D1") {
+          x1 = fr.left + (fr.width * 0.85) - wrapRect.left;
+          y1 = fr.top - wrapRect.top;
+          x2 = tr.left + (tr.width * 0.2) - wrapRect.left; // อ้างอิงจุดกึ่งกลางของ D1 (คลังน้ำมัน)
+          y2 = tr.bottom - wrapRect.top;
+
+          // เปลี่ยนเป็น L ${x2} ${y2} เพื่อให้ปลายเส้นล็อกติดกับ D1 เสมอไม่ว่าจะซูมเท่าใด
+          d = `M ${x1} ${y1} L ${x2} ${y2}`;
+        }
+        else if (fromId === "U1" && toId === "E1") {
+          d = `M ${x1} ${y1} L ${x2} ${y2}`;
+        }
+        else if (fromId === "U4" && toId === "I1") {
+          x2 = tr.left + (tr.width * 0.25) - wrapRect.left;
+          y2 = tr.bottom - wrapRect.top;
+          d = `M ${x1} ${y1} L ${x2} ${y1} L ${x2} ${y2}`;
+        }
+        else if (fromId === "U4" && toId === "D1") {
+          x2 = tr.left + (tr.width * 0.75) - wrapRect.left;
+          y2 = tr.bottom - wrapRect.top;
+
+          d = `M ${x1} ${y1}
+       L ${x2} ${y1}
+       L ${x2} ${y2}`;
+        }
+        else if (fromId === "I1") {
+          const shortX = x1 + 10;
+          d = `M ${x1} ${y1} L ${shortX} ${y1} L ${shortX} ${y2} L ${x2} ${y2}`;
+        }
+        else {
+          const midX = x1 + (x2 - x1) / 2;
+          d = Math.abs(y1 - y2) < 5 ? `M ${x1} ${y1} L ${x2} ${y2}` : `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+        }
+
+        const stage = STAGE_COLOR[fromId] || "upstream";
+        const stageStroke = { upstream: "#38bdf8", intermediate: "#a78bfa", downstream: "#fbbf24" }[stage];
+        const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        path.setAttribute("d", d);
+        path.setAttribute("class", "flow-line");
+        path.setAttribute("stroke", stageStroke);
+        path.setAttribute("marker-end", `url(#arrow-${stage})`);
+        svg.appendChild(path);
+      });
+    }
+
+    // ลิงก์ทุกกล่องเตรียม href ไว้หมดแล้ว แต่จะ "เปิดใช้งานจริง"
+    // เฉพาะกล่องที่มี data-enabled="true" (คือมีหน้าปลายทางจริงแล้ว)
+    // กล่องที่ยังไม่มีหน้าจริง (href เป็นไฟล์ placeholder เช่น U1.html)
+    // จะไม่ใส่ data-enabled หรือใส่เป็น "false" ไว้ก่อน คลิกแล้วจะไม่ไปไหน
+    document.querySelectorAll(".block.link-node").forEach(el => {
+      el.addEventListener("click", (e) => {
+        if (el.dataset.enabled !== "true") e.preventDefault();
+      });
+    });
+
+    window.addEventListener("load", drawConnections);
+    setTimeout(drawConnections, 150);
+
+    // รวมทุกตัวกระตุ้น (resize / ResizeObserver / visualViewport) ให้เรียก
+    // ผ่านตัวหน่วงเดียวกัน (debounce) กันไม่ให้หลายตัวยิงซ้อนกันจนวาดเส้นค้าง
+    // เป็นเส้นเกินตอนกำลังซูมเข้า-ออก
+    let redrawTimer = null;
+    function scheduleRedraw() {
+      if (redrawTimer) clearTimeout(redrawTimer);
+      redrawTimer = setTimeout(() => requestAnimationFrame(drawConnections), 60);
+    }
+
+    window.addEventListener("resize", scheduleRedraw);
+    if (window.ResizeObserver) {
+      new ResizeObserver(scheduleRedraw).observe(flowWrap);
+    }
+    if (window.visualViewport) {
+      window.visualViewport.addEventListener("resize", scheduleRedraw);
+      window.visualViewport.addEventListener("scroll", scheduleRedraw);
+    }
+  </script>
+</body>
+
+</html>
