@@ -262,10 +262,17 @@
         font-size: calc(22px * var(--scale));
       }
 
-      .block-i2 .block-name {
+      .block-i2 .block-name,
+      .block-e3 .block-name {
         white-space: normal;
         overflow: visible;
         text-align: left;
+      }
+
+      .group-label--domestic,
+      .group-label--import,
+      .group-label--export {
+        white-space: normal;
       }
 
       .page-header {
@@ -509,7 +516,8 @@
     }
 
     .block-u1 .block-name {
-      font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
+      font-size: calc(clamp(13px, 1.4vw, 21px) * var(--scale));
+      white-space: nowrap;
     }
 
     .block-u1 .block-icon {
@@ -601,9 +609,9 @@
        ========================================================== */
     .block-i1 {
       margin-top: calc(200px * var(--scale));
-      width: 270px;
+      width: clamp(200px, 19vw, 270px);
       max-width: 100%;
-      margin-left: 15px;
+      margin-left: clamp(0px, 1vw, 15px);
       padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
       border: 1px solid var(--panel-border);
       border-left: 5px solid #a78bfa;
@@ -630,8 +638,8 @@
 
     .block-i2 {
       margin-top: calc(120px * var(--scale));
-      margin-left: 150px;
-      width: 320px;
+      margin-left: clamp(20px, 14vw, 250px);
+      width: clamp(220px, 20vw, 320px);
       max-width: 100%;
       z-index: 10;
       padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
@@ -650,7 +658,6 @@
       font-size: calc(clamp(15px, 1.55vw, 21px) * var(--scale));
       text-align: center;
       white-space: nowrap;
-      overflow: hidden;
     }
 
     .block-i2 .block-icon {
@@ -667,8 +674,8 @@
        ========================================================== */
     .block-d1 {
       margin-top: calc(200px * var(--scale));
-      margin-left: 10px;
-      width: 270px;
+      margin-left: clamp(0px, 1vw, 10px);
+      width: clamp(200px, 19vw, 270px);
       max-width: 100%;
       padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
       border: 1px solid var(--panel-border);
@@ -852,6 +859,33 @@
     @media(max-width:1024px) {
       .chain-wrap {
         padding: 20px 14px 50px
+      }
+    }
+
+    /* จอมือถือขนาดเล็กมาก ๆ (เช่น iPhone SE) — ลดระยะ/ขนาดลงอีกนิดกันล้นจอ */
+    @media (max-width: 420px) {
+      .page-header {
+        padding: 56px 12px 6px;
+      }
+
+      .page-header h1 {
+        font-size: calc(clamp(24px, 7vw, 32px) * var(--scale));
+      }
+
+      .legend {
+        gap: 8px 14px;
+      }
+
+      .chain-wrap {
+        padding: 16px 10px 26px;
+      }
+
+      .flow-grid {
+        gap: 12px;
+      }
+
+      .group-label {
+        font-size: calc(20px * var(--scale));
       }
     }
   </style>
@@ -1110,19 +1144,16 @@
           d = `M ${x1} ${y1} L ${forkX} ${y1} L ${forkX} ${y2} L ${x2} ${y2}`;
         }
         else if (fromId === "I2" && toId === "I1") {
-          x1 = fr.left + (fr.width * 0.15) - wrapRect.left;
+          x1 = fr.left + (fr.width * 0.05) - wrapRect.left;
           y1 = fr.top - wrapRect.top;
           y2 = tr.bottom - wrapRect.top;
           d = `M ${x1} ${y1} L ${x1} ${y2}`;
         }
         else if (fromId === "I2" && toId === "D1") {
-          x1 = fr.left + (fr.width * 0.85) - wrapRect.left;
+          x1 = fr.left + (fr.width * 0.92) - wrapRect.left;
           y1 = fr.top - wrapRect.top;
-          x2 = tr.left + (tr.width * 0.2) - wrapRect.left; // อ้างอิงจุดกึ่งกลางของ D1 (คลังน้ำมัน)
           y2 = tr.bottom - wrapRect.top;
-
-          // เปลี่ยนเป็น L ${x2} ${y2} เพื่อให้ปลายเส้นล็อกติดกับ D1 เสมอไม่ว่าจะซูมเท่าใด
-          d = `M ${x1} ${y1} L ${x2} ${y2}`;
+          d = `M ${x1} ${y1} L ${x1} ${y2}`;
         }
         else if (fromId === "U1" && toId === "E1") {
           d = `M ${x1} ${y1} L ${x2} ${y2}`;
