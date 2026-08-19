@@ -10,72 +10,80 @@
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root, html[data-theme="dark"] {
-  /* ===== Main Theme: โทนน้ำเงินเข้ม ถนอมสายตา ===== */
-  --bg: #0B1320;
-  --surface: rgba(21, 38, 66, 0.88);
-  --surface-solid: #152642;
-  --surface-soft: #1E3456;
-  --surface-blue: #233F68;
+  /* ===== Background / Surface ===== */
+  --bg: #08111F;
+  --surface: rgba(16, 28, 46, 0.88);
+  --surface-solid: #101C2E;
+  --surface-soft: #17263D;
+  --surface-blue: #1B2E4A;
 
-  /* ===== Typography: ตัวอักษรสีสว่างแต่ไม่ขาวแสบตา ===== */
+  /* ===== Typography ===== */
   --text: #F8FAFC;
   --text-dim: #94A3B8;
   --text-muted: #64748B;
 
-  /* ===== Borders & เส้นขอบ ===== */
-  --border: #2A4365;
-  --border-light: #375480;
+  /* ===== Borders ===== */
+  --border: #263A55;
+  --border-light: #34496A;
 
-  /* ===== OR Corporate Branding ===== */
-  --or-dark: #070D17;
-  --or-primary: #1E40AF;
-  --or-blue: #3B82F6;
+  /* ===== Primary (Navy / Blue) ===== */
+  --or-dark: #0F2747;
+  --or-primary: #0F2747;
+  --or-blue: #2563EB;
   --or-light: #60A5FA;
-  --or-gold-status: #F59E0B;
+  --or-gold-status: #D97706;
 
-  /* ===== Status Colors ===== */
-  --up: #EF4444; 
-  --down: #10B981; 
-  --neutral: #94A3B8;
-  --warning: #F59E0B;
-  --info: #3B82F6;
-  --critical: #EF4444;
-  --normal: #10B981;
+  /* ===== Status Colors (semantic — never used for products/regions) ===== */
+  --up: #E04040;
+  --down: #23A27B;
+  --neutral: #64748B;
+  --warning: #DD8723;
+  --info: #2563EB;
+  --critical: #E04040;
+  --normal: #23A27B;
 
-  /* ===== Map & Echarts Sequential Blues ===== */
-  --blue-950: #070D17;
-  --blue-900: #0B1320;
-  --blue-800: #152642;
-  --blue-700: #1E3456;
-  --blue-600: #2A4B7C;
-  --blue-500: #3763A5;
-  --blue-400: #467CCF;
-  --blue-300: #6098EB;
-  --blue-100: rgba(59, 130, 246, 0.15);
+  /* ===== Analytical Category Accents ===== */
+  --cat-volume: #7C3AED;
+  --cat-share: #0891B2;
+  --cat-transport: #D97706;
+  --cat-price: #2563EB;
 
-  --radius: 16px; 
-  --shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+  /* ===== Map & ECharts Sequential Blues ===== */
+  --blue-950: #08111F;
+  --blue-900: #0B1524;
+  --blue-800: #101C2E;
+  --blue-700: #17263D;
+  --blue-600: #1E3A66;
+  --blue-500: #2563EB;
+  --blue-400: #3B82F6;
+  --blue-300: #60A5FA;
+  --blue-100: rgba(37, 99, 235, 0.15);
+
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.28);
+  --shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.18);
   --ui-scale: 1;
 }
 
 html[data-theme="light"] {
-  /* ===== Light Theme: ขาว-น้ำเงิน สะอาด ถนอมสายตากลางวัน ===== */
-  --bg: #F4F7FC;
+  /* ===== Light Theme ===== */
+  --bg: #F5F7FA;
   --surface: rgba(255, 255, 255, 0.92);
   --surface-solid: #FFFFFF;
-  --surface-soft: #EAF1FB;
-  --surface-blue: #DCE8FA;
+  --surface-soft: #F1F5F9;
+  --surface-blue: #E4ECFA;
 
-  --text: #0F1B2D;
-  --text-dim: #52627A;
+  --text: #0F172A;
+  --text-dim: #64748B;
   --text-muted: #8393AA;
 
-  --border: #D5E0F0;
-  --border-light: #C1D2EA;
+  --border: #D8E0EA;
+  --border-light: #C7D3E2;
 
-  --or-dark: #0F2A57;
-  --or-primary: #1E40AF;
-  --or-blue: #3B82F6;
+  --or-dark: #0F2747;
+  --or-primary: #0F2747;
+  --or-blue: #2563EB;
   --or-light: #2563EB;
   --or-gold-status: #D97706;
 
@@ -87,22 +95,28 @@ html[data-theme="light"] {
   --critical: #DC2626;
   --normal: #059669;
 
-  --blue-950: #0F1B2D;
-  --blue-900: #F4F7FC;
+  --cat-volume: #7C3AED;
+  --cat-share: #0891B2;
+  --cat-transport: #D97706;
+  --cat-price: #2563EB;
+
+  --blue-950: #0F172A;
+  --blue-900: #F5F7FA;
   --blue-800: #FFFFFF;
-  --blue-700: #EAF1FB;
-  --blue-600: #2A4B7C;
-  --blue-500: #3763A5;
-  --blue-400: #2563EB;
-  --blue-300: #467CCF;
+  --blue-700: #F1F5F9;
+  --blue-600: #1D4ED8;
+  --blue-500: #2563EB;
+  --blue-400: #3B82F6;
+  --blue-300: #60A5FA;
   --blue-100: rgba(37, 99, 235, 0.08);
 
-  --shadow: 0 4px 20px rgba(15, 43, 90, 0.10);
+  --shadow: 0 2px 12px rgba(15, 43, 90, 0.08);
+  --shadow-soft: 0 1px 6px rgba(15, 43, 90, 0.06);
 }
 html[data-theme="light"] body::before{ opacity:.35; }
-html[data-theme="light"] .topbar{ background:#0F2A57; }
+html[data-theme="light"] .topbar{ background:#0F2747; }
 html[data-theme="light"] table.data-table th{ color:#fff; }
-html[data-theme="light"] .map-region-bubble{ background:#0F2A57; }
+html[data-theme="light"] .map-region-bubble{ background:#0F2747; }
 html[data-theme="light"] ::-webkit-scrollbar-thumb{ background:var(--blue-500); }
 
 *{box-sizing:border-box; margin:0; padding:0;}
@@ -134,6 +148,7 @@ body::before{
   position:sticky; top:0; z-index:50; display:flex; flex-direction:column; gap:10px;
   padding:12px 22px; background:var(--or-dark); backdrop-filter:blur(16px);
   border-bottom:1px solid rgba(255,255,255,.10);
+  box-shadow:0 2px 10px rgba(0,0,0,.18);
 }
 .topbar-row1{display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
 .topbar-row2{display:flex; align-items:center;}
@@ -166,8 +181,8 @@ body::before{
 /* ---------- Filter bar ---------- */
 .filterbar{
   display:flex; flex-wrap:wrap; gap:8px; align-items:center; padding:10px 22px;
-  background:var(--surface); border-bottom:1px solid var(--border); position:sticky; top:57px; z-index:40;
-  backdrop-filter:blur(16px);
+  background:var(--surface-solid); border-bottom:1px solid var(--border); position:sticky; top:var(--topbar-h,57px); z-index:41;
+  backdrop-filter:blur(16px); box-shadow:0 2px 8px rgba(0,0,0,.10);
 }
 .filterbar select, .filterbar input{
   font-family:inherit; font-size:calc(12.5px * var(--ui-scale)); padding:7px 10px; border-radius:9px; border:1px solid var(--border);
@@ -223,12 +238,12 @@ body::before{
 .legend-list-item .stats .v{font-size:calc(14px * var(--ui-scale)); font-weight:700; margin-top:1px; display:block;}
 .legend-list-item .stats .v.hl{color:var(--blue-400);}
 .product-icon-row{display:flex; justify-content:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;}
-.product-icon{width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; cursor:pointer; opacity:.5; border:2px solid transparent; transition:all .15s; text-align:center; line-height:1.15; padding:4px; overflow:hidden;}
+.product-icon{width:60px; height:60px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:800; color:#fff; cursor:pointer; opacity:.6; border:2px solid transparent; transition:all .15s; text-align:center; line-height:1.15; padding:4px; overflow:hidden;}
 .product-icon:hover{opacity:.85;}
-.product-icon.active{opacity:1; border-color:#fff; box-shadow:0 0 0 2px var(--blue-400), var(--shadow);}
+.product-icon.active{opacity:1; border-color:#fff; box-shadow:0 0 0 2px var(--blue-400), var(--shadow-soft);}
 .product-icon.small{width:34px; height:34px; font-size:8px;}
 .product-icon.dimmed{opacity:.25;}
-.map-region-bubble{position:absolute; pointer-events:none; background:#152642; color:#fff; padding:5px 14px; border-radius:16px; font-size:12.5px; font-weight:700; box-shadow:0 3px 10px rgba(0,0,0,.5); border:3px solid var(--or-light); display:none; z-index:30; white-space:nowrap; transform:translate(-50%,-130%);}
+.map-region-bubble{position:absolute; pointer-events:none; background:#101C2E; color:#fff; padding:5px 14px; border-radius:16px; font-size:12.5px; font-weight:700; box-shadow:0 3px 10px rgba(0,0,0,.5); border:3px solid var(--or-light); display:none; z-index:30; white-space:nowrap; transform:translate(-50%,-130%);}
 #regionOverview .back-row{display:flex; align-items:center; gap:10px; margin-bottom:10px;}
 #regionOverview .back-row h3{margin:0;}
 
@@ -270,11 +285,11 @@ body::before{
 }
 .card h3{font-size:calc(14.5px * var(--ui-scale)); font-weight:500; margin-bottom:10px; display:flex; align-items:center; justify-content:space-between;}
 .card h3 .hint{font-size:calc(11px * var(--ui-scale)); color:var(--text-dim); font-weight:300;}
-.echart{width:100%; height:calc(420px * var(--ui-scale));}
-.echart.tall{height:calc(640px * var(--ui-scale));}
-.echart.map-xl{height:calc(860px * var(--ui-scale));}
+.echart{width:100%; height:clamp(260px, 40vh, calc(420px * var(--ui-scale)));}
+.echart.tall{height:clamp(320px, 58vh, calc(640px * var(--ui-scale)));}
+.echart.map-xl{height:clamp(360px, 72vh, calc(860px * var(--ui-scale)));}
 #page-overview .grid-2{align-items:start;}
-.echart.short{height:calc(280px * var(--ui-scale));}
+.echart.short{height:clamp(200px, 30vh, calc(280px * var(--ui-scale)));}
 
 .layer-switch{display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;}
 #sidebar{
@@ -320,6 +335,23 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 .spinner{width:44px; height:44px; border-radius:50%; border:4px solid var(--blue-100); border-top-color:var(--blue-500); animation:spin 1s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .footer-note{text-align:center; font-size:11px; color:var(--text-dim); margin-top:24px;}
+
+/* ---------- Card hierarchy (primary / secondary / supporting) ---------- */
+.card.card-primary{border-color:var(--blue-400); box-shadow:var(--shadow);}
+.card.card-supporting{background:transparent; border-color:var(--border); box-shadow:none;}
+
+/* ---------- Category identity per analysis page ---------- */
+#page-volume .kpi-card.accent, #page-volume .card h3{border-color:var(--cat-volume);}
+#page-volume .card.card-primary{border-color:var(--cat-volume);}
+#page-share .kpi-card.accent, #page-share .card h3{border-color:var(--cat-share);}
+#page-share .card.card-primary{border-color:var(--cat-share);}
+#page-transport .kpi-card.accent, #page-transport .card h3{border-color:var(--cat-transport);}
+#page-transport .card.card-primary{border-color:var(--cat-transport);}
+
+/* ---------- Typography scale ---------- */
+h1,.page-title{font-size:calc(22px * var(--ui-scale)); font-weight:700;}
+.card h3{font-weight:600;}
+.kpi-card .value{font-weight:700;}
 </style>
 </head>
 <body>
@@ -379,7 +411,7 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
   <button class="reset-btn" id="resetFilters">ล้างตัวกรอง</button>
 </div>
 
-<div class="product-icon-row" id="productIconRow" style="position:sticky; top:113px; z-index:39; background:var(--surface); backdrop-filter:blur(16px); padding:10px 22px; border-bottom:1px solid var(--border); margin:0;"></div>
+<div class="product-icon-row" id="productIconRow" style="position:sticky; top:var(--sticky2-h,113px); z-index:39; background:var(--surface-solid); backdrop-filter:blur(16px); padding:10px 22px; border-bottom:1px solid var(--border); margin:0; box-shadow:0 2px 8px rgba(0,0,0,.08);"></div>
 
 <!-- ============ PAGE: OVERVIEW / MAP ============ -->
 <div class="page active" id="page-overview">
@@ -480,7 +512,7 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
       <h3>Top 5 / Bottom 5 จังหวัด (ปริมาณ)</h3>
       <div id="volTopBottomChart" class="echart" style="height:250px"></div>
       <h3 style="margin-top:14px">สัดส่วนตามภาค</h3>
-      <div id="volRegionPie" class="echart" style="height:250px"></div>
+      <div id="volRegionPie" class="echart" style="height:310px"></div>
     </div>
   </div>
   <div class="card">
@@ -509,11 +541,11 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
   <div class="grid-2">
     <div class="card">
       <h3>สัดส่วนตลาดตามผลิตภัณฑ์ <span class="hint" id="shareHint"></span></h3>
-      <div id="shareProductPie" class="echart"></div>
+      <div id="shareProductPie" class="echart" style="height:340px"></div>
     </div>
     <div class="card">
       <h3>สัดส่วนตามภาค</h3>
-      <div id="shareRegionPie" class="echart"></div>
+      <div id="shareRegionPie" class="echart" style="height:340px"></div>
     </div>
   </div>
   <div class="card">
@@ -555,10 +587,6 @@ function buildISO(yearBE, month, day){
   const dim = daysInMonth(yearCE, month);
   const dd = Math.min(day, dim);
   return `${String(yearCE).padStart(4,'0')}-${String(month).padStart(2,'0')}-${String(dd).padStart(2,'0')}`;
-}
-function addDaysISO(iso, k){
-  const dt = new Date(iso+'T00:00:00Z'); dt.setUTCDate(dt.getUTCDate()+k);
-  return dt.toISOString().slice(0,10);
 }
 function dailyForwardFillAvg(distIdxs, prodIdx){
   const d = state.data;
@@ -658,6 +686,40 @@ function getChart(id){
   return charts[id];
 }
 window.addEventListener('resize', ()=>Object.values(charts).forEach(c=>c.resize()));
+
+/* ---------- Sticky offset engine: keeps filterbar/product-icon-row
+   pinned right under topbar no matter its actual (variable) height,
+   so filters stay visible+clickable while scrolling on any screen/font size. */
+(function initStickyOffsets(){
+  const root = document.documentElement;
+  let raf = null;
+  function measure(){
+    const topbar = document.querySelector('.topbar');
+    const filterbar = document.querySelector('.filterbar');
+    const topbarH = topbar ? Math.ceil(topbar.getBoundingClientRect().height) : 57;
+    const filterbarH = filterbar ? Math.ceil(filterbar.getBoundingClientRect().height) : 56;
+    root.style.setProperty('--topbar-h', topbarH + 'px');
+    root.style.setProperty('--sticky2-h', (topbarH + filterbarH) + 'px');
+  }
+  function schedule(){
+    if(raf) cancelAnimationFrame(raf);
+    raf = requestAnimationFrame(measure);
+  }
+  window.addEventListener('resize', schedule);
+  window.addEventListener('orientationchange', schedule);
+  if(window.ResizeObserver){
+    const ro = new ResizeObserver(schedule);
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const topbar = document.querySelector('.topbar');
+      const filterbar = document.querySelector('.filterbar');
+      if(topbar) ro.observe(topbar);
+      if(filterbar) ro.observe(filterbar);
+    });
+  }
+  document.addEventListener('DOMContentLoaded', schedule);
+  window.addEventListener('load', schedule);
+  schedule();
+})();
 
 const CACHE_DB = 'pttor-insight-cache', CACHE_STORE = 'kv', CACHE_KEY = 'or-dataset-v1';
 function idbOpen(){
@@ -892,7 +954,7 @@ function renderVolCompare(){
   const {y,m} = volYearMonth();
   const items = state.volCompareItems;
   const t = chartTheme();
-  const colors = ['#3763A5','#467CCF','#6098EB','#2A4B7C','#1E3456','#6A8E96','#8AAEB3'];
+  const colors = COMPARE_COLORS;
   const series = sortedProdIdx(vd.products).map(pi=>{ const prodName = vd.products[pi]; return {
     name:dispName(prodName), type:'bar', stack:'total', itemStyle:{color:prodColor(prodName)},
     data: items.map(it=>Math.round(volOf(it.provIdx,y,m,pi)*10)/10)
@@ -944,14 +1006,27 @@ function renderVolMap(){
   const vd = state.volData, {y,m} = volYearMonth();
   const prod = currentVolProdIdx();
   const vals = vd.provinces.map((p,i)=>({name:p, value:Math.round(volOf(i,y,m,prod)*10)/10}));
-  const nz = vals.filter(v=>v.value>0).map(v=>v.value);
+  const nz = vals.filter(v=>v.value>0).map(v=>v.value).sort((a,b)=>a-b);
   const maxV = nz.length?Math.max(...nz):1;
   const t = chartTheme();
+  // Volume is heavily right-skewed (BKK/big provinces dwarf the rest), so a
+  // linear gradient makes almost everything look the same pale/dark blue.
+  // Use quantile-based piecewise bands with a vivid, clearly-stepped palette
+  // instead, so differences actually pop visually.
+  const q = p => nz.length? nz[Math.min(nz.length-1, Math.floor(p*(nz.length-1)))] : 0;
+  const bands = [0, q(1/3), q(2/3), maxV];
+  const bandColors = ['#BFDBFE','#3B82F6','#1E3A8A'];
+  const pieces = bandColors.map((color,i)=>{
+    const min = bands[i], max = i===bandColors.length-1 ? undefined : bands[i+1];
+    const label = max!==undefined ? `${fmt(min)} - ${fmt(max)}` : `${fmt(min)}+`;
+    return max!==undefined ? {min, max, color, label} : {min, color, label};
+  });
   getChart('volMapChart').setOption({
     backgroundColor:'transparent',
     tooltip:{trigger:'item', formatter:p=> p.data? `${p.name}<br/>ปริมาณ: ${fmt(p.data.value)} ล้านลิตร`:p.name},
-    visualMap:{min:0,max:maxV,left:10,bottom:10,text:['สูง (ล้านลิตร)','ต่ำ'],calculable:true, textStyle:{color:t.dim}, inRange:{color:['#1E3A8A','#3B82F6','#60A5FA','#FDE047']}},
-    series:[{type:'map', map:'thailand', roam:false, aspectScale:0.95, layoutCenter:['50%', '50%'], layoutSize:'98%', label:{show:false}, itemStyle:{borderColor:t.border, borderWidth:0.6}, emphasis:{label:{show:true,fontSize:10,color:'#fff'},itemStyle:{areaColor:'#FDE047'}}, data:vals}]
+    visualMap:{type:'piecewise', pieces, left:10, bottom:10, orient:'vertical', itemGap:4, itemWidth:16, itemHeight:12,
+      text:['สูง (ล้านลิตร)','ต่ำ'], textStyle:{color:t.dim, fontSize:10.5}},
+    series:[{type:'map', map:'thailand', roam:false, aspectScale:0.95, layoutCenter:['50%', '50%'], layoutSize:'98%', label:{show:false}, itemStyle:{borderColor:t.border, borderWidth:0.6}, emphasis:{label:{show:true,fontSize:10,color:'#fff'},itemStyle:{areaColor:'#111827'}}, data:vals}]
   });
   
   const chart = getChart('volMapChart');
@@ -1066,8 +1141,8 @@ function renderVolTopBottomRegion(){
   const byRegion = regions.map(r=>({name:r, value:Math.round(vd.provinces.reduce((a,p,i)=> regionOf(p)===r ? a+volOf(i,y,m,prod) : a, 0)*10)/10, itemStyle:{color:REGION_COLORS[r]}}));
   getChart('volRegionPie').setOption({
     backgroundColor:'transparent', tooltip:{trigger:'item', formatter:'{b}: {c} ล้านลิตร ({d}%)'},
-    legend:{bottom:0, textStyle:{fontSize:10, color:t.dim}},
-    series:[{type:'pie', radius:['40%','70%'], labelLine:{lineStyle:{color:t.dim}}, data:byRegion, label:{fontSize:10, color:t.text}}]
+    legend:{bottom:4, left:'center', textStyle:{fontSize:10, color:t.dim}, itemWidth:12, itemHeight:12, itemGap:10, padding:[10,0,0,0], type:'scroll'},
+    series:[{type:'pie', radius:['38%','62%'], center:['50%','42%'], labelLine:{lineStyle:{color:t.dim}}, data:byRegion, label:{fontSize:10, color:t.text}}]
   });
 }
 function renderVolTrend(){
@@ -1095,16 +1170,16 @@ function renderShareCharts(){
   const t = chartTheme();
   getChart('shareProductPie').setOption({
     backgroundColor:'transparent', tooltip:{trigger:'item', formatter:'{b}: {c} ล้านลิตร ({d}%)'},
-    legend:{bottom:0, textStyle:{fontSize:10}, type:'scroll'},
-    series:[{type:'pie', radius:['40%','70%'], labelLine:{lineStyle:{color:t.dim}}, data, label:{fontSize:10.5, color:t.text}}]
+    legend:{bottom:4, left:'center', textStyle:{fontSize:10, color:t.dim}, itemWidth:12, itemHeight:12, itemGap:10, padding:[10,0,0,0], type:'scroll'},
+    series:[{type:'pie', radius:['38%','62%'], center:['50%','42%'], labelLine:{lineStyle:{color:t.dim}}, data, label:{fontSize:10.5, color:t.text}}]
   });
   const regions = Object.keys(REGIONS);
   const prod = currentVolProdIdx();
   const byRegion = regions.map(r=>({name:r, value:Math.round(vd.provinces.reduce((a,p,i)=> regionOf(p)===r ? a+volOf(i,y,m,prod) : a, 0)*10)/10, itemStyle:{color:REGION_COLORS[r]}}));
   getChart('shareRegionPie').setOption({
     backgroundColor:'transparent', tooltip:{trigger:'item', formatter:'{b}: {c} ล้านลิตร ({d}%)'},
-    legend:{bottom:0, textStyle:{fontSize:10.5, color:t.dim}},
-    series:[{type:'pie', radius:['40%','70%'], labelLine:{lineStyle:{color:t.dim}}, data:byRegion, label:{fontSize:10.5, color:t.text}}]
+    legend:{bottom:4, left:'center', textStyle:{fontSize:10.5, color:t.dim}, itemWidth:12, itemHeight:12, itemGap:10, padding:[10,0,0,0], type:'scroll'},
+    series:[{type:'pie', radius:['38%','62%'], center:['50%','42%'], labelLine:{lineStyle:{color:t.dim}}, data:byRegion, label:{fontSize:10.5, color:t.text}}]
   });
   const series = prodOrderIdx.map(pi=>({
     name:dispName(vd.products[pi]), type:'bar', stack:'total', itemStyle:{color:prodColor(vd.products[pi])},
@@ -1178,19 +1253,6 @@ function bkkAsOf(prodIdx, cutoffISO){
 }
 function transportOf(distIdx){ return state.data.transport_cost[distIdx]; }
 
-function yearAvgPrice(distIdx, prodIdx, yearStr){
-  const arr = state.data._byDistProd[distIdx+'-'+prodIdx];
-  if(!arr) return null;
-  const vals = arr.filter(([di])=> state.data.dates[di].slice(0,4)===yearStr).map(([,p])=>p);
-  return vals.length? +(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : null;
-}
-function yearAvgBkk(prodIdx, yearStr){
-  const arr = state.data._bkkByProd[prodIdx];
-  if(!arr) return null;
-  const vals = arr.filter(([di])=> state.data.dates[di].slice(0,4)===yearStr).map(([,p])=>p);
-  return vals.length? +(vals.reduce((a,b)=>a+b,0)/vals.length).toFixed(2) : null;
-}
-function currentYearStr(){ return (state.filterDateISO||'').slice(0,4); }
 
 
 // --- NEW THEME COLORS & LABELS ---
@@ -1221,17 +1283,30 @@ const PROD_LABEL = {
 };
 
 const PROD_COLOR_MAP = {
-  'เบนซิน': '#FFCC00',
-  'เบนซินแก๊สโซฮอล์ 95': '#F48B69',
-  'เบนซินแก๊สโซฮอล์ 91': '#75C397',
-  'เบนซินแก๊สโซฮอล์ E20': '#BEE078',
-  'เบนซินแก๊สโซฮอล์ E85': '#D575B4',
-  'ดีเซล': '#7D90CA',
-  'ดีเซล B20': '#E4757C',
-  'Super Power GSH95': '#EAD1A6',
-  'Super Power Diesel': '#76797C',
-  'Super Power X99': '#585A5D'
+  'เบนซิน': '#F5A623',
+  'เบนซินแก๊สโซฮอล์ 95': '#E8622C',
+  'เบนซินแก๊สโซฮอล์ 91': '#2F8F4E',
+  'เบนซินแก๊สโซฮอล์ E20': '#8CB43A',
+  'เบนซินแก๊สโซฮอล์ E85': '#C2368E',
+  'ดีเซล': '#2E5FA3',
+  'ดีเซล B20': '#C43A3A',
+  'Super Power GSH95': '#A9832E',
+  'Super Power Diesel': '#1C1C1C',
+  'Super Power X99': '#2B2B2B'
 };
+const PROD_TEXT_MAP = {
+  'เบนซิน': '#1A2332',
+  'เบนซินแก๊สโซฮอล์ 95': '#FFFFFF',
+  'เบนซินแก๊สโซฮอล์ 91': '#FFFFFF',
+  'เบนซินแก๊สโซฮอล์ E20': '#1A2332',
+  'เบนซินแก๊สโซฮอล์ E85': '#FFFFFF',
+  'ดีเซล': '#FFFFFF',
+  'ดีเซล B20': '#FFFFFF',
+  'Super Power GSH95': '#FFFFFF',
+  'Super Power Diesel': '#FFFFFF',
+  'Super Power X99': '#FFFFFF'
+};
+function prodTextColor(name){ return PROD_TEXT_MAP[name] || '#FFFFFF'; }
 
 function dispName(raw){ return PROD_LABEL[raw] || raw; }
 function prodColor(name){ return PROD_COLOR_MAP[name] || '#8A9BA8'; }
@@ -1241,23 +1316,39 @@ function sortedProdIdx(products){
   const rank = name => { const i = order.indexOf(name); return i===-1 ? 999 : i; };
   return products.map((p,i)=>i).sort((a,b)=> rank(products[a]) - rank(products[b]));
 }
-function productAxisLabelOption(prodOrderArr, dataset){
+function productAxisLabelOption(prodOrderArr, dataset, size){
+  size = size || 44;
   const rich = {};
   prodOrderArr.forEach(pi=>{
     const raw = dataset.products[pi];
     const file = LOGO_FILE[raw];
     if(file){
-      rich['logo'+pi] = { height:30, width:30, backgroundColor:{image:'assets/Logo/'+file}, borderRadius:15, align:'center' };
+      rich['logo'+pi] = { height:size, width:size, backgroundColor:{image:'assets/Logo/'+file}, borderRadius:size/2, align:'center' };
     }
   });
   return {
-    margin:14, interval:0, rotate:0,
+    margin:size<40?14:18, interval:0, rotate:0,
     formatter: function(value, index){
       const pi = prodOrderArr[index];
       const raw = dataset.products[pi];
       return LOGO_FILE[raw] ? '{logo'+pi+'|}' : value;
     },
     rich
+  };
+}
+
+/* Shared helper: builds an ECharts legend "data" array using product logos
+   as icons instead of text, so every chart's product legend looks/sizes
+   the same (reuse this instead of hand-rolling legend.data per chart). */
+function productLegendOption(prodOrderArr, dataset, size){
+  size = size || 44;
+  return {
+    data: prodOrderArr.map(pi=>{
+      const raw = dataset.products[pi];
+      const file = LOGO_FILE[raw];
+      return { name: dispName(raw), icon: file ? 'image://assets/Logo/'+file : 'circle' };
+    }),
+    itemWidth: size, itemHeight: size, itemGap: 16, top: 0, type: 'scroll'
   };
 }
 
@@ -1276,7 +1367,7 @@ function initFilters(){
     const leftover = d.products.map((p,i)=>({i, label:dispName(p), file:LOGO_FILE[p]||null})).filter(it=>!LOGO_ORDER.includes(d.products[it.i]));
     const items = ordered.concat(leftover);
     iconRow.innerHTML = items.map((it)=>`
-      <div class="product-icon${it.i===state.filterProduct?' active':''}" data-i="${it.i}" title="${it.label}" style="background:${prodColor(d.products[it.i])}">
+      <div class="product-icon${it.i===state.filterProduct?' active':''}" data-i="${it.i}" title="${it.label}" style="background:${prodColor(d.products[it.i])}; color:${prodTextColor(d.products[it.i])};">
         ${it.file ? `<img src="assets/Logo/${it.file}" alt="" style="width:118%;height:118%;object-fit:cover;border-radius:50%;display:block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
         <span style="display:${it.file?'none':'block'};">${it.label}</span>
       </div>`).join('');
@@ -1298,7 +1389,7 @@ function initFilters(){
     const volItems = [{i:-1, label:'รวมทุกผลิตภัณฑ์', file:'ALL.png'}].concat(ordered, leftover);
     state.filterVolProductRaw = -1;
     volIconRow.innerHTML = volItems.map((it)=>`
-      <div class="product-icon${it.i===state.filterVolProductRaw?' active':''}" data-i="${it.i}" title="${it.label}" style="background:${it.i===-1?'#3763A5':prodColor(d.products[it.i])}">
+      <div class="product-icon${it.i===state.filterVolProductRaw?' active':''}" data-i="${it.i}" title="${it.label}" style="background:${it.i===-1?'#0B3D91':prodColor(d.products[it.i])}; color:${it.i===-1?'#FFFFFF':prodTextColor(d.products[it.i])};">
         ${it.file ? `<img src="assets/Logo/${it.file}" alt="" style="width:118%;height:118%;object-fit:cover;border-radius:50%;display:block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
         <span style="display:${it.file?'none':'block'};">${it.i===-1?'รวม':it.label}</span>
       </div>`).join('');
@@ -1483,6 +1574,41 @@ function initFilters(){
   };
   document.addEventListener('click', e=>{ if(!e.target.closest('.search-wrap')) results.style.display='none'; });
 
+  // ตัวช่วยกลาง: chip-based compare picker (ราคา + ปริมาณ ใช้ร่วมกัน)
+  function createCompareChips(opts){
+    const colors = COMPARE_COLORS;
+    function renderChips(){
+      const items = opts.getItems();
+      opts.chipsEl.innerHTML = items.map((it,i)=>`
+        <div class="chip" style="border-color:${colors[i%colors.length]}; color:${colors[i%colors.length]}; display:flex; align-items:center; gap:6px;">
+          ${opts.iconFor(it)} ${it.label} <span data-k="${it.key}" class="cmp-remove" style="cursor:pointer; font-weight:700;">×</span>
+        </div>`).join('') || `<span class="hint" style="color:var(--text-dim)">${opts.emptyHint}</span>`;
+      opts.chipsEl.querySelectorAll('.cmp-remove').forEach(x=>{
+        x.onclick = ()=>{ opts.setItems(opts.getItems().filter(it=>it.key!==x.dataset.k)); renderChips(); opts.onChange(); };
+      });
+    }
+    opts.inputEl.oninput = ()=>{
+      const q = opts.inputEl.value.trim();
+      if(!q){ opts.resultsEl.style.display='none'; return; }
+      const haveKeys = new Set(opts.getItems().map(it=>it.key));
+      const matches = opts.search(q, haveKeys);
+      if(!matches.length){ opts.resultsEl.style.display='none'; return; }
+      opts.resultsEl.innerHTML = matches.map(m=>`<div data-k="${m.key}">${m.label}${m.sub?` <span style="color:var(--text-dim); font-size:10px;">(${m.sub})</span>`:''}</div>`).join('');
+      opts.resultsEl.style.display='block';
+      opts.resultsEl.querySelectorAll('div').forEach((el,i)=>{
+        el.onclick = ()=>{
+          if(opts.getItems().length>=8){ alert('เทียบได้สูงสุด 8 รายการ'); return; }
+          opts.setItems([...opts.getItems(), matches[i].add()]);
+          opts.inputEl.value=''; opts.resultsEl.style.display='none';
+          renderChips(); opts.onChange();
+        };
+      });
+    };
+    document.addEventListener('click', (e)=>{ if(!opts.inputEl.contains(e.target) && !opts.resultsEl.contains(e.target)) opts.resultsEl.style.display='none'; });
+    renderChips();
+    return renderChips;
+  }
+
   function makeProvItem(prov){
     const provIdx = d.provinces.indexOf(prov);
     return {key:'prov:'+prov, label:prov, type:'prov', distIdxs: d._provDists[provIdx]||[]};
@@ -1495,42 +1621,23 @@ function initFilters(){
   const defP2 = d.provinces.includes('ภูเก็ต') ? 'ภูเก็ต' : d.provinces[1];
   state.compareItems = [defP1, defP2].filter(Boolean).map(makeProvItem);
   const cmpInput = $('compareSearch'), cmpResults = $('compareSearchResults'), cmpChips = $('compareChips');
-  function renderCompareChips(){
-    const colors = ['#3763A5','#467CCF','#6098EB','#2A4B7C','#1E3456','#6A8E96','#8AAEB3'];
-    cmpChips.innerHTML = state.compareItems.map((it,i)=>`
-      <div class="chip" style="border-color:${colors[i%colors.length]}; color:${colors[i%colors.length]}; display:flex; align-items:center; gap:6px;">
-        ${it.type==='prov'?'📍':'📌'} ${it.label} <span data-k="${it.key}" class="cmp-remove" style="cursor:pointer; font-weight:700;">×</span>
-      </div>`).join('') || `<span class="hint" style="color:var(--text-dim)">ยังไม่ได้เลือก — พิมพ์ค้นหาด้านบน (จังหวัด หรือ อำเภอ)</span>`;
-    cmpChips.querySelectorAll('.cmp-remove').forEach(x=>{
-      x.onclick = ()=>{ state.compareItems = state.compareItems.filter(it=>it.key!==x.dataset.k); renderCompareChips(); renderCompare(); };
-    });
-  }
-  cmpInput.oninput = ()=>{
-    const q = cmpInput.value.trim();
-    if(!q){ cmpResults.style.display='none'; return; }
-    const haveKeys = new Set(state.compareItems.map(it=>it.key));
-    const provMatches = d.provinces.filter(p=>p.includes(q) && !haveKeys.has('prov:'+p)).slice(0,5).map(p=>({key:'prov:'+p, label:p, sub:'จังหวัด', add:()=>makeProvItem(p)}));
-    const distMatches = [];
-    d.districts.forEach((dd,i)=>{
-      if(distMatches.length>=6) return;
-      if(haveKeys.has('dist:'+i)) return;
-      if(dd[1].includes(q)){ distMatches.push({key:'dist:'+i, label:`${dd[1]}, ${d.provinces[dd[0]]}`, sub:'อำเภอ', add:()=>makeDistItem(i)}); }
-    });
-    const matches = [...provMatches, ...distMatches];
-    if(!matches.length){ cmpResults.style.display='none'; return; }
-    cmpResults.innerHTML = matches.map(m=>`<div data-k="${m.key}">${m.label} <span style="color:var(--text-dim); font-size:10px;">(${m.sub})</span></div>`).join('');
-    cmpResults.style.display='block';
-    cmpResults.querySelectorAll('div').forEach((el,i)=>{
-      el.onclick = ()=>{
-        if(state.compareItems.length>=8){ alert('เทียบได้สูงสุด 8 รายการ'); return; }
-        state.compareItems.push(matches[i].add());
-        cmpInput.value=''; cmpResults.style.display='none';
-        renderCompareChips(); renderCompare();
-      };
-    });
-  };
-  document.addEventListener('click', (e)=>{ if(!cmpInput.contains(e.target) && !cmpResults.contains(e.target)) cmpResults.style.display='none'; });
-  renderCompareChips();
+  const renderCompareChips = createCompareChips({
+    getItems: ()=>state.compareItems, setItems: v=>state.compareItems=v,
+    chipsEl: cmpChips, inputEl: cmpInput, resultsEl: cmpResults,
+    iconFor: it=> it.type==='prov'?'📍':'📌',
+    emptyHint: 'ยังไม่ได้เลือก — พิมพ์ค้นหาด้านบน (จังหวัด หรือ อำเภอ)',
+    search: (q, haveKeys)=>{
+      const provMatches = d.provinces.filter(p=>p.includes(q) && !haveKeys.has('prov:'+p)).slice(0,5).map(p=>({key:'prov:'+p, label:p, sub:'จังหวัด', add:()=>makeProvItem(p)}));
+      const distMatches = [];
+      d.districts.forEach((dd,i)=>{
+        if(distMatches.length>=6) return;
+        if(haveKeys.has('dist:'+i)) return;
+        if(dd[1].includes(q)){ distMatches.push({key:'dist:'+i, label:`${dd[1]}, ${d.provinces[dd[0]]}`, sub:'อำเภอ', add:()=>makeDistItem(i)}); }
+      });
+      return [...provMatches, ...distMatches];
+    },
+    onChange: renderCompare
+  });
 
   if(state.volData){
     const vd = state.volData;
@@ -1539,35 +1646,14 @@ function initFilters(){
     const defV2 = vd.provinces.includes('ภูเก็ต') ? 'ภูเก็ต' : vd.provinces[1];
     state.volCompareItems = [defV1, defV2].filter(Boolean).map(makeVolProvItem);
     const vCmpInput = $('volCompareSearch'), vCmpResults = $('volCompareSearchResults'), vCmpChips = $('volCompareChips');
-    function renderVolCompareChips(){
-      const colors = ['#3763A5','#467CCF','#6098EB','#2A4B7C','#1E3456','#6A8E96','#8AAEB3'];
-      vCmpChips.innerHTML = state.volCompareItems.map((it,i)=>`
-        <div class="chip" style="border-color:${colors[i%colors.length]}; color:${colors[i%colors.length]}; display:flex; align-items:center; gap:6px;">
-          📍 ${it.label} <span data-k="${it.key}" class="vcmp-remove" style="cursor:pointer; font-weight:700;">×</span>
-        </div>`).join('') || `<span class="hint" style="color:var(--text-dim)">ยังไม่ได้เลือก — พิมพ์ค้นหาด้านบน</span>`;
-      vCmpChips.querySelectorAll('.vcmp-remove').forEach(x=>{
-        x.onclick = ()=>{ state.volCompareItems = state.volCompareItems.filter(it=>it.key!==x.dataset.k); renderVolCompareChips(); renderVolCompare(); };
-      });
-    }
-    vCmpInput.oninput = ()=>{
-      const q = vCmpInput.value.trim();
-      if(!q){ vCmpResults.style.display='none'; return; }
-      const haveKeys = new Set(state.volCompareItems.map(it=>it.key));
-      const matches = vd.provinces.filter(p=>p.includes(q) && !haveKeys.has('vprov:'+p)).slice(0,8).map(p=>({key:'vprov:'+p, label:p}));
-      if(!matches.length){ vCmpResults.style.display='none'; return; }
-      vCmpResults.innerHTML = matches.map(m=>`<div data-k="${m.key}">${m.label}</div>`).join('');
-      vCmpResults.style.display='block';
-      vCmpResults.querySelectorAll('div').forEach((el,i)=>{
-        el.onclick = ()=>{
-          if(state.volCompareItems.length>=8){ alert('เทียบได้สูงสุด 8 รายการ'); return; }
-          state.volCompareItems.push(makeVolProvItem(matches[i].label));
-          vCmpInput.value=''; vCmpResults.style.display='none';
-          renderVolCompareChips(); renderVolCompare();
-        };
-      });
-    };
-    document.addEventListener('click', (e)=>{ if(!vCmpInput.contains(e.target) && !vCmpResults.contains(e.target)) vCmpResults.style.display='none'; });
-    renderVolCompareChips();
+    createCompareChips({
+      getItems: ()=>state.volCompareItems, setItems: v=>state.volCompareItems=v,
+      chipsEl: vCmpChips, inputEl: vCmpInput, resultsEl: vCmpResults,
+      iconFor: ()=>'📍',
+      emptyHint: 'ยังไม่ได้เลือก — พิมพ์ค้นหาด้านบน',
+      search: (q, haveKeys)=> vd.provinces.filter(p=>p.includes(q) && !haveKeys.has('vprov:'+p)).slice(0,8).map(p=>({key:'vprov:'+p, label:p, add:()=>makeVolProvItem(p)})),
+      onChange: renderVolCompare
+    });
   }
   $('volExportExcel').onclick = exportVolExcel;
 
@@ -1623,9 +1709,11 @@ const REGIONS = {
 };
 function regionOf(prov){ for(const r in REGIONS){ if(REGIONS[r].includes(prov)) return r; } return 'อื่นๆ'; }
 const REGION_COLORS = {
-  'ภาคเหนือ':'#60A5FA', 'กรุงเทพและปริมณฑล':'#F59E0B', 'ภาคกลาง':'#3B82F6', 'ภาคตะวันตก':'#818CF8',
-  'ภาคตะวันออกเฉียงเหนือ':'#1E40AF', 'ภาคตะวันออก':'#38BDF8', 'ภาคใต้':'#0EA5E9', 'อื่นๆ':'#64748B'
+  'กรุงเทพและปริมณฑล':'#2563EB', 'ภาคกลาง':'#0D9488', 'ภาคตะวันตก':'#65A30D', 'ภาคตะวันออก':'#EA580C',
+  'ภาคตะวันออกเฉียงเหนือ':'#CA8A04', 'ภาคเหนือ':'#7C3AED', 'ภาคใต้':'#DC2626', 'อื่นๆ':'#6B7280'
 };
+// สีสำหรับกราฟเปรียบเทียบจังหวัด/อำเภอ (compare) — คนละชุดกับสี Product และ Region เพื่อไม่ให้สื่อความหมายซ้อนกัน
+const COMPARE_COLORS = ['#7199F2','#E772A6','#61B9B1','#DCB25B','#A97EF3','#7A8390','#847DDC','#9AC361'];
 
 function computeRegionBBoxCenterZoom(region){
   if(!state.geo || !state.geo.features) return null;
@@ -1646,25 +1734,13 @@ function computeRegionBBoxCenterZoom(region){
   return {center, zoom};
 }
 
-function avgBkkAll(cutoffISO){
+function avgAllProducts(getPrice){
   const d=state.data; let sum=0,n=0;
-  d.products.forEach((_,pi)=>{ const v=bkkAsOf(pi,cutoffISO); if(v!=null){ sum+=v; n++; } });
+  d.products.forEach((_,pi)=>{ const v=getPrice(pi); if(v!=null){ sum+=v; n++; } });
   return n?+(sum/n).toFixed(2):null;
 }
-function avgPriceAll(distIdx,cutoffISO){
-  const d=state.data; let sum=0,n=0;
-  d.products.forEach((_,pi)=>{ const v=priceAsOf(distIdx,pi,cutoffISO); if(v!=null){ sum+=v; n++; } });
-  return n?+(sum/n).toFixed(2):null;
-}
-function avgPriceAllDistricts(cutoffISO){
-  const d=state.data, out=[];
-  d.districts.forEach((dd,i)=>{
-    const price=avgPriceAll(i,cutoffISO);
-    if(price!=null) out.push({distIdx:i, price});
-  });
-  return out;
-}
-
+function avgBkkAll(cutoffISO){ return avgAllProducts(pi=>bkkAsOf(pi,cutoffISO)); }
+function avgPriceAll(distIdx,cutoffISO){ return avgAllProducts(pi=>priceAsOf(distIdx,pi,cutoffISO)); }
 function latestSnapshot(){
   const d = state.data, out=[];
   const cutoff = state.filterDateISO, prod = state.filterProduct;
@@ -1718,15 +1794,15 @@ function renderAll(){
 function chartTheme(){
   const light = document.documentElement.dataset.theme === 'light';
   return light ? {
-    text: '#0F1B2D',
-    dim: '#52627A',
-    blue: '#2563EB', blueLight:'#3B82F6', up:'#DC2626', down:'#059669', border: '#D5E0F0',
+    text: '#0F172A',
+    dim: '#64748B',
+    blue: '#2563EB', blueLight:'#3B82F6', up:'#DC2626', down:'#059669', border: '#D8E0EA',
     surface: '#FFFFFF'
   } : {
     text: '#F8FAFC',
     dim: '#94A3B8',
-    blue: '#3763A5', blueLight:'#467CCF', up:'#EF4444', down:'#10B981', border: '#2A4365',
-    surface: '#152642'
+    blue: '#2563EB', blueLight:'#60A5FA', up:'#E04040', down:'#23A27B', border: '#263A55',
+    surface: '#101C2E'
   };
 }
 
@@ -1893,7 +1969,7 @@ function renderMap(){
   const snap = latestSnapshot();
   const t = chartTheme();
   const chart = getChart('mapChart');
-  const HL = '#467CCF'; 
+  const HL = '#60A5FA'; 
 
   const byProv = {};
   snap.forEach(r=>{ (byProv[r.prov] ||= []).push(r); });
@@ -1932,10 +2008,10 @@ function renderMap(){
     if(!p.data) return `${p.name}<br>ไม่มีข้อมูล`;
     const dd = p.data;
     const diffStr = dd.diff!=null? (dd.diff>0?'+':'')+dd.diff.toFixed(2)+' ฿' : '-';
-    const diffColor = dd.diff!=null? (dd.diff>0.001?'#EF4444':dd.diff<-0.001?'#10B981':'#94A3B8') : '#94A3B8';
+    const diffColor = dd.diff!=null? (dd.diff>0.001?'#E04040':dd.diff<-0.001?'#23A27B':'#94A3B8') : '#94A3B8';
     const statusStr = dd.diff==null? '—' : Math.abs(dd.diff)<=0.001? '✓ ตรงตามสนพ.' : dd.diff>0.001? 'แพงกว่าเกณฑ์' : 'ถูกกว่าเกณฑ์';
     return `<div style="min-width:220px;">`
-      + `<div style="font-size:14px;font-weight:600;margin-bottom:6px;">${p.name}${dd.isSelected? ' <span style="color:#467CCF">★</span>':''}</div>`
+      + `<div style="font-size:14px;font-weight:600;margin-bottom:6px;">${p.name}${dd.isSelected? ' <span style="color:#60A5FA">★</span>':''}</div>`
       + `<div style="font-size:11px;color:#94A3B8;margin-bottom:8px;">${dd.region} · ${dd.districtCount} อำเภอ</div>`
       + `<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 12px;font-size:12px;">`
       + `<div>ราคาเฉลี่ย</div><div style="text-align:right;font-weight:600;">${dd.price?.toFixed?.(2) ?? '-'} ฿</div>`
@@ -1943,7 +2019,7 @@ function renderMap(){
       + `<div>ส่วนต่าง</div><div style="text-align:right;color:${diffColor};font-weight:600;">${diffStr}</div>`
       + `<div>สถานะ</div><div style="text-align:right;"><span style="color:${diffColor}">${statusStr}</span></div>`
       + `</div>`
-      + `<div style="margin-top:8px;padding-top:6px;border-top:1px solid #375480;font-size:11px;color:#94A3B8;">`
+      + `<div style="margin-top:8px;padding-top:6px;border-top:1px solid #34496A;font-size:11px;color:#94A3B8;">`
       + `ตรงตามสนพ.: ${dd.compliantCount}/${dd.districtCount} (${dd.compliantRate}%)`
       + (dd.maxPrice? `<br>แพงสุด: ${dd.maxDist} ${dd.maxPrice.toFixed(2)}฿` : '')
       + (dd.minPrice? `<br>ถูกสุด: ${dd.minDist} ${dd.minPrice.toFixed(2)}฿` : '')
@@ -1977,13 +2053,13 @@ function renderMap(){
       visualMap:{
         show:false, type:'piecewise',
         pieces:[
-          {min:0.20, max:maxAbs+1, color:'#EF4444'},
+          {min:0.20, max:maxAbs+1, color:'#E04040'},
           {min:0.05, max:0.20, color:'#F87171'},
           {min:0.001, max:0.05, color:'#FCA5A5'},
-          {min:-0.001, max:0.001, color:'#3B82F6'},
+          {min:-0.001, max:0.001, color:'#2563EB'},
           {min:-0.05, max:-0.001, color:'#6EE7B7'},
           {min:-0.20, max:-0.05, color:'#34D399'},
-          {min:-maxAbs-1, max:-0.20, color:'#10B981'}
+          {min:-maxAbs-1, max:-0.20, color:'#23A27B'}
         ]
       }
     }, true);
@@ -1998,7 +2074,7 @@ function renderMap(){
     chart.__regionBubbleOver = (params)=>{
       if(mode!=='region' || !params.data) { bubble.style.display='none'; return; }
       bubble.textContent = params.data.region;
-      bubble.style.borderColor = REGION_COLORS[params.data.region]||'#467CCF';
+      bubble.style.borderColor = REGION_COLORS[params.data.region]||'#60A5FA';
       bubble.style.display='block';
     };
     chart.__regionBubbleMove = (params)=>{
@@ -2334,7 +2410,7 @@ function renderProductMonthlyTrend(){
   const legendEl = $('productTrendLegend');
   if(legendEl){
     legendEl.innerHTML = sortedProdIdx(d.products).map(pi=>{ const p = d.products[pi]; return `
-      <div class="product-icon small" data-name="${dispName(p)}" title="${dispName(p)}" style="background:${prodColor(p)}">
+      <div class="product-icon small" data-name="${dispName(p)}" title="${dispName(p)}" style="background:${prodColor(p)}; color:${prodTextColor(p)};">
         ${LOGO_FILE[p] ? `<img src="assets/Logo/${LOGO_FILE[p]}" alt="" style="width:118%;height:118%;object-fit:cover;border-radius:50%;display:block;" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">` : ''}
         <span style="display:${LOGO_FILE[p]?'none':'block'};">${dispName(p)}</span>
       </div>`;}).join('');
@@ -2418,17 +2494,17 @@ function renderTransport(){
         + `ไม่ตรงตามสนพ.: ${c.nonCompliant} / ${c.total} อำเภอ (${c.value[2]}%)<br>`
         + (c.nonCompliant? `ส่วนต่างเฉลี่ยของอำเภอที่ไม่ตรง: ${c.avgNonCompliantDiff>0?'+':''}${c.avgNonCompliantDiff} ฿` : 'ตรงตามราคาอ้างอิง สนพ. ทั้งหมด');
     }},
-    grid:{left:80,right:20,top:20,bottom:60},
-    xAxis:{type:'category', data:prodOrder.map(pi=>dispName(d.products[pi])), axisLabel:{color:t.dim, fontSize:SC(11), rotate:45, interval:0, margin:16}, splitArea:{show:true}},
+    grid:{left:80,right:20,top:20,bottom:82},
+    xAxis:{type:'category', data:prodOrder.map(pi=>dispName(d.products[pi])), axisLabel: productAxisLabelOption(prodOrder, d, 46), splitArea:{show:true}},
     yAxis:{type:'category', data:regionNames, axisLabel:{color:t.text, fontSize:SC(13)}, splitArea:{show:true}},
     visualMap:{
       show:false, min:0, max:100, type:'piecewise',
       pieces:[
-        {min:0, max:0, color:'#10B981'},
-        {min:0.001, max:5, color:'#3B82F6'},
+        {min:0, max:0, color:'#23A27B'},
+        {min:0.001, max:5, color:'#2563EB'},
         {min:5, max:15, color:'#F59E0B'},
         {min:15, max:30, color:'#EA580C'},
-        {min:30, max:60, color:'#DC2626'},
+        {min:30, max:60, color:'#E04040'},
         {min:60, max:100, color:'#991B1B'}
       ]
     },
@@ -2437,7 +2513,7 @@ function renderTransport(){
       label:{show:true, color:'#fff', fontSize:SC(16), fontWeight:700, formatter:p=>p.data.total? p.data.value[2]+'%' : '–',
         textBorderColor:'rgba(0,0,0,.65)', textBorderWidth:2.5},
       itemStyle:{ borderColor:t.border, borderWidth:1,
-        color: p=> p.data.total===0 ? '#1E3456' : undefined }
+        color: p=> p.data.total===0 ? '#17263D' : undefined }
     }]
   }, true);
 }
@@ -2513,7 +2589,7 @@ function renderCompare(){
   const items = state.compareItems || [];
   if(!items.length) { getChart('compareBar').clear(); return; }
   const cutoff = state.filterDateISO;
-  const colors = ['#3763A5','#467CCF','#6098EB','#2A4B7C','#1E3456','#6A8E96','#8AAEB3'];
+  const colors = COMPARE_COLORS;
 
   const prodOrder = sortedProdIdx(d.products);
   const avgOf = (distIdxs, pi) => {
@@ -2533,7 +2609,7 @@ function renderCompare(){
     backgroundColor:'transparent',
     tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
     legend:{data:[...items.map(it=>it.label),'ราคากลาง กทม.'], textStyle:{color:t.dim, fontSize:SC(14)}, itemWidth:22, itemHeight:14, itemGap:20, top:0, type:'scroll'},
-    grid:{left:50,right:20,top:44,bottom:100},
+    grid:{left:50,right:20,top:44,bottom:115},
     xAxis:{type:'category', data:prodOrder.map(pi=>dispName(d.products[pi])), axisLabel: productAxisLabelOption(prodOrder, d)},
     yAxis:{type:'value', scale:true, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
     series
@@ -2586,12 +2662,12 @@ function renderMomChart(){
     tooltip:{ trigger:'axis', axisPointer:{type:'shadow'}, formatter: params => {
       let s = `<b>${params[0]?.axisValue || ''}</b><br>`;
       params.forEach(p => {
-        if(p.value != null) s += `${p.marker} ${p.seriesName}: <b style="color:${p.value >= 0 ? '#EF4444' : '#10B981'}">${p.value >= 0 ? '+' : ''}${p.value} ฿</b><br>`;
+        if(p.value != null) s += `${p.marker} ${p.seriesName}: <b style="color:${p.value >= 0 ? '#E04040' : '#23A27B'}">${p.value >= 0 ? '+' : ''}${p.value} ฿</b><br>`;
       });
       return s;
     }},
-    legend:{ data:sortedProdIdx(d.products).map(pi=>dispName(d.products[pi])), textStyle:{color:t.dim, fontSize:SC(14)}, itemWidth:22, itemHeight:14, itemGap:20, top:0, type:'scroll' },
-    grid:{left:50,right:20,top:50,bottom:85},
+    legend:{ ...productLegendOption(sortedProdIdx(d.products), d, 60), textStyle:{color:t.dim, fontSize:SC(11)} },
+    grid:{left:50,right:20,top:92,bottom:85},
     dataZoom:[{type:'inside'},{type:'slider', textStyle:{color:t.dim}}],
     xAxis:{ type:'category', data:momMonths.map(ym=>{ const [y,m]=ym.split('-'); return THAI_MONTHS_SHORT[+m-1]+' '+(+y+543); }), axisLabel:{color:t.dim, fontSize:SC(10), rotate:35, margin:14} },
     yAxis:{ type:'value', axisLabel:{color:t.dim, formatter:v=>(v>=0?'+':'')+v+' ฿'}, splitLine:{lineStyle:{color:t.border}},
