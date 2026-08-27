@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PTTOR Insight Dashboard | ราคาขายปลีกน้ำมัน สนพ.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<link rel="stylesheet" href="assets/css/styles.css">
+<link rel="stylesheet" href="assets/css/chart-theme.css">
+</head>
+<body>
+
+<div class="loading-overlay" id="loadingOverlay">
+  <div class="spinner"></div>
+  <div id="loadingText" style="font-size:13px;color:var(--text-dim)">กำลังโหลดข้อมูลราคาน้ำมัน...</div>
+</div>
+
+<aside id="appSidebar">
+  <div class="sb-brand">
+    <div class="sb-logo"><img src="assets/picture/or-logo-sm.png" alt="OR Logo" onerror="this.style.display='none'"></div>
+    <div class="sb-brand-text">PTTOR Dashboard<br><small> Dashboard · สนพ.</small></div>
+  </div>
+  <nav class="sb-nav" id="tabs">
+    <div class="sb-group-label">ราคาน้ำมันขายปลีก</div>
+    <button class="tab-btn active" data-page="overview"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9" rx="1.5"/><rect x="14" y="3" width="7" height="5" rx="1.5"/><rect x="14" y="12" width="7" height="9" rx="1.5"/><rect x="3" y="16" width="7" height="5" rx="1.5"/></svg></span><span class="sb-label">ภาพรวม/แผนที่</span></button>
+    <button class="tab-btn" data-page="trend"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 17 9 11 13 15 21 6"/><polyline points="14 6 21 6 21 13"/></svg></span><span class="sb-label">แนวโน้มราคา</span></button>
+    <button class="tab-btn" data-page="transport"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="6" width="14" height="11" rx="1.2"/><path d="M15 9h4l3 3.5V17h-7z"/><circle cx="6" cy="19" r="1.8"/><circle cx="17.5" cy="19" r="1.8"/></svg></span><span class="sb-label">วิเคราะห์ค่าขนส่ง</span></button>
+    <button class="tab-btn" data-page="ranking"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="13"/><line x1="12" y1="21" x2="12" y2="7"/><line x1="20" y1="21" x2="20" y2="3"/></svg></span><span class="sb-label">จัดอันดับจังหวัด</span></button>
+    <button class="tab-btn" data-page="compare"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h11l-3-3"/><path d="M20 16H9l3 3"/></svg></span><span class="sb-label">เปรียบเทียบจังหวัด</span></button>
+    <div class="sb-group-label">ปริมาณน้ำมัน</div>
+    <button class="tab-btn" data-page="volume"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5.5" rx="8" ry="3"/><path d="M4 5.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/><path d="M4 11.5v6c0 1.66 3.58 3 8 3s8-1.34 8-3v-6"/></svg></span><span class="sb-label">ปริมาณจำหน่าย</span></button>
+    <button class="tab-btn" data-page="share"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v10l7 5.2"/><path d="M12 2a10 10 0 1 0 8.66 15"/></svg></span><span class="sb-label">สัดส่วนตลาด</span></button>
+  </nav>
+  <div class="sb-links">
+    <a href="index.html"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14 3h7v7"/><path d="M10 14 21 3"/><path d="M20 14v6a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h6"/></svg></span><span class="sb-label">Value Chain</span></a>
+    <a href="Companies.html"><span class="sb-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="2" width="10" height="20" rx="1"/><path d="M14 22h6V11h-6"/><line x1="7" y1="6" x2="7" y2="6"/><line x1="11" y1="6" x2="11" y2="6"/><line x1="7" y1="10" x2="7" y2="10"/><line x1="11" y1="10" x2="11" y2="10"/><line x1="7" y1="14" x2="7" y2="14"/><line x1="11" y1="14" x2="11" y2="14"/></svg></span><span class="sb-label">บริษัทที่เกี่ยวข้อง</span></a>
+  </div>
+  <button class="sb-collapse-btn" id="sbCollapseBtn" title="ย่อ/ขยายเมนู"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></button>
+</aside>
+
+<div class="topbar">
+  <div class="topbar-row1">
+    <div class="topbar-actions" style="margin-left:auto;">
+      <div class="size-switch" title="ขนาดตัวอักษร (ทั้งเว็บ)">
+        <button class="size-btn" data-size="small">เล็ก</button>
+        <button class="size-btn active" data-size="medium">กลาง</button>
+        <button class="size-btn" data-size="large">ใหญ่</button>
+      </div>
+      <button class="icon-btn" id="themeToggle" title="สลับโหมดสี (สว่าง/มืด)">☀</button>
+      <button class="icon-btn" id="refreshData" title="โหลดข้อมูลใหม่จาก Excel (ล้างแคช)">↻</button>
+      <button class="icon-btn" id="exportCsv" title="Export CSV">⬇</button>
+    </div>
+  </div>
+</div>
+
+<div class="filterbar">
+  <label id="wrapDay">วัน<select id="fDay"></select></label>
+  <label>เดือน<select id="fMonth"></select></label>
+  <label>ปี<select id="fYear"></select></label>
+  <label>ภาค<select id="fRegion"><option value="">ทั้งหมด</option></select></label>
+  <label>จังหวัด<select id="fProvince"><option value="">ทั้งหมด</option></select></label>
+  <label id="wrapDistrict">อำเภอ<select id="fDistrict"><option value="">ทั้งหมด</option></select></label>
+  <div class="search-wrap">
+    <label>ค้นหาจังหวัด/อำเภอ<input id="fSearch" placeholder="พิมพ์ชื่อ..." autocomplete="off"></label>
+    <div class="search-results" id="searchResults"></div>
+  </div>
+  <button class="reset-btn" id="resetFilters">ล้างตัวกรอง</button>
+</div>
+
+<div class="product-icon-row" id="productIconRow" style="position:sticky; top:var(--sticky2-h,113px); z-index:39; background:var(--surface-solid); backdrop-filter:blur(16px); padding:10px 22px; border-bottom:1px solid var(--border); margin:0; box-shadow:0 2px 8px rgba(0,0,0,.08);"></div>
+
+<!-- ============ PAGE: OVERVIEW / MAP ============ -->
+<div class="page active" id="page-overview">
+  <div class="data-freshness" id="dataFreshness"></div>
+  <div class="kpi-row" id="kpiRow"></div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>แผนที่ราคาขายปลีกน้ำมันรายจังหวัด</h3>
+      <div class="layer-switch" id="mapColorSwitch">
+        <button class="chip active" data-mode="diff">แบ่งสีตามส่วนต่างราคา</button>
+        <button class="chip" data-mode="region">แบ่งสีตามภูมิภาค</button>
+      </div>
+      <div class="map-legend-wrap">
+        <div class="map-col">
+          <div id="mapChart" class="echart map-xl"></div>
+          <div class="map-region-bubble" id="mapRegionBubble"></div>
+          <button id="mapResetBtn" style="position:absolute;left:10px;bottom:10px;z-index:5;padding:6px 12px;border-radius:8px;border:none;background:#dc2626;color:#fff;font-size:12px;font-weight:600;cursor:pointer;">รีเซ็ตแผนที่</button>        </div>
+        <div class="legend-col" id="regionOverview"></div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Top 5 / Bottom 5 จังหวัด</h3>
+      <div id="topBottomChart" class="echart"></div>
+      <h3 style="margin-top:14px">สัดส่วนตามภาค</h3>
+      <div id="regionPie" class="echart"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE: TREND ============ -->
+<div class="page" id="page-trend">
+  <div class="card" style="margin-bottom:20px;">
+    <h3>แนวโน้มราคารายเดือน ทุกผลิตภัณฑ์ <span class="hint">ค่าเฉลี่ยทั่วประเทศรายเดือน แยกเส้นครบทุกชนิดน้ำมัน</span></h3>
+    <div id="productTrendLegend" class="product-icon-row" style="gap:8px;"></div>
+    <div id="productMonthlyTrend" class="echart tall"></div>
+  </div>
+  <div class="card">
+    <h3>การเปลี่ยนแปลงราคาเดือนต่อเดือน <span class="hint">สีแดง = ราคาขึ้น · สีเขียว = ราคาลง · ยิ่งยาวยิ่งเปลี่ยนมาก</span></h3>
+    <div id="momChart" class="echart tall"></div>
+  </div>
+</div>
+
+<!-- ============ PAGE: TRANSPORT ============ -->
+<div class="page" id="page-transport">
+  <div class="card" style="margin-bottom:20px;">
+    <h3>Heatmap: สัดส่วนอำเภอที่ราคาขายไม่ตรงกับราคาอ้างอิง สนพ. (ตามภาค x ผลิตภัณฑ์) <span class="hint">ราคาอ้างอิง = ราคากลาง กทม. + ค่าขนส่งอ้างอิง สนพ. ปี 2549 · นับว่า "ไม่ตรง" เมื่อราคาขายจริงต่างจากราคาอ้างอิงเกิน 0.01 บาท</span></h3>
+    <div id="transportHeatmap" class="echart tall"></div>
+  </div>
+  <div class="card">
+    <h3>จังหวัดผิดปกติ (Outlier: ราคาขายจริงกับราคาอ้างอิงต่างกันมาก) <span class="hint">ค่าความคลาดเคลื่อน = ราคาขายจริง − ราคาอ้างอิง (ราคากลาง กทม. + ค่าขนส่งอ้างอิง สนพ.) · ค่าบวก = ขายแพงกว่าที่ควร, ค่าลบ = ขายถูกกว่าที่ควร</span></h3>
+    <div style="margin-bottom:8px; display:flex; gap:14px; flex-wrap:wrap; align-items:center;">
+      <input type="text" id="outlierSearch" placeholder="พิมพ์ค้นหา จังหวัด / อำเภอ / ผลิตภัณฑ์..." style="flex:1; min-width:220px; max-width:340px; padding:7px 10px; border-radius:8px; border:1px solid var(--border); background:var(--surface-solid); color:var(--text); font-size:12.5px;">
+      <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:var(--text-dim); cursor:pointer;">
+        <input type="checkbox" id="outlierShowAll"> แสดงทั้งหมด (รวมอำเภอที่ราคาตรงตามเกณฑ์ สนพ.)
+      </label>
+    </div>
+    <div class="table-wrap"><table class="data-table" id="outlierTable"></table></div>
+  </div>
+</div>
+
+<!-- ============ PAGE: RANKING ============ -->
+<div class="page" id="page-ranking">
+  <div class="grid-half">
+    <div class="card">
+      <h3>Top 20 จังหวัดแพงสุด</h3>
+      <div id="rankTop" class="echart tall"></div>
+    </div>
+    <div class="card">
+      <h3>Bottom 20 จังหวัดถูกสุด</h3>
+      <div id="rankBottom" class="echart tall"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ PAGE: COMPARE ============ -->
+<div class="page" id="page-compare">
+  <div class="card">
+    <h3>เปรียบเทียบจังหวัด/อำเภอ <span class="hint">พิมพ์ค้นหาแล้วเลือกจังหวัดหรืออำเภอ เพิ่มได้หลายรายการ เทียบราคาเฉลี่ยแยกตามชนิดน้ำมัน ตามปีที่เลือกอยู่ในตัวกรอง เทียบกับราคากลาง สนพ.</span></h3>
+    <div style="position:relative; max-width:320px; margin-bottom:10px;">
+      <input type="text" id="compareSearch" placeholder="พิมพ์ชื่อจังหวัด หรือ อำเภอ..." style="width:100%; font-family:inherit; font-size:calc(12.5px * var(--ui-scale)); padding:8px 12px; border-radius:9px; border:1px solid var(--border); background:var(--surface-solid); color:var(--text); outline:none;">
+      <div id="compareSearchResults" class="search-results" style="width:100%;"></div>
+    </div>
+    <div id="compareChips" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;"></div>
+    <div id="compareBar" class="echart tall"></div>
+  </div>
+</div>
+
+<!-- ============ PAGE: VOLUME (ปริมาณจำหน่าย) ============ -->
+<div class="page" id="page-volume">
+  <div class="product-icon-row" id="volProductIconRow" style="background:var(--surface); backdrop-filter:blur(16px); padding:6px 4px 14px; border-bottom:1px solid var(--border); margin:0 0 14px;"></div>
+  <div style="font-size:11.5px; color:var(--text-dim); margin:-8px 0 10px;">หน่วย: ล้านลิตร</div>
+  <div class="kpi-row" id="volKpiRow"></div>
+  <div class="grid-2">
+    <div class="card">
+      <h3>แผนที่ปริมาณจำหน่ายรายจังหวัด <span class="hint" id="volMapHint"></span></h3>
+      <div class="map-legend-wrap">
+        <div class="map-col">
+          <div id="volMapChart" class="echart map-xl"></div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Top 5 / Bottom 5 จังหวัด (ปริมาณ)</h3>
+      <div id="volTopBottomChart" class="echart"></div>
+      <h3 style="margin-top:14px">สัดส่วนตามภาค</h3>
+      <div id="volRegionPie" class="echart"></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <h3>แนวโน้มปริมาณจำหน่ายรายเดือน <span class="hint">ตามผลิตภัณฑ์/ภาค/จังหวัดที่เลือก — ทุกปีในไฟล์</span></h3>
+    <div id="volTrendChart" class="echart tall"></div>
+  </div>
+  <div class="card" style="margin-bottom:20px;">
+    <h3>เปรียบเทียบจังหวัด (ปริมาณ) <span class="hint">พิมพ์ค้นหาแล้วเลือกจังหวัด เพิ่มได้หลายรายการ</span></h3>
+    <div style="position:relative; max-width:320px; margin-bottom:10px;">
+      <input type="text" id="volCompareSearch" placeholder="พิมพ์ชื่อจังหวัด..." style="width:100%; font-family:inherit; font-size:calc(12.5px * var(--ui-scale)); padding:8px 12px; border-radius:9px; border:1px solid var(--border); background:var(--surface-solid); color:var(--text); outline:none;">
+      <div id="volCompareSearchResults" class="search-results" style="width:100%;"></div>
+    </div>
+    <div id="volCompareChips" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;"></div>
+    <div id="volCompareBar" class="echart tall"></div>
+    <div id="volCompareTrend" class="echart tall" style="margin-top:14px"></div>
+  </div>
+  <div class="card">
+    <h3>จัดอันดับจังหวัดตามปริมาณ (ทั้งหมด) <span class="hint" id="volRankHint"></span></h3>
+    <button class="small-btn" id="volExportExcel" style="margin-bottom:10px;">Export Excel</button>
+    <div class="table-wrap"><table class="data-table" id="volRankTable"></table></div>
+  </div>
+</div>
+
+<!-- ============ PAGE: SHARE (สัดส่วนตลาด) ============ -->
+<div class="page" id="page-share">
+  <div class="grid-half">
+    <div class="card">
+      <h3>สัดส่วนตลาดตามผลิตภัณฑ์ <span class="hint" id="shareHint"></span></h3>
+      <div id="shareProductPie" class="echart tall"></div>
+    </div>
+    <div class="card">
+      <h3>สัดส่วนตามภาค</h3>
+      <div id="shareRegionPie" class="echart tall"></div>
+    </div>
+  </div>
+  <div class="card">
+    <h3>สัดส่วนผลิตภัณฑ์ตามภาค (Stacked)</h3>
+    <div id="shareByRegionChart" class="echart tall"></div>
+  </div>
+</div>
+
+<div id="sidebar">
+  <span class="close-btn" id="sidebarClose">✕</span>
+  <h3 id="sbTitle" style="font-size:16px; margin-bottom:12px;"></h3>
+  <div id="sbBody"></div>
+</div>
+
+<div class="footer-note">PTTOR Dashboard </div>
+
+<script src="assets/js/chart-theme.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
