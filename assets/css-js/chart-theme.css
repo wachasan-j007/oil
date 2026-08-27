@@ -1,0 +1,17 @@
+/* ============================================================
+   Chart container polish — visual chrome around ECharts canvases
+   only. Does not touch layout/grid rules already defined in
+   styles.css; purely adds a subtle hover lift to chart cards.
+
+   NOTE: intentionally does NOT set overflow:hidden or border-radius
+   on .echart/canvas — ECharts tooltips and edge labels (e.g. heatmap
+   cell labels, legend markers) render right at the container edge
+   and get visually clipped/cut off if overflow is hidden here.
+   ============================================================ */
+
+.card:has(.echart) {
+  transition: box-shadow .25s ease;
+}
+.card:has(.echart):hover {
+  box-shadow: 0 10px 32px rgba(0,0,0,0.28);
+}
