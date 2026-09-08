@@ -834,6 +834,188 @@
       color: #34d399;
     }
 
+    /* ป๊อปอัพ 2 ตัวเลือก (ปริมาณ / ราคา) ของสถานีบริการน้ำมันเชื้อเพลิง */
+    .block.has-choice {
+      cursor: pointer;
+    }
+
+    .choice-modal-overlay {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+      background: rgba(2, 6, 23, .72);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+      transition: opacity .22s ease, visibility .22s;
+      z-index: 5000;
+    }
+
+    .choice-modal-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+      pointer-events: auto;
+    }
+
+    .choice-modal {
+      position: relative;
+      width: 100%;
+      max-width: 560px;
+      border-radius: 22px;
+      border: 1px solid var(--panel-border);
+      background:
+        radial-gradient(circle at 15% -10%, rgba(52, 211, 153, .14), transparent 45%),
+        radial-gradient(circle at 90% 0%, rgba(251, 191, 36, .1), transparent 40%),
+        #101a30;
+      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .7);
+      padding: 30px 28px 26px;
+      transform: scale(.94) translateY(10px);
+      opacity: 0;
+      transition: transform .28s cubic-bezier(.22,1,.36,1), opacity .28s ease;
+    }
+
+    .choice-modal-overlay.is-open .choice-modal {
+      transform: scale(1) translateY(0);
+      opacity: 1;
+    }
+
+    .choice-modal-close {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 999px;
+      border: 1px solid var(--panel-border);
+      background: rgba(148, 163, 184, .08);
+      color: var(--text-lo);
+      cursor: pointer;
+      transition: background .18s ease, color .18s ease;
+    }
+
+    .choice-modal-close:hover,
+    .choice-modal-close:focus-visible {
+      background: rgba(148, 163, 184, .18);
+      color: var(--text-hi);
+    }
+
+    .choice-modal-close svg {
+      width: 16px;
+      height: 16px;
+    }
+
+    .choice-modal-eyebrow {
+      font-size: 12.5px;
+      color: var(--text-lo);
+      letter-spacing: .3px;
+    }
+
+    .choice-modal-title {
+      font-size: clamp(19px, 2.6vw, 23px);
+      font-weight: 600;
+      margin-top: 6px;
+      padding-right: 30px;
+      line-height: 1.35;
+    }
+
+    .choice-modal-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-top: 22px;
+    }
+
+    @media (max-width: 520px) {
+      .choice-modal-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .choice-card {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 20px 18px;
+      border-radius: 16px;
+      border: 1px solid var(--panel-border);
+      background: rgba(148, 163, 184, .05);
+      text-align: left;
+      transition: transform .22s cubic-bezier(.22,1,.36,1), border-color .22s ease, background .22s ease, box-shadow .22s ease;
+    }
+
+    .choice-card:hover,
+    .choice-card:focus-visible {
+      transform: translateY(-3px);
+    }
+
+    .choice-card--volume:hover,
+    .choice-card--volume:focus-visible {
+      border-color: rgba(52, 211, 153, .55);
+      background: rgba(52, 211, 153, .1);
+      box-shadow: 0 16px 32px -14px rgba(52, 211, 153, .5);
+    }
+
+    .choice-card--price:hover,
+    .choice-card--price:focus-visible {
+      border-color: rgba(251, 191, 36, .55);
+      background: rgba(251, 191, 36, .1);
+      box-shadow: 0 16px 32px -14px rgba(251, 191, 36, .5);
+    }
+
+    .choice-card-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .choice-card-icon svg {
+      width: 55%;
+      height: 55%;
+    }
+
+    .choice-card--volume .choice-card-icon {
+      background: rgba(52, 211, 153, .16);
+      border: 1px solid rgba(52, 211, 153, .4);
+      color: #34d399;
+    }
+
+    .choice-card--price .choice-card-icon {
+      background: rgba(251, 191, 36, .16);
+      border: 1px solid rgba(251, 191, 36, .4);
+      color: #fbbf24;
+    }
+
+    .choice-card-title {
+      font-size: 17px;
+      font-weight: 600;
+    }
+
+    .choice-card-sub {
+      font-size: 13px;
+      color: var(--text-lo);
+      line-height: 1.5;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .choice-modal-overlay,
+      .choice-modal,
+      .choice-card {
+        transition: none !important;
+      }
+    }
+
     .block-e4 {
       padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
       border: 1px solid var(--panel-border);
@@ -1258,15 +1440,15 @@
           <div class="group-divider"></div>
           <div class="group-label group-label--local">ใช้ในประเทศ</div>
 
-          <a class="block link-node block-e3" data-id="E3" data-enabled="true" href="Companies.html">
+          <div class="block link-node block-e3 has-choice" data-id="E3" data-enabled="true" tabindex="0" role="button" aria-haspopup="true" aria-expanded="false">
             <div class="block-top">
               <div style="flex-grow:1">
                 <div class="block-name">สถานีบริการน้ำมันเชื้อเพลิง</div>
-                <div class="click-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>คลิกดูรายละเอียด</div>
+                <div class="click-badge"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><path d="M15 3h6v6"/><path d="M10 14 21 3"/></svg>คลิกเลือกดูข้อมูล</div>
               </div>
               <div class="block-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22V6a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v16M3 22h10M14 9h2l3 3v6a1.5 1.5 0 0 1-3 0v-3h-2"/><path d="M3 12h8"/></svg></div>
             </div>
-          </a>
+          </div>
 
           <a class="block link-node block-e4" data-id="E4" href="E4.html">
             <div class="block-top">
@@ -1424,6 +1606,119 @@
         if (el.dataset.enabled !== "true") e.preventDefault();
       });
     });
+
+    // ===== ป๊อปอัพโมดัลใหญ่ 2 ตัวเลือก (ปริมาณ / ราคา) สำหรับสถานีบริการน้ำมันเชื้อเพลิง =====
+    // Append เข้า <body> โดยตรง (ไม่ใช่ลูกของ .block) เพราะ .block ตั้ง overflow:hidden ไว้
+    (function () {
+      const CHOICE_OPTIONS = {
+        E3: {
+          eyebrow: "สถานีบริการน้ำมันเชื้อเพลิง",
+          title: "เลือกมุมมองข้อมูลที่ต้องการดู",
+          options: [
+            {
+              href: "Volume.html",
+              key: "volume",
+              title: "ปริมาณ",
+              sub: "ภาพรวมปริมาณจำหน่ายทั่วประเทศ แยกจังหวัด/สาขา",
+              icon: '<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>'
+            },
+            {
+              href: "Companies.html",
+              key: "price",
+              title: "ราคา",
+              sub: "ข้อมูลราคาน้ำมันแยกรายบริษัท",
+              icon: '<path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'
+            }
+          ]
+        }
+      };
+
+      const choiceBlocks = Array.from(document.querySelectorAll(".block.has-choice"));
+      if (!choiceBlocks.length) return;
+
+      let overlayEl = null;
+      let lastFocusedEl = null;
+
+      function buildOverlay() {
+        if (overlayEl) return overlayEl;
+        overlayEl = document.createElement("div");
+        overlayEl.className = "choice-modal-overlay";
+        overlayEl.innerHTML = `
+          <div class="choice-modal" role="dialog" aria-modal="true">
+            <button type="button" class="choice-modal-close" aria-label="ปิด">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+            <div class="choice-modal-eyebrow"></div>
+            <div class="choice-modal-title"></div>
+            <div class="choice-modal-grid"></div>
+          </div>
+        `;
+        document.body.appendChild(overlayEl);
+
+        overlayEl.querySelector(".choice-modal-close").addEventListener("click", closeModal);
+        overlayEl.addEventListener("click", (e) => {
+          if (e.target === overlayEl) closeModal();
+        });
+
+        return overlayEl;
+      }
+
+      function fillOverlay(id) {
+        const data = CHOICE_OPTIONS[id];
+        if (!data) return null;
+        const overlay = buildOverlay();
+        overlay.querySelector(".choice-modal-eyebrow").textContent = data.eyebrow;
+        overlay.querySelector(".choice-modal-title").textContent = data.title;
+        overlay.querySelector(".choice-modal-grid").innerHTML = data.options.map(opt => `
+          <a class="choice-card choice-card--${opt.key}" href="${opt.href}">
+            <span class="choice-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${opt.icon}</svg></span>
+            <span class="choice-card-title">${opt.title}</span>
+            <span class="choice-card-sub">${opt.sub}</span>
+          </a>
+        `).join("");
+        return overlay;
+      }
+
+      function openModal(block) {
+        const overlay = fillOverlay(block.dataset.id);
+        if (!overlay) return;
+        lastFocusedEl = document.activeElement;
+        overlay.classList.add("is-open");
+        block.setAttribute("aria-expanded", "true");
+        document.body.style.overflow = "hidden";
+        const closeBtn = overlay.querySelector(".choice-modal-close");
+        if (closeBtn) closeBtn.focus();
+      }
+
+      function closeModal() {
+        if (!overlayEl) return;
+        overlayEl.classList.remove("is-open");
+        choiceBlocks.forEach(b => b.setAttribute("aria-expanded", "false"));
+        document.body.style.overflow = "";
+        if (lastFocusedEl && typeof lastFocusedEl.focus === "function") lastFocusedEl.focus();
+      }
+
+      choiceBlocks.forEach(block => {
+        block.addEventListener("click", (e) => {
+          e.preventDefault();
+          e.stopPropagation();
+          openModal(block);
+        });
+
+        block.addEventListener("keydown", (e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault();
+            openModal(block);
+          }
+        });
+      });
+
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && overlayEl && overlayEl.classList.contains("is-open")) {
+          closeModal();
+        }
+      });
+    })();
 
     window.addEventListener("load", drawConnections);
     setTimeout(drawConnections, 150);
