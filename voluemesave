@@ -1,0 +1,2108 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f4f7fb">
+<title>แดชบอร์ดวิเคราะห์ปริมาณการจำหน่ายผลิตภัณฑ์ปิโตรเลียม</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+
+<style>
+/* ============================================================
+   DOEB LIGHT EXECUTIVE ANALYTICS
+   - Light / soft enterprise theme
+   - Header + filter dock stay visible while scrolling
+   - All CSS intentionally lives in this HTML file
+   ============================================================ */
+:root{
+  --bg:#e9eff4;
+  --bg-soft:#e2eaf0;
+  --panel:rgba(247,250,252,.96);
+  --panel-solid:#f8fbfd;
+  --panel-soft:#edf3f7;
+  --line:#cbd9e3;
+  --line-strong:#aec4d2;
+  --text:#0b2233;
+  --text-2:#263f51;
+  --muted:#4f6677;
+  --muted-2:#6f8494;
+  --font-scale:1;
+  --navy:#163b5a;
+  --blue:#2385b8;
+  --cyan:#21a7c7;
+  --green:#16a47a;
+  --amber:#d99222;
+  --red:#d95167;
+  --purple:#7c6ab2;
+  --shadow:0 12px 34px rgba(29,58,82,.075);
+  --shadow-hover:0 18px 44px rgba(29,58,82,.12);
+  --radius:18px;
+  --header-h:70px;
+  --control-h:148px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth;background:var(--bg)}
+html{font-size:calc(16px * var(--font-scale))}
+body{
+  margin:0;min-height:100vh;overflow-x:hidden;
+  color:var(--text);
+  background:
+    radial-gradient(circle at 4% -5%,rgba(21,126,164,.13),transparent 27%),
+    radial-gradient(circle at 97% 2%,rgba(18,148,113,.10),transparent 25%),
+    linear-gradient(180deg,#edf3f7 0%,#e7eef3 50%,#eaf0f4 100%);
+  font-family:'Inter','Kanit',system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;opacity:.4;
+  background-image:linear-gradient(rgba(96,125,149,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(96,125,149,.035) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask-image:linear-gradient(to bottom,black,transparent 68%);
+}
+button,input,select{font:inherit}
+button{color:inherit}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid rgba(33,167,199,.35);outline-offset:2px}
+.hidden{display:none!important}
+
+/* Header stays visible */
+.app-header{
+  position:sticky;top:0;z-index:80;height:var(--header-h);
+  background:rgba(239,245,249,.94);
+  border-bottom:1px solid rgba(174,196,210,.95);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.header-inner{
+  max-width:1640px;height:100%;margin:auto;padding:0 24px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px
+}
+.brand{display:flex;align-items:center;gap:13px;min-width:0}
+.brand-logo{
+  width:43px;height:43px;border-radius:14px;display:grid;place-items:center;flex:0 0 auto;
+  color:#fff;background:linear-gradient(145deg,#1c6c95,#26a2b7);
+  box-shadow:0 8px 20px rgba(35,133,184,.18),inset 0 1px rgba(255,255,255,.25)
+}
+.brand-logo svg{width:25px;height:25px}
+.brand-copy{min-width:0}
+.brand-copy h1{
+  font-family:'Kanit',sans-serif;font-size:19px;line-height:1.15;font-weight:600;
+  margin:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  color:#123a55;
+  text-shadow:0 2px 9px rgba(35,133,184,.13),0 1px 0 rgba(255,255,255,.9)
+}
+.brand-copy p{margin:3px 0 0;color:var(--muted);font-size:9.5px;letter-spacing:.7px}
+.header-status{display:flex;align-items:center;gap:8px;flex:0 0 auto}
+.pill{
+  height:34px;padding:0 11px;border-radius:999px;display:flex;align-items:center;gap:7px;
+  color:var(--text-2);background:rgba(255,255,255,.78);border:1px solid var(--line);
+  font-size:10px;box-shadow:0 4px 12px rgba(40,72,97,.04)
+}
+.status-dot{width:7px;height:7px;border-radius:50%;background:#28b487;box-shadow:0 0 0 4px rgba(40,180,135,.10)}
+.pill strong{color:var(--navy);font-weight:600}
+
+.shell{max-width:1640px;margin:0 auto;padding:14px 24px 38px}
+
+/* ============================================================
+   STICKY FILTER DOCK
+   This is the UX fix: user can change filter from anywhere
+   without scrolling back to the top.
+   ============================================================ */
+.control-center{
+  position:sticky;
+  top:calc(var(--header-h) + 10px);
+  z-index:65;
+  margin-bottom:14px;
+  padding:12px 13px;
+  background:rgba(242,247,250,.96);
+  border:1px solid rgba(174,196,210,.96);
+  border-radius:17px;
+  box-shadow:0 12px 30px rgba(34,65,90,.09);
+  backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);
+}
+.control-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.tab-switch{
+  display:flex;gap:4px;padding:4px;border-radius:12px;
+  background:#edf3f7;border:1px solid #e2eaf0
+}
+.tab-btn{
+  height:34px;padding:0 14px;border:0;border-radius:9px;background:transparent;color:#6e8395;
+  display:flex;align-items:center;gap:7px;cursor:pointer;font-family:'Kanit',sans-serif;font-size:11px;
+  transition:.18s ease
+}
+.tab-btn svg{width:14px;height:14px}
+.tab-btn.active{
+  color:#14547a;background:#fff;
+  box-shadow:0 4px 12px rgba(34,65,90,.08),inset 0 0 0 1px rgba(35,133,184,.13)
+}
+.dataset-line{display:flex;align-items:center;gap:7px;color:var(--muted);font-size:9.5px;min-width:0}
+.dataset-line .pulse{width:6px;height:6px;border-radius:50%;background:var(--cyan);box-shadow:0 0 0 4px rgba(33,167,199,.08)}
+.dataset-line span:last-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.filter-grid{
+  display:grid;
+  grid-template-columns:145px 160px minmax(250px,1.25fr) minmax(220px,.9fr) auto;
+  gap:9px;align-items:end
+}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.field-label{font-family:'Kanit',sans-serif;font-size:9.5px;color:var(--muted);padding-left:2px}
+.select-wrap{position:relative}
+.select-wrap:after{
+  content:"⌄";position:absolute;right:11px;top:50%;transform:translateY(-55%);
+  pointer-events:none;color:#8094a5;font-size:12px
+}
+select,input[type="search"]{
+  width:100%;height:39px;border-radius:10px;border:1px solid #dbe5ec;
+  color:var(--text);background:#fbfdfe;padding:0 32px 0 10px;appearance:none;
+  font-size:10.5px;transition:.17s ease
+}
+select:hover,input[type="search"]:hover{border-color:#bed3df}
+select:focus,input[type="search"]:focus{
+  border-color:#8bc3d6;box-shadow:0 0 0 3px rgba(33,167,199,.07);outline:none
+}
+.unit-badge{
+  height:39px;min-width:205px;padding:0 12px;border-radius:10px;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  color:#166078;background:linear-gradient(135deg,#e9f7f9,#eef9f5);
+  border:1px solid #cde9e6;font-family:'Kanit',sans-serif;font-size:10.5px;white-space:nowrap
+}
+.unit-badge svg{width:13px;height:13px;color:#1596aa}
+.unit-badge strong{font-weight:500;color:#15556e}
+.reset-btn{
+  height:39px;padding:0 12px;border-radius:10px;border:1px solid #dce6ed;background:#f6f9fb;
+  color:#667d90;font-size:10px;cursor:pointer;white-space:nowrap
+}
+.reset-btn:hover{background:#edf4f7;color:#30566e;border-color:#c9dbe5}
+.sticky-note{
+  position:absolute;right:12px;top:-10px;padding:3px 8px;border-radius:999px;
+  background:#e6f5f7;border:1px solid #cbe8eb;color:#31748a;font-size:8.5px;
+  box-shadow:0 3px 10px rgba(33,167,199,.07)
+}
+
+/* shared cards */
+.glass{
+  background:var(--panel);
+  border:1px solid rgba(190,207,218,.98);
+  border-radius:var(--radius);
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)
+}
+.panel{transition:box-shadow .2s,border-color .2s,transform .2s}
+.panel:hover{box-shadow:var(--shadow-hover);border-color:#cbdde7}
+.card-head{
+  display:flex;align-items:flex-start;justify-content:space-between;gap:14px;
+  padding:17px 18px 0
+}
+.card-title h2{
+  font-family:'Kanit',sans-serif;font-size:17px;font-weight:600;margin:0;color:#123750;
+  letter-spacing:.1px;text-shadow:0 2px 8px rgba(33,112,151,.12),0 1px 0 #fff
+}
+.card-title p{font-size:10.5px;color:#607789;margin:5px 0 0;line-height:1.55;font-weight:500}
+.data-count{
+  height:27px;padding:0 9px;border-radius:999px;display:flex;align-items:center;gap:6px;
+  color:#32788d;background:#ecf7f8;border:1px solid #d3ebed;font-size:9px;white-space:nowrap
+}
+
+/* KPI */
+.kpi-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:14px}
+.kpi-card{
+  min-height:118px;padding:16px 16px 14px;position:relative;overflow:hidden
+}
+.kpi-card:after{
+  content:"";position:absolute;right:-42px;top:-50px;width:120px;height:120px;border-radius:50%;
+  background:radial-gradient(circle,rgba(33,167,199,.09),transparent 66%)
+}
+.kpi-head{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:13px}
+.kpi-label{font-family:'Kanit',sans-serif;font-size:11px;color:#536d80;font-weight:500}
+.kpi-icon{
+  width:29px;height:29px;border-radius:9px;display:grid;place-items:center;
+  background:#eef7fa;border:1px solid #dcecf2;color:#2785aa
+}
+.kpi-icon svg{width:14px;height:14px}
+.kpi-value{
+  font-size:29px;line-height:1.08;font-weight:800;letter-spacing:-.55px;color:#123a54;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  text-shadow:0 3px 12px rgba(30,112,151,.14),0 1px 0 #fff
+}
+.kpi-value.name{
+  font-family:'Kanit',sans-serif;font-size:18px;font-weight:600;letter-spacing:0;
+  text-shadow:0 2px 9px rgba(30,112,151,.10),0 1px 0 #fff
+}
+.kpi-sub{margin-top:6px;font-size:9.7px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.kpi-sub strong{color:#287a99;font-weight:600}
+
+/* Charts */
+.chart-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1.18fr) minmax(470px,.92fr);
+  gap:14px;margin-bottom:14px
+}
+.geo-grid{display:grid;grid-template-columns:minmax(0,1.12fr) minmax(420px,.88fr);gap:14px;margin-bottom:14px}
+.chart{width:100%}
+.company-scroll{
+  max-height:670px;overflow:auto;margin:8px 7px 10px 0;padding-right:5px;
+  scrollbar-width:thin;scrollbar-color:#b6c9d5 transparent
+}
+.company-scroll::-webkit-scrollbar,.table-wrap::-webkit-scrollbar{width:7px;height:7px}
+.company-scroll::-webkit-scrollbar-thumb,.table-wrap::-webkit-scrollbar-thumb{background:#b8cad5;border-radius:99px}
+#companyChart{min-height:380px}
+#shareChart{height:540px}
+#mapChart{height:500px}
+#areaChart{height:500px}
+.map-error{height:500px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:6px;color:var(--muted);font-size:10px}
+
+/* Table */
+.table-card{overflow:hidden;margin-bottom:0}
+.table-tools{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:13px 18px 11px}
+.search-box{position:relative;flex:1;min-width:260px;max-width:480px}
+.search-box svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:14px;height:14px;color:#8497a7}
+.search-box input{padding-left:34px;padding-right:10px;background:#fff}
+.table-summary{font-size:9.5px;color:var(--muted);margin-left:auto}
+.export-btn{
+  height:38px;padding:0 12px;border-radius:9px;border:1px solid #cfe2ea;background:#eef8fb;
+  color:#2e718b;cursor:pointer;font-size:9.8px
+}
+.export-btn:hover{background:#e3f3f7}
+.table-wrap{overflow:auto;max-height:620px;border-top:1px solid #e6edf2}
+table{width:100%;border-collapse:separate;border-spacing:0;font-size:10.3px;min-width:980px}
+thead th{
+  position:sticky;top:0;z-index:4;background:#f5f9fb;color:#698095;
+  font-family:'Kanit',sans-serif;font-weight:400;text-align:left;padding:11px 12px;
+  border-bottom:1px solid #dfe8ef;white-space:nowrap
+}
+tbody td{padding:10px 12px;border-bottom:1px solid #edf2f5;color:#3f5669;white-space:nowrap}
+tbody tr:hover td{background:#f7fbfc}
+td.num,th.num{text-align:right;font-variant-numeric:tabular-nums}
+.company-cell{display:flex;align-items:center;gap:8px;min-width:230px}
+.brand-dot{width:8px;height:8px;border-radius:2px;flex:0 0 auto}
+.share-bar{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.share-track{width:72px;height:4px;border-radius:99px;background:#e6eef3;overflow:hidden}
+.share-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,#2385b8,#21a7c7)}
+.empty-row{text-align:center!important;color:#91a1ae!important;padding:30px!important}
+.pagination{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:11px 18px 14px;border-top:1px solid #e6edf2}
+.page-info{font-size:9.5px;color:var(--muted)}
+.page-actions{display:flex;gap:6px}
+.page-btn{
+  height:31px;min-width:62px;padding:0 9px;border-radius:8px;border:1px solid #dbe5ec;
+  background:#f7fafc;color:#647b8e;font-size:9.4px;cursor:pointer
+}
+.page-btn:disabled{opacity:.4;cursor:not-allowed}
+.page-btn:not(:disabled):hover{background:#edf5f8;color:#315c73}
+
+.footer{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:18px 2px 0;color:#93a3af;font-size:8.8px
+}
+
+/* Loading */
+.overlay{
+  position:fixed;inset:0;z-index:120;background:rgba(247,250,252,.97);
+  display:flex;align-items:center;justify-content:center;padding:22px
+}
+.loader-box{width:min(480px,100%);text-align:center}
+.loader-ring{
+  width:42px;height:42px;border-radius:50%;margin:0 auto 14px;
+  border:3px solid #dfe9ef;border-top-color:#21a7c7;animation:spin .8s linear infinite
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-box h3{font-family:'Kanit',sans-serif;font-size:15px;font-weight:500;margin:0 0 5px;color:#21445b}
+.loader-box p{font-size:10.5px;color:var(--muted);margin:0;line-height:1.65}
+.progress{
+  width:260px;max-width:100%;height:5px;border-radius:99px;background:#e4edf2;
+  overflow:hidden;margin:14px auto 0
+}
+.progress > span{display:block;height:100%;width:8%;border-radius:99px;background:linear-gradient(90deg,#2385b8,#21a7c7);transition:width .2s}
+.error-box{
+  padding:16px;border:1px solid #efcfd5;background:#fff3f5;border-radius:13px;
+  color:#a83e53;text-align:left;display:none;margin-top:12px
+}
+.error-box strong{font-family:'Kanit',sans-serif;font-weight:500;display:block;margin-bottom:4px}
+
+
+/* ---------- Executive readability additions ---------- */
+.chart-head-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:flex-end}
+.chart-unit-badge{
+  min-height:28px;padding:5px 10px;border-radius:999px;
+  display:inline-flex;align-items:center;gap:6px;
+  background:linear-gradient(135deg,#e8f6fa,#eef9f5);
+  border:1px solid #cce7ea;color:#1d6980;
+  font-family:'Kanit',sans-serif;font-size:9.8px;font-weight:500;
+  box-shadow:0 4px 12px rgba(33,133,164,.06)
+}
+.chart-unit-badge:before{
+  content:"หน่วย";font-size:8px;color:#718796;font-weight:400
+}
+.product-scope{
+  color:#246d84;font-weight:600;cursor:help;
+  border-bottom:1px dashed rgba(36,109,132,.38)
+}
+.font-control{
+  height:34px;padding:0 10px;border-radius:999px;
+  display:flex;align-items:center;gap:7px;
+  background:rgba(255,255,255,.82);border:1px solid var(--line);
+  color:#4d687b;box-shadow:0 4px 12px rgba(40,72,97,.04)
+}
+.font-control .a-small{font-size:9px;font-weight:700}
+.font-control .a-big{font-size:15px;font-weight:700;color:#244d65}
+.font-control input[type="range"]{
+  appearance:none;width:104px;height:4px;padding:0;border:0;border-radius:999px;
+  background:linear-gradient(90deg,#88c6d7,#2686aa);cursor:pointer
+}
+.font-control input[type="range"]::-webkit-slider-thumb{
+  appearance:none;width:15px;height:15px;border-radius:50%;background:#fff;
+  border:2px solid #2a8eaf;box-shadow:0 2px 7px rgba(26,92,119,.2)
+}
+.font-control output{min-width:31px;text-align:right;font-size:8.5px;color:#6e8495}
+
+
+/* ---------- Continuous user font scaling ---------- */
+/* คุมเฉพาะ typography ไม่ขยาย card/layout แบบ browser zoom */
+.brand-copy h1{font-size:calc(19px * var(--font-scale))}
+.brand-copy p{font-size:calc(9.5px * var(--font-scale))}
+.pill{font-size:calc(10px * var(--font-scale))}
+.tab-btn{font-size:calc(11px * var(--font-scale))}
+.dataset-line{font-size:calc(9.5px * var(--font-scale))}
+.field-label{font-size:calc(9.5px * var(--font-scale))}
+select,input[type="search"]{font-size:calc(10.5px * var(--font-scale))}
+.unit-badge{font-size:calc(10.5px * var(--font-scale))}
+.reset-btn{font-size:calc(10px * var(--font-scale))}
+.sticky-note{font-size:calc(8.5px * var(--font-scale))}
+.kpi-label{font-size:calc(11px * var(--font-scale))}
+.kpi-value{font-size:calc(29px * var(--font-scale))}
+.kpi-value.name{font-size:calc(18px * var(--font-scale))}
+.kpi-sub{font-size:calc(9.7px * var(--font-scale))}
+.card-title h2{font-size:calc(17px * var(--font-scale))}
+.card-title p{font-size:calc(10.5px * var(--font-scale))}
+.data-count{font-size:calc(9px * var(--font-scale))}
+.chart-unit-badge{font-size:calc(9.8px * var(--font-scale))}
+.chart-unit-badge:before{font-size:calc(8px * var(--font-scale))}
+table{font-size:calc(10.3px * var(--font-scale))}
+.table-summary{font-size:calc(9.5px * var(--font-scale))}
+.export-btn{font-size:calc(9.8px * var(--font-scale))}
+.page-info{font-size:calc(9.5px * var(--font-scale))}
+.page-btn{font-size:calc(9.4px * var(--font-scale))}
+.footer{font-size:calc(8.8px * var(--font-scale))}
+
+
+/* ============================================================
+   V3 — Executive contrast / chart interaction
+   ============================================================ */
+.card-title h2{
+  color:#0d2c41!important;
+  text-shadow:0 2px 0 rgba(255,255,255,.95),0 4px 13px rgba(20,80,112,.16)!important
+}
+.card-title p{color:#415d70!important}
+.kpi-value{
+  color:#0b3048!important;
+  text-shadow:0 2px 0 #fff,0 5px 15px rgba(14,76,107,.17)!important
+}
+.kpi-label{color:#405d71!important}
+.kpi-sub{color:#536c7e!important}
+.field-label{color:#405d70!important;font-weight:600}
+select,input[type="search"]{
+  color:#102f44!important;background:#f7fafc!important;
+  border-color:#bcd0dc!important;font-weight:500
+}
+select option{color:#101820;background:#fff}
+.unit-badge{
+  color:#0d536c!important;background:#dff1f3!important;border-color:#acd7dc!important;
+  box-shadow:0 4px 12px rgba(23,110,139,.10)
+}
+.tab-switch{background:#dfe8ee!important;border-color:#c6d6e0!important}
+.tab-btn{color:#3e586b!important;font-weight:500}
+.tab-btn.active{
+  color:#0d4f70!important;background:#f7fbfd!important;
+  box-shadow:0 4px 14px rgba(25,76,106,.12),inset 0 0 0 1px rgba(26,128,164,.20)!important
+}
+.panel{
+  box-shadow:0 10px 30px rgba(30,62,84,.10)!important
+}
+.panel:hover{
+  box-shadow:0 17px 40px rgba(30,62,84,.15)!important;
+  border-color:#9dbcca!important
+}
+
+/* ให้กราฟมีพื้นหลังแยกจากเว็บ ไม่จมหายกับสีขาว */
+.company-scroll,
+#shareChart,#compareChart,#mapChart,#areaChart{
+  background:#e8f0f5;
+  border:1px solid #c9d9e3;
+  border-radius:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 3px 10px rgba(39,74,97,.045)
+}
+#shareChart,#compareChart,#mapChart,#areaChart{
+  width:calc(100% - 20px);
+  margin:10px
+}
+.company-scroll{margin:10px;padding:4px 5px 4px 0}
+
+.chart-tools{
+  display:flex;align-items:center;gap:5px;flex-wrap:wrap;justify-content:flex-end
+}
+.tool-group{
+  display:inline-flex;gap:3px;padding:3px;border-radius:10px;
+  background:#dfe8ee;border:1px solid #c7d7e1
+}
+.chart-tool{
+  min-height:28px;padding:5px 9px;border-radius:7px;border:0;
+  background:transparent;color:#486277;cursor:pointer;
+  font-size:calc(9px * var(--font-scale));font-weight:600;
+  transition:.16s ease;white-space:nowrap
+}
+.chart-tool:hover{background:#edf5f8;color:#164f70}
+.chart-tool.active{
+  background:#f9fcfd;color:#0d5677;
+  box-shadow:0 2px 8px rgba(30,82,111,.12),inset 0 0 0 1px rgba(34,129,167,.16)
+}
+.icon-tool{
+  width:30px;padding:0;display:grid;place-items:center;
+  background:#e4edf2;border:1px solid #c7d7e1;color:#244f69
+}
+.icon-tool:hover{background:#d6e6ed;color:#0f5273}
+.icon-tool svg{width:14px;height:14px}
+
+.analytics-card .card-head{padding-bottom:2px}
+.analytics-view-switch{display:flex;gap:4px}
+.compare-controls{
+  display:flex;align-items:center;gap:7px;flex-wrap:wrap;
+  padding:8px 16px 2px
+}
+.year-picker{position:relative}
+.year-picker-btn{
+  min-height:31px;padding:5px 10px;border-radius:9px;border:1px solid #bdd0dc;
+  background:#f5f9fb;color:#284d64;cursor:pointer;font-size:calc(9.5px * var(--font-scale));font-weight:600
+}
+.year-menu{
+  position:absolute;right:0;top:calc(100% + 7px);z-index:90;width:250px;max-height:330px;overflow:auto;
+  padding:9px;background:#f8fbfd;border:1px solid #b9ceda;border-radius:12px;
+  box-shadow:0 18px 42px rgba(24,59,81,.20)
+}
+.year-menu-head{display:flex;gap:5px;margin-bottom:7px}
+.year-menu-head button{
+  flex:1;height:28px;border-radius:7px;border:1px solid #cbdbe4;background:#eaf2f6;
+  color:#315a70;font-size:9px;cursor:pointer
+}
+.year-check{
+  display:flex;align-items:center;gap:8px;padding:6px 7px;border-radius:7px;
+  color:#263f50;font-size:10px;cursor:pointer
+}
+.year-check:hover{background:#e9f2f6}
+.year-check input{accent-color:#157fa7}
+.compare-context{
+  color:#536c7e;font-size:calc(9.2px * var(--font-scale));font-weight:500
+}
+#compareChart{height:470px}
+#shareChart{height:500px}
+
+/* แผนที่ต้องเด่นกว่าส่วนอื่น */
+#mapChart{background:#dce8ef}
+.map-card-strong{border-color:#9fbfce!important;box-shadow:0 14px 38px rgba(14,75,105,.15)!important}
+
+/* ลดความจางของข้อความ ECharts รอบนอกด้วย */
+.data-count{
+  color:#1c627c!important;background:#dceff2!important;border-color:#b6dbe0!important;font-weight:700
+}
+.chart-unit-badge{
+  color:#124d67!important;background:#d9edf1!important;border-color:#abd5dd!important;font-weight:600
+}
+
+
+/* Market Share legend below chart */
+.legend-list{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(210px,1fr));
+  gap:8px;
+  padding:0 16px 16px;
+}
+.legend-item{
+  display:flex;align-items:flex-start;gap:9px;
+  padding:9px 10px;border-radius:10px;
+  background:#f3f8fb;border:1px solid #c8d8e2;
+  box-shadow:0 2px 8px rgba(27,63,86,.05)
+}
+.legend-swatch{
+  width:11px;height:11px;border-radius:3px;flex:0 0 auto;margin-top:3px
+}
+.legend-copy{min-width:0;display:flex;flex-direction:column;gap:2px}
+.legend-name{
+  color:#102f44;font-weight:700;font-size:calc(10px * var(--font-scale));
+  line-height:1.35;word-break:break-word
+}
+.legend-meta{
+  color:#597183;font-size:calc(9px * var(--font-scale));font-weight:500;
+  line-height:1.35
+}
+
+
+/* ============================================================
+   V5 — Better chart proportions + large modal view
+   ============================================================ */
+.analytics-card .card-head{
+  flex-direction:column;
+  align-items:stretch;
+  gap:10px;
+}
+.analytics-card .chart-tools{
+  width:100%;
+  justify-content:flex-start;
+}
+.analytics-card .chart-tools .chart-unit-badge{
+  margin-left:auto;
+}
+.analytics-card .card-title p{
+  max-width:720px;
+}
+.compare-controls{
+  padding-top:4px!important;
+  padding-bottom:7px!important;
+}
+#shareChart,#compareChart{
+  height:430px;
+}
+
+/* Generic large-view modal: intentionally NOT browser fullscreen */
+.chart-modal-backdrop{
+  position:fixed;inset:0;z-index:990;
+  background:rgba(23,38,49,.46);
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}
+.panel.chart-modal{
+  position:fixed!important;
+  z-index:1000!important;
+  left:50%!important;
+  top:50%!important;
+  transform:translate(-50%,-50%)!important;
+  width:min(92vw,1450px)!important;
+  height:min(86vh,860px)!important;
+  max-width:none!important;
+  margin:0!important;
+  overflow:auto!important;
+  border-radius:22px!important;
+  background:#edf4f7!important;
+  border:1px solid #a9c2d0!important;
+  box-shadow:0 30px 90px rgba(13,43,62,.34)!important;
+}
+.panel.chart-modal .card-head{
+  position:sticky;
+  top:0;
+  z-index:15;
+  background:rgba(237,244,247,.96);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid #c5d5df;
+  padding-bottom:11px;
+}
+.panel.chart-modal .fullscreen-btn{
+  background:#d7e6ed;
+  color:#123f58;
+}
+.panel.chart-modal #shareChart,
+.panel.chart-modal #compareChart,
+.panel.chart-modal #mapChart,
+.panel.chart-modal #areaChart{
+  height:calc(min(86vh,860px) - 155px)!important;
+}
+.panel.chart-modal .company-scroll{
+  max-height:calc(min(86vh,860px) - 145px)!important;
+}
+body.chart-modal-active{
+  overflow:hidden!important;
+}
+
+/* Keep controls compact on medium-width screens */
+@media(max-width:1320px){
+  .chart-grid{
+    grid-template-columns:minmax(0,1.08fr) minmax(440px,.92fr);
+  }
+}
+@media(max-width:1100px){
+  .chart-grid{grid-template-columns:1fr}
+  .analytics-card .chart-tools .chart-unit-badge{margin-left:0}
+}
+
+@media(max-width:1180px){
+  .filter-grid{grid-template-columns:130px 150px 1fr auto}.field.secondary-field{grid-column:1/4}.unit-badge{grid-column:4}
+  .kpi-grid{grid-template-columns:repeat(2,1fr)}
+  .chart-grid,.geo-grid{grid-template-columns:1fr}
+  #shareChart{height:440px}
+}
+@media(max-width:780px){
+  :root{--header-h:64px}
+  .header-inner{padding:0 13px}.latest-pill{display:none}.brand-copy p{display:none}
+  .shell{padding:10px 11px 28px}
+  .control-center{top:calc(var(--header-h) + 6px);padding:10px}
+  .control-top{align-items:flex-start;flex-direction:column}
+  .tab-switch{width:100%}.tab-btn{flex:1;justify-content:center}
+  .dataset-line{display:none}
+  .filter-grid{grid-template-columns:1fr 1fr}
+  .filter-grid .product-field,.filter-grid .secondary-field{grid-column:1/-1}
+  .unit-badge{grid-column:1/-1;width:100%}
+  .reset-btn{grid-column:1/-1}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .kpi-value{font-size:20px}
+  #mapChart,#areaChart{height:420px}
+}
+@media(max-width:520px){
+  .kpi-grid{grid-template-columns:1fr}
+  .brand-copy h1{font-size:14px}
+  .status-pill{display:none}
+  .filter-grid{grid-template-columns:1fr}
+  .filter-grid .product-field,.filter-grid .secondary-field,.unit-badge,.reset-btn{grid-column:auto}
+  .card-head{flex-direction:column}.data-count{align-self:flex-start}
+}
+
+/* Responsive charts: keep the entire plot visible without nested scrolling. */
+.chart-grid,.geo-grid{align-items:start;grid-template-columns:repeat(2,minmax(0,1fr))}
+.chart-grid>.panel,.geo-grid>.panel{min-width:0}
+.company-scroll{max-height:none;overflow:visible;margin:8px 0 10px;padding:0}
+.chart{min-width:0}
+.card-head{flex-wrap:wrap;gap:10px}
+.card-title{min-width:0}
+.legend-list{grid-template-columns:repeat(auto-fit,minmax(min(190px,100%),1fr));gap:6px}
+.legend-item{padding:6px 8px}
+.panel.chart-modal{width:min(96vw,1600px)!important;height:92vh!important;height:92dvh!important;overflow:visible!important;display:flex;flex-direction:column}
+.panel.chart-modal .card-head{position:relative;flex:none;border-radius:22px 22px 0 0}
+.panel.chart-modal .compare-controls{flex:none}
+.panel.chart-modal .company-scroll{position:relative;flex:1 1 0;min-height:0;max-height:none!important;margin:0 0 10px}
+.panel.chart-modal #companyChart{position:absolute!important;inset:0;width:auto!important;height:auto!important;min-height:0}
+.panel.chart-modal #shareChart,.panel.chart-modal #compareChart,
+.panel.chart-modal #mapChart,.panel.chart-modal #areaChart{height:auto!important;min-height:0;flex:1}
+.panel.chart-modal .legend-list{flex:none;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));padding:4px 14px 12px}
+.panel.chart-modal .map-error{height:auto;min-height:0;flex:1}
+@media(max-width:1180px){.chart-grid,.geo-grid{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:600px){
+  .panel.chart-modal{width:98vw!important;height:96vh!important;height:96dvh!important}
+  .card-head{padding:12px}
+  .chart-head-actions,.chart-tools{gap:5px}
+  .panel.chart-modal .legend-list{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+
+
+/* Keep font sizing within reach while a chart is expanded. */
+.chart-font-toolbar{
+  flex:none;display:flex;align-items:center;justify-content:flex-start;gap:10px;
+  min-height:48px;padding:7px 12px;border-top:1px solid #c5d5df;
+  border-radius:0 0 22px 22px;background:#edf4f7;
+}
+.chart-font-toolbar>label{font-size:11px;font-weight:600;color:#284d64;white-space:nowrap}
+.chart-font-toolbar .font-control{flex:none;height:32px}
+.chart-font-toolbar input[type="range"]{touch-action:pan-y}
+@media(max-width:420px){
+  .chart-font-toolbar{gap:7px;padding:7px 9px}
+  .chart-font-toolbar .font-control{gap:6px;padding:0 8px}
+  .chart-font-toolbar input[type="range"]{width:90px}
+}
+
+
+/* Company names remain accessible even when a donut slice is very small. */
+button.legend-item{width:100%;text-align:left;font:inherit;cursor:pointer}
+button.legend-item:hover,button.legend-item:focus-visible{background:#e3f1f7;border-color:#2587aa}
+
+</style>
+</head>
+
+<body>
+<div class="overlay" id="loadingOverlay">
+  <div class="loader-box">
+    <div class="loader-ring" id="loaderRing"></div>
+    <h3 id="loadingTitle">กำลังเตรียม Dashboard</h3>
+    <p id="loadingMessage">กำลังอ่านข้อมูลจากไฟล์ CSV.GZ โดยตรง...</p>
+    <div class="progress" id="progressWrap"><span id="progressBar"></span></div>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+</div>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M7 4h7a3 3 0 0 1 3 3v13H7z"/><path d="M9 7h6v4H9z"/>
+          <path d="M17 9h2l2 3v5a2 2 0 0 1-2 2h-2"/><path d="M10 20v-3h4v3"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <h1>แดชบอร์ดวิเคราะห์ปริมาณการจำหน่ายผลิตภัณฑ์ปิโตรเลียม</h1>
+        <p></p>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="font-control" title="เลื่อนเพื่อปรับขนาดตัวอักษรและตัวหนังสือในกราฟ">
+        <span class="a-small">A</span>
+        <input id="fontScaleRange" type="range" min="80" max="145" step="1" value="100" aria-label="ขนาดตัวอักษร">
+        <span class="a-big">A</span>
+        <output id="fontScaleValue">100%</output>
+      </div>
+      <div class="pill status-pill"><span class="status-dot"></span><strong>DATA READY</strong></div>
+      <div class="pill latest-pill">ล่าสุด <strong id="latestPeriod">—</strong></div>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+  <section class="control-center" id="controlCenter">
+    <span class="sticky-note">ตัวกรองติดหน้าจอ · เปลี่ยนได้ทุกตำแหน่ง</span>
+    <div class="control-top">
+      <div class="tab-switch">
+        <button class="tab-btn active" data-mode="province" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.3"/></svg>
+          ยอดจำหน่ายรายจังหวัด
+        </button>
+        <button class="tab-btn" data-mode="business" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V7l8-4 8 4v14"/><path d="M8 21v-6h8v6"/><path d="M8 9h1M12 9h1M16 9h1"/></svg>
+          ยอดจำหน่ายรายสาขาธุรกิจ
+        </button>
+      </div>
+      <div class="dataset-line"><span class="pulse"></span><span id="datasetState">กำลังโหลดข้อมูล...</span></div>
+    </div>
+
+    <div class="filter-grid">
+      <label class="field">
+        <span class="field-label">ปี พ.ศ.</span>
+        <span class="select-wrap"><select id="yearFilter"></select></span>
+      </label>
+
+      <label class="field">
+        <span class="field-label">เดือน</span>
+        <span class="select-wrap"><select id="monthFilter"></select></span>
+      </label>
+
+      <label class="field product-field">
+        <span class="field-label">ผลิตภัณฑ์ <span id="productScopeSummary" class="product-scope"></span></span>
+        <span class="select-wrap"><select id="productFilter"></select></span>
+      </label>
+
+      <label class="field secondary-field">
+        <span class="field-label" id="secondaryLabel">เจาะจงจังหวัด</span>
+        <span class="select-wrap"><select id="secondaryFilter"></select></span>
+      </label>
+
+      <div class="unit-badge" title="หน่วยสลับอัตโนมัติตามผลิตภัณฑ์">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M7 7h10M7 17h10"/></svg>
+        หน่วยปัจจุบัน <strong id="unitBadge">พันลิตร</strong>
+      </div>
+
+      <button class="reset-btn" id="resetFilters" type="button">ล้างตัวกรอง</button>
+    </div>
+  </section>
+
+  <section class="kpi-grid">
+    <article class="glass panel kpi-card">
+      <div class="kpi-head"><span class="kpi-label">ปริมาณจำหน่ายรวม</span><span class="kpi-icon">Σ</span></div>
+      <div class="kpi-value" id="kpiTotal">—</div>
+      <div class="kpi-sub" id="kpiTotalSub">—</div>
+    </article>
+    <article class="glass panel kpi-card">
+      <div class="kpi-head"><span class="kpi-label">บริษัท / ค่ายที่มียอดสูงสุด</span><span class="kpi-icon">1</span></div>
+      <div class="kpi-value name" id="kpiCompany">—</div>
+      <div class="kpi-sub" id="kpiCompanySub">—</div>
+    </article>
+    <article class="glass panel kpi-card">
+      <div class="kpi-head"><span class="kpi-label" id="kpiAreaLabel">จังหวัดที่มียอดสูงสุด</span><span class="kpi-icon">⌖</span></div>
+      <div class="kpi-value name" id="kpiArea">—</div>
+      <div class="kpi-sub" id="kpiAreaSub">—</div>
+    </article>
+    <article class="glass panel kpi-card">
+      <div class="kpi-head"><span class="kpi-label">จำนวนบริษัทที่มีการจำหน่าย</span><span class="kpi-icon">#</span></div>
+      <div class="kpi-value" id="kpiCompanyCount">—</div>
+      <div class="kpi-sub">แสดงครบทุกบริษัทที่พบในเงื่อนไข</div>
+    </article>
+  </section>
+
+  <section class="chart-grid">
+    <article class="glass panel" id="companyCard">
+      <div class="card-head">
+        <div class="card-title">
+          <h2>ยอดจำหน่ายแยกตามบริษัท</h2>
+          <p>Horizontal Bar · แสดงทุกบริษัท 100% ไม่มีการตัด Top N</p>
+        </div>
+        <div class="chart-head-actions">
+          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+          <div class="data-count" id="companyCountBadge">0 บริษัท</div>
+          <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="companyCard" title="ขยายกราฟ" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="company-scroll" id="companyScroll">
+        <div id="companyChart" class="chart"></div>
+      </div>
+    </article>
+
+    <article class="glass panel analytics-card" id="analyticsCard">
+      <div class="card-head">
+        <div class="card-title">
+          <h2 id="analyticsTitle">Market Share</h2>
+          <p id="analyticsSubtitle">สัดส่วนบริษัทตามเงื่อนไขปัจจุบัน</p>
+        </div>
+        <div class="chart-tools">
+          <div class="tool-group analytics-view-switch">
+            <button class="chart-tool active" data-analytics-view="share" type="button">Market Share</button>
+            <button class="chart-tool" data-analytics-view="compare" type="button">เปรียบเทียบปี</button>
+          </div>
+          <div class="tool-group" id="shareTypeTools">
+            <button class="chart-tool active" data-share-type="donut" type="button">Donut</button>
+            <button class="chart-tool" data-share-type="bar" type="button">Bar</button>
+          </div>
+          <div class="tool-group hidden" id="compareTypeTools">
+            <button class="chart-tool active" data-compare-type="line" type="button">เส้น</button>
+            <button class="chart-tool" data-compare-type="bar" type="button">แท่ง</button>
+          </div>
+          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+          <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="analyticsCard" title="ขยายกราฟ (Esc เพื่อปิด)" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="compare-controls hidden" id="compareControls">
+        <div class="tool-group">
+          <button class="chart-tool active" data-compare-mode="monthly" type="button">รายเดือน</button>
+          <button class="chart-tool" data-compare-mode="annual" type="button">รายปี</button>
+        </div>
+        <div class="year-picker">
+          <button class="year-picker-btn" id="compareYearBtn" type="button">เลือกปี ▾</button>
+          <div class="year-menu hidden" id="compareYearMenu"></div>
+        </div>
+        <span class="compare-context" id="compareContext">—</span>
+      </div>
+
+      <div id="shareChart" class="chart"></div>
+      <div id="shareLegendList" class="legend-list"></div>
+      <div id="compareChart" class="chart hidden"></div>
+    </article>
+  </section>
+
+  <section class="geo-grid" id="geoGrid">
+    <article class="glass panel map-card-strong" id="mapCard">
+      <div class="card-head">
+        <div class="card-title">
+          <h2>แผนที่ปริมาณจำหน่ายรายจังหวัด</h2>
+          <p>คลิกจังหวัดบนแผนที่เพื่อกรอง Dashboard ทั้งหน้า</p>
+        </div>
+        <div class="chart-head-actions">
+          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+          <div class="data-count">THAILAND</div>
+          <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="mapCard" title="ขยายกราฟ" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="mapChart" class="chart"></div>
+      <div id="mapError" class="map-error hidden">ไม่สามารถโหลด GeoJSON ได้ · กราฟอื่นยังใช้งานได้ตามปกติ</div>
+    </article>
+
+    <article class="glass panel" id="areaCard">
+      <div class="card-head">
+        <div class="card-title">
+          <h2 id="areaChartTitle">Top 10 จังหวัด</h2>
+          <p id="areaChartSubtitle">10 จังหวัดที่มีปริมาณจำหน่ายสูงสุด</p>
+        </div>
+        <div class="chart-tools">
+          <div class="tool-group">
+            <button class="chart-tool active" data-area-type="bar" type="button">แท่ง</button>
+            <button class="chart-tool" data-area-type="line" type="button">เส้น</button>
+          </div>
+          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+          <div class="data-count" id="areaCountBadge">TOP 10</div>
+          <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="areaCard" title="ขยายกราฟ" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="areaChart" class="chart"></div>
+    </article>
+  </section>
+
+  <section class="glass panel table-card">
+    <div class="card-head">
+      <div class="card-title">
+        <h2>Interactive Data Table</h2>
+        <p>ค้นหาบริษัท พื้นที่ หรือผลิตภัณฑ์ได้ทันที · Market Share คำนวณตามตัวกรองปัจจุบัน</p>
+      </div>
+      <div class="data-count" id="tableCountBadge">0 RECORDS</div>
+    </div>
+
+    <div class="table-tools">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input type="search" id="tableSearch" placeholder="ค้นหาบริษัท / จังหวัด / สาขาธุรกิจ / ผลิตภัณฑ์...">
+      </div>
+      <div class="table-summary" id="tableSummary">—</div>
+      <button class="export-btn" id="exportCsv" type="button">Export CSV</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ปี พ.ศ.</th>
+            <th>เดือน</th>
+            <th>ผลิตภัณฑ์</th>
+            <th id="tableAreaHead">จังหวัด</th>
+            <th>บริษัท</th>
+            <th class="num" id="tableVolumeHead">ปริมาณ (พันลิตร)</th>
+            <th class="num">Market Share</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <div class="page-info" id="pageInfo">—</div>
+      <div class="page-actions">
+        <button class="page-btn" id="prevPage" type="button">ก่อนหน้า</button>
+        <button class="page-btn" id="nextPage" type="button">ถัดไป</button>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    <span>แดชบอร์ดวิเคราะห์ปริมาณการจำหน่ายผลิตภัณฑ์ปิโตรเลียม</span>
+    <span>Data source: <strong>index.json + province.csv.gz + business.csv.gz</strong> โดยตรง</span>
+  </footer>
+</main>
+
+<script>
+(() => {
+'use strict';
+
+/* ============================================================
+   DATA SOURCE
+   ใช้ raw .csv.gz โดยตรง ไม่ใช้ province-summary.json หรือ
+   business-summary.json
+   ============================================================ */
+const DATA_CANDIDATES = [
+  {
+    index:'assets/data/index.json',
+    province:'assets/data/province.csv.gz',
+    business:'assets/data/business.csv.gz'
+  },
+  {
+    index:'assets/data/raw/index.json',
+    province:'assets/data/raw/province.csv.gz',
+    business:'assets/data/raw/business.csv.gz'
+  }
+];
+
+const $ = id => document.getElementById(id);
+const TH_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const TH_MONTHS_SHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const ALL_OIL='__ALL_OIL__';
+const LPG_NAME='ก๊าซแอลพีจี';
+const PAGE_SIZE=50;
+
+const state={
+  mode:'province',
+  year:null,
+  month:'',
+  product:ALL_OIL,
+  secondary:'',
+  index:null,
+  dataPaths:null,
+  loaded:{province:false,business:false},
+  datasetMeta:{province:null,business:null},
+  charts:{},
+  mapReady:false,
+  tableQuery:'',
+  tablePage:1,
+  lastResult:null,
+  renderToken:0,
+  availableProducts:[],
+  availableAreas:[],
+  fontScale:1,
+  analyticsView:'share',
+  shareType:'donut',
+  areaType:'bar',
+  compareType:'line',
+  compareMode:'monthly',
+  compareYears:[]
+};
+
+const PRODUCT_ORDER=[
+  'น้ำมันเบนซิน',
+  'น้ำมันแก๊สโซฮอล์ 91',
+  'น้ำมันแก๊สโซฮอล์ 95',
+  'น้ำมันแก๊สโซฮอล์ 95 (ชนิดพิเศษ)',
+  'น้ำมันแก๊สโซฮอล์ E20',
+  'น้ำมันแก๊สโซฮอล์ E85',
+  'น้ำมันดีเซลหมุนเร็วธรรมดา',
+  'น้ำมันดีเซลหมุนเร็วธรรมดา (ชนิดพิเศษ)',
+  'น้ำมันดีเซลหมุนเร็ว บี20',
+  'ก๊าซแอลพีจี'
+];
+const BUSINESS_ORDER=[
+  'สถานีบริการ',
+  'ร้านค้าน้ำมัน ร้านค้า',
+  'การขนส่ง',
+  'อุตสาหกรรม',
+  'การผลิตไฟฟ้า',
+  'ราชการและรัฐวิสาหกิจ',
+  'อื่น ๆ'
+];
+const PRODUCT_DISPLAY={
+  'น้ำมันเบนซิน':'น้ำมันเบนซิน 95',
+  'น้ำมันดีเซลหมุนเร็ว บี20':'น้ำมันดีเซลหมุนเร็ว B20'
+};
+function displayProduct(name){return PRODUCT_DISPLAY[name]||name}
+function productOrderIndex(name){
+  const i=PRODUCT_ORDER.indexOf(name);
+  return i<0?999:i;
+}
+function businessOrderIndex(name){
+  const i=BUSINESS_ORDER.indexOf(name);
+  return i<0?999:i;
+}
+function SC(n){return Math.max(7,Math.round(n*state.fontScale))}
+
+/* ---------- Company brand colors ---------- */
+const FALLBACK_COLORS=['#2563eb','#64748b','#475569','#6b7f91','#6366f1','#0ea5e9','#7c3aed','#0891b2'];
+const CHART_COLORS=['#1479a8','#10a37f','#f59e0b','#e11d48','#7c3aed','#0d9488','#ea580c','#2563eb','#db2777','#65a30d','#0891b2','#9333ea'];
+const YEAR_COLORS=['#1479a8','#e11d48','#10a37f','#f59e0b','#7c3aed','#0d9488','#ea580c','#2563eb','#db2777','#65a30d','#0891b2','#9333ea','#c2410c','#4f46e5','#047857','#be123c','#a16207'];
+
+function companyColor(name=''){
+  const n=String(name).toLowerCase().replace(/\s+/g,' ').trim();
+  if(n.includes('ปตท')||n.includes('pttor')||n.includes('โออาร์'))return '#0284c7';
+  if(n.includes('บางจาก')||n.includes('bangchak'))return '#10b981';
+  if(n.includes('เชลล์')||n.includes('shell'))return '#f59e0b';
+  if(n.includes('พีทีจี')||n.includes('ptg')||/(^|\s)pt($|\s)/i.test(n))return '#e11d48';
+  if(n.includes('คาลเท็กซ์')||n.includes('caltex')||n.includes('เชฟรอน')||n.includes('chevron'))return '#0d9488';
+  if(n.includes('ซัสโก้')||n.includes('susco'))return '#ea580c';
+  if(n.includes('เอสโซ่')||n.includes('esso'))return '#2563eb';
+  let h=0;for(let i=0;i<n.length;i++)h=((h<<5)-h)+n.charCodeAt(i)|0;
+  return FALLBACK_COLORS[Math.abs(h)%FALLBACK_COLORS.length];
+}
+
+function expectedUnit(){return state.product===LPG_NAME?'พันกิโลกรัม':'พันลิตร';}
+function productLabel(){return state.product===ALL_OIL?'น้ำมันทุกชนิด (ไม่รวม LPG)':displayProduct(state.product);}
+function periodText(){return state.month===''?`ทั้งปี ${state.year}`:`${TH_MONTHS[+state.month-1]} ${state.year}`;}
+function scopeLabel(){return state.secondary||(state.mode==='province'?'ทั่วประเทศ':'ทุกสาขาธุรกิจ');}
+function formatNumber(v,d=1){return Number.isFinite(v)?v.toLocaleString('th-TH',{useGrouping:true,minimumFractionDigits:d,maximumFractionDigits:d}):'—';}
+function formatCompact(v){return Number.isFinite(v)?new Intl.NumberFormat('th-TH',{notation:'compact',maximumFractionDigits:2}).format(v):'—';}
+function escapeHtml(v){return String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function option(value,label,disabled=false){const o=document.createElement('option');o.value=value;o.textContent=label;o.disabled=disabled;return o;}
+
+function updateUnitUI(){
+  const u=expectedUnit();
+  $('unitBadge').textContent=u;
+  $('tableVolumeHead').textContent=`ปริมาณ (${u})`;
+  document.querySelectorAll('.current-chart-unit').forEach(el=>el.textContent=u);
+}
+function fillSelect(el,items,allLabel){
+  const old=el.value;el.innerHTML='';
+  if(allLabel!=null)el.appendChild(option('',allLabel));
+  for(const v of items)el.appendChild(option(v,v));
+  if([...el.options].some(o=>o.value===old))el.value=old;
+}
+function refreshMonthOptions(){
+  const periods=new Set(state.index?.periods||[]);
+  const sel=$('monthFilter'),old=state.month;
+  sel.innerHTML='';sel.appendChild(option('','ทั้งปี'));
+  for(let m=1;m<=12;m++){
+    const key=`${state.year}-${String(m).padStart(2,'0')}`;
+    sel.appendChild(option(String(m),TH_MONTHS[m-1],periods.size>0&&!periods.has(key)));
+  }
+  if([...sel.options].some(o=>o.value===String(old)&&!o.disabled)){sel.value=String(old)}
+  else{state.month='';sel.value=''}
+}
+function refreshSecondaryOptions(){
+  let list=[...(state.availableAreas||[])];
+  if(state.mode==='business'){
+    list.sort((a,b)=>{
+      const d=businessOrderIndex(a)-businessOrderIndex(b);
+      return d||String(a).localeCompare(String(b),'th');
+    });
+  }else{
+    list.sort((a,b)=>String(a).localeCompare(String(b),'th'));
+  }
+  fillSelect($('secondaryFilter'),list,state.mode==='province'?'ทุกจังหวัด':'ทุกสาขาธุรกิจ');
+  $('secondaryLabel').textContent=state.mode==='province'?'เจาะจงจังหวัด':'เจาะจงสาขาธุรกิจ';
+  if(state.secondary&&[...$('secondaryFilter').options].some(o=>o.value===state.secondary))$('secondaryFilter').value=state.secondary;
+  else{state.secondary='';$('secondaryFilter').value=''}
+}
+
+async function refreshAvailability(){
+  await ensureDataset(state.mode);
+  const m=await workerCall({
+    type:'availability',
+    mode:state.mode,
+    filters:{year:state.year,product:state.product}
+  });
+  state.availableProducts=(m.result.products||[]).sort((a,b)=>{
+    const d=productOrderIndex(a)-productOrderIndex(b);
+    return d||String(a).localeCompare(String(b),'th');
+  });
+  state.availableAreas=m.result.areas||[];
+
+  const current=state.product;
+  const sel=$('productFilter');
+  sel.innerHTML='';
+  const oilCount=state.availableProducts.filter(p=>p!==LPG_NAME).length;
+  if(oilCount>0)sel.appendChild(option(ALL_OIL,'น้ำมันทุกชนิด (ไม่รวม LPG)'));
+  state.availableProducts.forEach(p=>sel.appendChild(option(p,displayProduct(p))));
+
+  // ถ้า product เดิมไม่มีในปีใหม่ ให้ fallback เป็น "รวม" (ถ้ามี) หรือรายการแรก
+  if(current===ALL_OIL && oilCount>0){
+    state.product=ALL_OIL;
+  }else if(state.availableProducts.includes(current)){
+    state.product=current;
+  }else{
+    state.product=oilCount>0?ALL_OIL:(state.availableProducts[0]||'');
+  }
+  sel.value=state.product;
+
+  // อัปเดต area อีกครั้งตาม product ที่อาจ fallback
+  if(state.product!==current){
+    const m2=await workerCall({
+      type:'availability',mode:state.mode,
+      filters:{year:state.year,product:state.product}
+    });
+    state.availableAreas=m2.result.areas||[];
+  }
+  refreshSecondaryOptions();
+  updateProductScopeSummary();
+  updateUnitUI();
+}
+function updateProductScopeSummary(){
+  const el=$('productScopeSummary');
+  if(!el)return;
+  if(state.product!==ALL_OIL){
+    el.textContent='';
+    el.removeAttribute('title');
+    return;
+  }
+  const oils=(state.availableProducts||[]).filter(p=>p!==LPG_NAME);
+  el.textContent=`· รวม ${oils.length} ชนิด`;
+  el.title=oils.length
+    ? 'ผลิตภัณฑ์ที่รวมในปี '+state.year+':\\n'+oils.map(displayProduct).join('\\n')
+    : 'ไม่มีข้อมูลน้ำมันในปีที่เลือก';
+}
+
+function updateModeUI(){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
+  $('tableAreaHead').textContent=state.mode==='province'?'จังหวัด':'สาขาธุรกิจ';
+  $('kpiAreaLabel').textContent=state.mode==='province'?'จังหวัดที่มียอดสูงสุด':'สาขาธุรกิจที่มียอดสูงสุด';
+  $('areaChartTitle').textContent=state.mode==='province'?'Top 10 จังหวัด':'อันดับสาขาธุรกิจ';
+  $('areaChartSubtitle').textContent=state.mode==='province'?'10 จังหวัดที่มีปริมาณจำหน่ายสูงสุด':'แสดงทุกสาขาธุรกิจเรียงตามปริมาณ';
+  $('areaCountBadge').textContent=state.mode==='province'?'TOP 10':`${(state.index.business_sectors||[]).length} SECTORS`;
+  $('mapCard').classList.toggle('hidden',state.mode!=='province');
+  $('geoGrid').style.gridTemplateColumns=state.mode==='province'?'':'1fr';
+  refreshSecondaryOptions();
+}
+
+/* ============================================================
+   INLINE WEB WORKER
+   - Fetch + gzip decompress ใน background thread
+   - เก็บข้อมูลเป็น TypedArrays เพื่อลด memory
+   - Filter/aggregate ใน Worker ทำให้ UI ไม่ค้างตอนเปลี่ยน filter
+   ============================================================ */
+const workerSource=String.raw`
+const stores={};
+function parseCSVLine(line){
+  const out=[];let cur='',quoted=false;
+  for(let i=0;i<line.length;i++){
+    const c=line[i];
+    if(quoted){
+      if(c==='"'){
+        if(line[i+1]==='"'){cur+='"';i++}else quoted=false;
+      }else cur+=c;
+    }else{
+      if(c==='"')quoted=true;
+      else if(c===','){out.push(cur);cur=''}
+      else if(c!=='\r')cur+=c;
+    }
+  }
+  out.push(cur);return out;
+}
+function makeEncoder(){
+  const map=new Map(),values=[];
+  return {values,code(v){v=(v??'').trim();let x=map.get(v);if(x===undefined){x=values.length;map.set(v,x);values.push(v)}return x}};
+}
+function growTyped(old,Ctor,newSize){const n=new Ctor(newSize);n.set(old);return n}
+async function loadDataset(url,mode,expectedRows,requestId){
+  const res=await fetch(url,{cache:'no-store'});
+  if(!res.ok)throw new Error(url+' → HTTP '+res.status);
+  if(!('DecompressionStream' in self))throw new Error('Browser นี้ไม่รองรับ DecompressionStream(gzip) กรุณาใช้ Chrome / Edge รุ่นใหม่');
+
+  let cap=Math.max(1024,Number(expectedRows)||100000);
+  let year=new Uint16Array(cap),month=new Uint8Array(cap),fuel=new Uint8Array(cap),
+      product=new Uint8Array(cap),area=new Uint8Array(cap),company=new Uint16Array(cap),
+      unit=new Uint8Array(cap),volume=new Float64Array(cap);
+
+  const eFuel=makeEncoder(),eProduct=makeEncoder(),eArea=makeEncoder(),eCompany=makeEncoder(),eUnit=makeEncoder();
+  let count=0,header=null,idx=null,buffer='',processedBytes=0,lastProgress=0;
+  const reader=res.body.pipeThrough(new DecompressionStream('gzip')).pipeThrough(new TextDecoderStream('utf-8')).getReader();
+
+  function ensure(){
+    if(count<cap)return;
+    cap=Math.ceil(cap*1.35)+1024;
+    year=growTyped(year,Uint16Array,cap);month=growTyped(month,Uint8Array,cap);
+    fuel=growTyped(fuel,Uint8Array,cap);product=growTyped(product,Uint8Array,cap);
+    area=growTyped(area,Uint8Array,cap);company=growTyped(company,Uint16Array,cap);
+    unit=growTyped(unit,Uint8Array,cap);volume=growTyped(volume,Float64Array,cap);
+  }
+  function consume(line){
+    if(!line)return;
+    const a=parseCSVLine(line);
+    if(!header){
+      header=a.map(x=>x.replace(/^\uFEFF/,'').trim());
+      idx=Object.fromEntries(header.map((x,i)=>[x,i]));
+      const required=mode==='province'?['year','month','fuel_group','product','province','company','volume','unit']:['year','month','fuel_group','product','business_sector','company','volume','unit'];
+      for(const k of required)if(idx[k]==null)throw new Error(mode+' CSV ไม่มีคอลัมน์ '+k);
+      return;
+    }
+    ensure();
+    const y=Number(a[idx.year]),m=Number(a[idx.month]),v=Number(a[idx.volume]);
+    if(!Number.isFinite(y)||!Number.isFinite(m)||!Number.isFinite(v))return;
+    year[count]=y;month[count]=m;
+    fuel[count]=eFuel.code(a[idx.fuel_group]);
+    product[count]=eProduct.code(a[idx.product]);
+    area[count]=eArea.code(a[idx[mode==='province'?'province':'business_sector']]);
+    company[count]=eCompany.code(a[idx.company]);
+    unit[count]=eUnit.code(a[idx.unit]);
+    volume[count]=v;count++;
+  }
+
+  while(true){
+    const {value,done}=await reader.read();
+    if(done)break;
+    processedBytes+=value.length;buffer+=value;
+    let pos=0,nl;
+    while((nl=buffer.indexOf('\n',pos))!==-1){consume(buffer.slice(pos,nl));pos=nl+1}
+    buffer=buffer.slice(pos);
+    const p=expectedRows?Math.min(99,Math.round(count/expectedRows*100)):0;
+    if(p>=lastProgress+3){lastProgress=p;postMessage({type:'progress',requestId,mode,percent:p,rows:count})}
+  }
+  if(buffer.trim())consume(buffer);
+  const store={
+    mode,count,
+    year:year.slice(0,count),month:month.slice(0,count),fuel:fuel.slice(0,count),
+    product:product.slice(0,count),area:area.slice(0,count),company:company.slice(0,count),
+    unit:unit.slice(0,count),volume:volume.slice(0,count),
+    fuel_groups:eFuel.values,products:eProduct.values,
+    areas:eArea.values,companies:eCompany.values,units:eUnit.values
+  };
+  stores[mode]=store;
+  postMessage({type:'progress',requestId,mode,percent:100,rows:count});
+  return {count,products:store.products,areas:store.areas,companies:store.companies,units:store.units};
+}
+function codesForProduct(s,productName){
+  const unitName=productName==='ก๊าซแอลพีจี'?'พันกิโลกรัม':'พันลิตร';
+  const unitCode=s.units.indexOf(unitName);
+  if(productName==='__ALL_OIL__'){
+    const allowed=new Set();
+    s.products.forEach((p,i)=>{if(p!=='ก๊าซแอลพีจี')allowed.add(i)});
+    return {allowed,unitCode};
+  }
+  const code=s.products.indexOf(productName);
+  return {allowed:new Set(code>=0?[code]:[]),unitCode};
+}
+function queryStore(mode,f){
+  const s=stores[mode];if(!s)throw new Error('Dataset '+mode+' ยังไม่ได้โหลด');
+  const {allowed,unitCode}=codesForProduct(s,f.product);
+  const areaCode=f.secondary?s.areas.indexOf(f.secondary):-1;
+  const compTotals=new Float64Array(s.companies.length);
+  const areaTotals=new Float64Array(s.areas.length);
+  let total=0,rawCount=0,searchCount=0;
+  const q=(f.search||'').trim().toLowerCase(),page=Math.max(1,f.page||1),pageSize=f.pageSize||50;
+  const start=(page-1)*pageSize,end=start+pageSize,table=[];
+
+  for(let i=0;i<s.count;i++){
+    if(s.year[i]!==f.year)continue;
+    if(f.month!==''&&s.month[i]!==Number(f.month))continue;
+    if(unitCode<0||s.unit[i]!==unitCode)continue;
+    if(!allowed.has(s.product[i]))continue;
+    if(areaCode>=0&&s.area[i]!==areaCode)continue;
+    const v=s.volume[i];if(!Number.isFinite(v)||v===0)continue;
+    rawCount++;total+=v;compTotals[s.company[i]]+=v;areaTotals[s.area[i]]+=v;
+
+    if(q){
+      const hay=(s.companies[s.company[i]]+' '+s.areas[s.area[i]]+' '+s.products[s.product[i]]).toLowerCase();
+      if(!hay.includes(q))continue;
+    }
+    if(searchCount>=start&&searchCount<end){
+      table.push({
+        year:s.year[i],month:s.month[i],product:s.products[s.product[i]],area:s.areas[s.area[i]],
+        company:s.companies[s.company[i]],volume:v
+      });
+    }
+    searchCount++;
+  }
+  const companyAgg=[];
+  for(let i=0;i<compTotals.length;i++)if(compTotals[i]>0)companyAgg.push({name:s.companies[i],value:compTotals[i]});
+  companyAgg.sort((a,b)=>b.value-a.value);
+  const areaAgg=[];
+  for(let i=0;i<areaTotals.length;i++)if(areaTotals[i]>0)areaAgg.push({name:s.areas[i],value:areaTotals[i]});
+  areaAgg.sort((a,b)=>b.value-a.value);
+
+  return {total,rawCount,searchCount,companyAgg,areaAgg,table,page,pageSize};
+}
+
+function availability(mode,f){
+  const s=stores[mode];if(!s)throw new Error('Dataset '+mode+' ยังไม่ได้โหลด');
+  const products=new Set(),areas=new Set();
+  const selectedProduct=f.product||'__ALL_OIL__';
+  const selectedUnit=selectedProduct==='ก๊าซแอลพีจี'?'พันกิโลกรัม':'พันลิตร';
+  const unitCode=s.units.indexOf(selectedUnit);
+
+  for(let i=0;i<s.count;i++){
+    if(s.year[i]!==f.year)continue;
+    if(!Number.isFinite(s.volume[i])||s.volume[i]===0)continue;
+
+    const prod=s.products[s.product[i]];
+    const rowUnit=s.units[s.unit[i]];
+
+    // product dropdown: แสดงเฉพาะผลิตภัณฑ์ที่มีข้อมูลจริงในปีที่เลือก
+    if((prod==='ก๊าซแอลพีจี'&&rowUnit==='พันกิโลกรัม') ||
+       (prod!=='ก๊าซแอลพีจี'&&rowUnit==='พันลิตร')){
+      products.add(prod);
+    }
+
+    // secondary dropdown: ให้สอดคล้องกับปี + product ปัจจุบัน
+    let productOK=false;
+    if(selectedProduct==='__ALL_OIL__') productOK=(prod!=='ก๊าซแอลพีจี'&&rowUnit==='พันลิตร');
+    else productOK=(prod===selectedProduct&&rowUnit===selectedUnit);
+    if(productOK)areas.add(s.areas[s.area[i]]);
+  }
+  return {products:[...products],areas:[...areas]};
+}
+
+
+function compareYears(mode,f){
+  const s=stores[mode];if(!s)throw new Error('Dataset '+mode+' ยังไม่ได้โหลด');
+  const {allowed,unitCode}=codesForProduct(s,f.product);
+  const areaCode=f.secondary?s.areas.indexOf(f.secondary):-1;
+  const years=new Set((f.years||[]).map(Number));
+  const byYear=new Map();
+  for(const y of years)byYear.set(y,new Float64Array(12));
+
+  for(let i=0;i<s.count;i++){
+    const y=s.year[i];
+    if(!years.has(y))continue;
+    if(unitCode<0||s.unit[i]!==unitCode)continue;
+    if(!allowed.has(s.product[i]))continue;
+    if(areaCode>=0&&s.area[i]!==areaCode)continue;
+    const v=s.volume[i];
+    if(!Number.isFinite(v)||v===0)continue;
+    const arr=byYear.get(y);
+    arr[s.month[i]-1]+=v;
+  }
+  return [...years].sort((a,b)=>a-b).map(y=>({
+    year:y,
+    months:Array.from(byYear.get(y)||new Float64Array(12))
+  }));
+}
+
+function exportRows(mode,f){
+  const s=stores[mode];if(!s)throw new Error('Dataset ยังไม่ได้โหลด');
+  const {allowed,unitCode}=codesForProduct(s,f.product);
+  const areaCode=f.secondary?s.areas.indexOf(f.secondary):-1;
+  const q=(f.search||'').trim().toLowerCase(),rows=[];
+  for(let i=0;i<s.count;i++){
+    if(s.year[i]!==f.year)continue;
+    if(f.month!==''&&s.month[i]!==Number(f.month))continue;
+    if(unitCode<0||s.unit[i]!==unitCode)continue;
+    if(!allowed.has(s.product[i]))continue;
+    if(areaCode>=0&&s.area[i]!==areaCode)continue;
+    const v=s.volume[i];if(!Number.isFinite(v)||v===0)continue;
+    const comp=s.companies[s.company[i]],ar=s.areas[s.area[i]],prod=s.products[s.product[i]];
+    if(q&&!((comp+' '+ar+' '+prod).toLowerCase().includes(q)))continue;
+    rows.push([s.year[i],s.month[i],prod,ar,comp,v]);
+  }
+  return rows;
+}
+onmessage=async e=>{
+  const m=e.data;
+  try{
+    if(m.type==='load'){
+      const meta=await loadDataset(m.url,m.mode,m.expectedRows,m.id);
+      postMessage({type:'loaded',id:m.id,mode:m.mode,meta});
+    }else if(m.type==='query'){
+      postMessage({type:'queryResult',id:m.id,result:queryStore(m.mode,m.filters)});
+    }else if(m.type==='availability'){
+      postMessage({type:'availabilityResult',id:m.id,result:availability(m.mode,m.filters)});
+    }else if(m.type==='compare'){
+      postMessage({type:'compareResult',id:m.id,result:compareYears(m.mode,m.filters)});
+    }else if(m.type==='export'){
+      postMessage({type:'exportResult',id:m.id,rows:exportRows(m.mode,m.filters)});
+    }
+  }catch(err){postMessage({type:'error',id:m.id,message:err?.message||String(err)})}
+};
+`;
+
+const worker=new Worker(URL.createObjectURL(new Blob([workerSource],{type:'text/javascript'})));
+let requestSeq=0;
+const pending=new Map();
+worker.onmessage=e=>{
+  const m=e.data;
+  if(m.type==='progress'){
+    if(m.mode===state.mode){
+      $('loadingMessage').textContent=`กำลังอ่าน ${m.mode==='province'?'ข้อมูลรายจังหวัด':'ข้อมูลรายสาขาธุรกิจ'} ${m.rows.toLocaleString('th-TH')} แถว`;
+      $('progressBar').style.width=Math.max(8,m.percent)+'%';
+    }
+    return;
+  }
+  const p=pending.get(m.id);
+  if(!p)return;
+  if(m.type==='error'){pending.delete(m.id);p.reject(new Error(m.message));return}
+  pending.delete(m.id);p.resolve(m);
+};
+function workerCall(payload){
+  return new Promise((resolve,reject)=>{
+    const id=++requestSeq;pending.set(id,{resolve,reject});worker.postMessage({...payload,id});
+  });
+}
+
+/* ---------- data discovery ---------- */
+async function fetchJson(url){
+  const r=await fetch(url,{cache:'no-store'});if(!r.ok)throw new Error(`${url} → HTTP ${r.status}`);return r.json();
+}
+async function discoverData(){
+  let lastErr;
+  for(const candidate of DATA_CANDIDATES){
+    try{
+      // IMPORTANT:
+      // Worker ตัวนี้สร้างจาก Blob URL ดังนั้น relative URL เช่น
+      // "assets/data/province.csv.gz" จะไม่มี base URL ของหน้าเว็บ
+      // และทำให้ fetch ใน Worker ขึ้น "Failed to parse URL".
+      // จึง resolve URL ให้เป็น absolute URL จากหน้าเว็บก่อนส่งเข้า Worker
+      const resolved = {
+        index: new URL(candidate.index, window.location.href).href,
+        province: new URL(candidate.province, window.location.href).href,
+        business: new URL(candidate.business, window.location.href).href
+      };
+
+      const idx = await fetchJson(resolved.index);
+      return {idx, candidate: resolved};
+    }catch(err){lastErr=err}
+  }
+  throw lastErr||new Error('ไม่พบ index.json');
+}
+function expectedRowsFor(mode){
+  return Number(state.index?.sources?.[mode]?.rows||0);
+}
+async function ensureDataset(mode){
+  if(state.loaded[mode])return;
+  $('loadingOverlay').style.display='flex';
+  $('loaderRing').style.display='block';$('progressWrap').style.display='block';
+  $('loadingTitle').textContent='กำลังโหลดข้อมูล';
+  $('loadingMessage').textContent=`กำลังแตกไฟล์ ${mode}.csv.gz ...`;
+  $('progressBar').style.width='8%';
+  const r=await workerCall({
+    type:'load',mode,url:state.dataPaths[mode],expectedRows:expectedRowsFor(mode)
+  });
+  state.loaded[mode]=true;state.datasetMeta[mode]=r.meta;
+  $('loadingOverlay').style.display='none';
+}
+
+/* ---------- charts ---------- */
+function getChart(id){
+  if(!state.charts[id])state.charts[id]=echarts.init($(id),null,{renderer:'canvas'});
+  scheduleChartLayout();
+  return state.charts[id];
+}
+
+let chartLayoutFrame=0;
+function scheduleChartLayout(){
+  cancelAnimationFrame(chartLayoutFrame);
+  chartLayoutFrame=requestAnimationFrame(fitChartLayout);
+}
+function fitChartLayout(){
+  const modal=document.querySelector('.panel.chart-modal');
+  const legend=$('shareLegendList');
+  if(legend){
+    legend.style.zoom='';
+    if(modal?.id==='analyticsCard'&&!legend.classList.contains('hidden')){
+      const head=modal.querySelector('.card-head').offsetHeight;
+      const budget=Math.max(40,(modal.clientHeight-head)*.38);
+      if(legend.offsetHeight>budget)legend.style.zoom=String(budget/legend.offsetHeight);
+    }
+  }
+  for(const [id,c] of Object.entries(state.charts)){
+    const el=$(id);
+    if(!el||!el.clientWidth||el.classList.contains('hidden'))continue;
+    const expanded=!!el.closest('.chart-modal');
+    const option=c.getOption();
+    const width=el.clientWidth;
+    const horizontal=option.yAxis?.[0]?.type==='category';
+    const count=horizontal?(option.yAxis[0].data||[]).length:0;
+    if(!expanded){
+      let height=Math.max(340,Math.min(500,width*.72));
+      if(horizontal)height=Math.max(360,count*26*state.fontScale+60);
+      if(id==='mapChart')height=Math.max(380,Math.min(540,width*.85));
+      el.style.height=Math.round(height)+'px';
+    }
+    c.resize({width:'auto',height:'auto'});
+    if(horizontal){
+      const labelWidth=Math.round(Math.min(id==='companyChart'?195:145,width*.34));
+      const labelSize=expanded?Math.min(SC(9.5),Math.max(7,(el.clientHeight-64)/Math.max(1,count)*.58)):SC(9.5);
+      c.setOption({
+        grid:{left:labelWidth+16,right:Math.min(78,Math.max(52,width*.13)),top:16,bottom:48},
+        xAxis:{nameLocation:'middle',nameGap:18,axisLabel:{hideOverlap:true}},
+        yAxis:{axisLabel:{width:labelWidth,fontSize:labelSize,interval:0}},
+        series:[{label:{fontSize:Math.min(SC(8.8),labelSize)}}]
+      });
+    }else if(id==='compareChart'&&state.compareMode==='monthly'){
+      const years=option.series?.length||0;
+      const rows=Math.ceil(years/Math.max(1,Math.floor((width-32)/70)));
+      c.setOption({legend:{type:'plain',left:16,right:16},grid:{top:30+rows*22}});
+    }
+  }
+}
+const chartLayoutObserver=new ResizeObserver(scheduleChartLayout);
+document.querySelectorAll('.chart-grid>.panel,.geo-grid>.panel,.chart,.company-scroll,.card-head,#compareControls,#shareLegendList').forEach(el=>chartLayoutObserver.observe(el));
+document.fonts.ready.then(scheduleChartLayout);
+window.addEventListener('resize',scheduleChartLayout);
+
+const AX='#314f63',GRID='#cfdce5',TIP_BG='rgba(248,251,253,.99)';
+function tooltipBase(){
+  return {confine:true,valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`,backgroundColor:TIP_BG,borderColor:'#afc7d5',borderWidth:1,textStyle:{fontFamily:'Inter, Kanit',fontSize:SC(10.5),fontWeight:500,color:'#102f44'},padding:[10,12],extraCssText:'box-shadow:0 14px 34px rgba(31,62,84,.12);border-radius:10px;'};
+}
+function renderCompanyChart(data,total){
+  $('companyCountBadge').textContent=`${data.length.toLocaleString('th-TH')} บริษัท`;
+  const dynamic=Math.max(360,data.length*26*state.fontScale+60);
+  $('companyChart').style.height=dynamic+'px';
+  const arr=[...data].reverse();
+  const c=getChart('companyChart');
+  c.setOption({
+    animationDurationUpdate:320,
+    tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'},formatter:p=>{
+      const i=p[0]?.dataIndex??0,x=arr[i];return x?`<b>${escapeHtml(x.name)}</b><br>${formatNumber(x.value,2)} ${expectedUnit()}<br>Market Share ${total?(x.value/total*100).toFixed(2):'0.00'}%`:'';
+    }},
+    grid:{left:210,right:78,top:16,bottom:22},
+    xAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9)},axisLabel:{color:AX,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+    yAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#415f73',fontFamily:'Kanit',fontSize:SC(9.5),width:195,overflow:'truncate'}},
+    series:[{type:'bar',barMaxWidth:17,data:arr.map(x=>({value:x.value,itemStyle:{color:companyColor(x.name),borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',color:'#708594',fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+  },true);
+}
+
+function renderShareLegend(data,total){
+  const wrap=$('shareLegendList');
+  if(!wrap)return;
+  wrap.innerHTML=data.map((item,index)=>{
+    const pct=total?(item.value/total*100):0;
+    return `
+      <button type="button" class="legend-item" data-share-company="${index}" title="${escapeHtml(item.name)}">
+        <span class="legend-swatch" style="background:${companyColor(item.name)}"></span>
+        <div class="legend-copy">
+          <div class="legend-name">${escapeHtml(item.name)}</div>
+          <div class="legend-meta">${formatNumber(item.value,2)} ${expectedUnit()} · ${pct.toFixed(2)}%</div>
+        </div>
+      </button>
+    `;
+  }).join('');
+}
+
+function renderShareChart(data,total){
+  renderShareLegend(data,total);
+  const c=getChart('shareChart');
+
+  if(state.shareType==='bar'){
+    const arr=[...data].reverse();
+    c.setOption({
+      tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'},formatter:p=>{
+        const i=p[0]?.dataIndex??0,x=arr[i];
+        return x?`<b>${escapeHtml(x.name)}</b><br>${formatNumber(x.value,2)} ${expectedUnit()}<br>Market Share ${total?(x.value/total*100).toFixed(2):'0.00'}%`:'';
+      }},
+      grid:{left:160,right:62,top:18,bottom:26},
+      xAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontSize:SC(9),fontWeight:500},splitLine:{lineStyle:{color:GRID}}},
+      yAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:500,fontSize:SC(9.5),width:145,overflow:'truncate'}},
+      series:[{type:'bar',barMaxWidth:18,data:arr.map(x=>({value:x.value,itemStyle:{color:companyColor(x.name),borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',color:'#27495e',fontWeight:600,fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+    },true);
+    return;
+  }
+
+  const donut=[...data];
+
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'item',formatter:p=>`<b>${escapeHtml(p.name)}</b><br>${formatNumber(p.value,2)} ${expectedUnit()}<br>${p.percent.toFixed(2)}%`},
+    legend:{show:false},
+    series:[{
+      type:'pie',
+      radius:['50%','73%'],
+      center:['50%','50%'],
+      avoidLabelOverlap:true,
+      minAngle:0,
+      itemStyle:{borderColor:'#e8f0f5',borderWidth:3},
+      label:{
+        show:true,
+        position:'outside',
+        alignTo:'edge',edgeDistance:12,width:110,overflow:'truncate',
+        color:'#16384c',
+        fontFamily:'Kanit',
+        fontWeight:700,
+        fontSize:SC(8.7),
+        formatter:params=>params.name,
+      },
+      labelLine:{
+        show:true,
+        length:12,
+        length2:10,
+        smooth:false,
+        lineStyle:{color:'#7b93a4',width:1.2}
+      },
+      labelLayout:{hideOverlap:true},
+      emphasis:{
+        scale:true,scaleSize:6,
+        label:{
+          show:true,
+          color:'#0c2f47',
+          fontWeight:800,
+          fontSize:SC(9.5),
+          formatter:params=>`${params.name}\n${params.percent.toFixed(1)}%`
+        }
+      },
+      data:donut.map(x=>({name:x.name,value:x.value,itemStyle:{color:companyColor(x.name)}}))
+    }],
+    graphic:[{type:'text',left:'center',top:'41%',style:{text:`${data.length}\nบริษัท`,textAlign:'center',fill:'#123b54',font:`700 ${SC(18)}px Inter`,lineHeight:SC(25),textShadowColor:'rgba(15,70,100,.12)',textShadowBlur:7,textShadowOffsetY:2}}]
+  },true);
+}
+function renderAreaChart(data){
+  const source=state.mode==='province'?data.slice(0,10):data;
+  const c=getChart('areaChart');
+
+  if(state.areaType==='line'){
+    const arr=[...source];
+    c.setOption({
+      tooltip:{...tooltipBase(),trigger:'axis',valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`},
+      grid:{left:65,right:28,top:30,bottom:88},
+      xAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{lineStyle:{color:'#9fb4c2'}},axisTick:{show:false},axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:500,fontSize:SC(9),rotate:35,interval:0}},
+      yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+      series:[{type:'line',smooth:.22,symbol:'circle',symbolSize:7,data:arr.map(x=>x.value),
+        lineStyle:{width:3,color:'#1479a8'},itemStyle:{color:'#e11d48',borderColor:'#fff',borderWidth:2},
+        label:{show:true,position:'top',color:'#173c53',fontWeight:700,fontSize:SC(8.5),formatter:p=>formatCompact(p.value)}
+      }]
+    },true);
+    return;
+  }
+
+  const arr=[...source].reverse();
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`},
+    grid:{left:145,right:62,top:20,bottom:24},
+    xAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontSize:SC(9),fontWeight:500},splitLine:{lineStyle:{color:GRID}}},
+    yAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:500,fontSize:SC(9.5),width:130,overflow:'truncate'}},
+    series:[{type:'bar',barMaxWidth:19,data:arr.map((x,i)=>({value:x.value,itemStyle:{color:CHART_COLORS[(arr.length-1-i)%CHART_COLORS.length],borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',color:'#27495e',fontWeight:700,fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+  },true);
+}
+async function ensureMap(){
+  if(state.mapReady)return true;
+  try{
+    const r=await fetch('https://raw.githubusercontent.com/knottx/opengisdata-thailand/master/provinces.geojson',{cache:'force-cache'});
+    if(!r.ok)throw new Error('GeoJSON HTTP '+r.status);
+    const geo=await r.json();
+    for(const f of geo.features||[])if(f.properties?.pro_th)f.properties.name=f.properties.pro_th;
+    echarts.registerMap('thailand-doeb-light',geo);state.mapReady=true;return true;
+  }catch(err){
+    console.warn(err);$('mapChart').classList.add('hidden');$('mapError').classList.remove('hidden');return false;
+  }
+}
+async function renderMap(areaAgg,total){
+  if(state.mode!=='province')return;
+  if(!(await ensureMap()))return;
+  $('mapChart').classList.remove('hidden');$('mapError').classList.add('hidden');
+
+  const positive=[...areaAgg].filter(x=>x.value>0).sort((a,b)=>a.value-b.value);
+  const bandByName=new Map();
+  positive.forEach((x,i)=>{
+    const pct=(i+1)/positive.length;
+    const band=pct<=.20?1:pct<=.40?2:pct<=.60?3:pct<=.80?4:5;
+    bandByName.set(x.name,band);
+  });
+  const ranks=new Map(areaAgg.map((x,i)=>[x.name,i+1]));
+  const actual=new Map(areaAgg.map(x=>[x.name,x.value]));
+
+  const c=getChart('mapChart');
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'item',formatter:p=>{
+      const v=actual.get(p.name)||0;
+      return `<b>${escapeHtml(p.name)}</b><br>${formatNumber(v,2)} ${expectedUnit()}<br>สัดส่วน ${total?(v/total*100).toFixed(2):'0.00'}%<br>อันดับ #${ranks.get(p.name)||'—'}`;
+    }},
+    visualMap:{
+      type:'piecewise',left:14,bottom:14,orient:'vertical',
+      textStyle:{color:'#173d54',fontFamily:'Kanit',fontWeight:600,fontSize:SC(9)},
+      itemWidth:15,itemHeight:12,itemGap:5,
+      pieces:[
+        {value:5,label:'สูงมาก',color:'#0b4f73'},
+        {value:4,label:'สูง',color:'#147fa6'},
+        {value:3,label:'ปานกลาง',color:'#24a3bf'},
+        {value:2,label:'ค่อนข้างต่ำ',color:'#55bdd0'},
+        {value:1,label:'ต่ำ',color:'#93d2de'},
+        {value:0,label:'ไม่มีข้อมูล',color:'#cbd7df'}
+      ]
+    },
+    series:[{type:'map',map:'thailand-doeb-light',roam:true,layoutCenter:['50%','51%'],layoutSize:'95%',
+      data:(state.index.provinces||[]).map(name=>({name,value:bandByName.get(name)||0,rawValue:actual.get(name)||0})),
+      itemStyle:{areaColor:'#cbd7df',borderColor:'#f7fafc',borderWidth:1.35,shadowBlur:2,shadowColor:'rgba(21,65,90,.12)'},
+      emphasis:{label:{show:true,color:'#071c2a',fontFamily:'Kanit',fontWeight:700,fontSize:SC(10)},itemStyle:{areaColor:'#f59e0b',borderColor:'#fff',borderWidth:1.5,shadowBlur:12,shadowColor:'rgba(245,158,11,.28)'}},
+      selectedMode:false
+    }]
+  },true);
+  c.off('click');c.on('click',p=>{if(!p.name)return;state.secondary=p.name;$('secondaryFilter').value=p.name;requestRender();});
+}
+
+
+function ensureCompareYears(){
+  const years=[...(state.index?.years||[])].sort((a,b)=>b-a);
+  if(!state.compareYears.length){
+    state.compareYears=years.slice(0,3);
+  }else{
+    state.compareYears=state.compareYears.filter(y=>years.includes(y));
+    if(!state.compareYears.length)state.compareYears=years.slice(0,3);
+  }
+}
+function renderCompareYearMenu(){
+  ensureCompareYears();
+  const years=[...(state.index?.years||[])].sort((a,b)=>b-a);
+  const menu=$('compareYearMenu');
+  menu.innerHTML=`
+    <div class="year-menu-head">
+      <button type="button" data-year-action="latest3">ล่าสุด 3 ปี</button>
+      <button type="button" data-year-action="all">ทุกปี</button>
+      <button type="button" data-year-action="clear">ล้าง</button>
+    </div>
+    ${years.map(y=>`<label class="year-check"><input type="checkbox" value="${y}" ${state.compareYears.includes(y)?'checked':''}> <span>${y}</span></label>`).join('')}
+  `;
+  updateCompareYearButton();
+}
+function updateCompareYearButton(){
+  const list=[...state.compareYears].sort((a,b)=>b-a);
+  $('compareYearBtn').textContent=list.length<=4?`ปี: ${list.join(', ')} ▾`:`เลือก ${list.length} ปี ▾`;
+}
+async function renderCompareChart(){
+  ensureCompareYears();
+  const m=await workerCall({
+    type:'compare',mode:state.mode,
+    filters:{product:state.product,secondary:state.secondary,years:state.compareYears}
+  });
+  const rows=m.result||[];
+  const c=getChart('compareChart');
+  const scope=state.secondary|| (state.mode==='province'?'ทั้งประเทศ':'ทุกสาขาธุรกิจ');
+  $('compareContext').textContent=`${productLabel()} · ${scope} · ${expectedUnit()}`;
+
+  if(state.compareMode==='annual'){
+    const data=rows.map(r=>({year:String(r.year),value:r.months.reduce((a,b)=>a+b,0)}));
+    c.setOption({
+      tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:state.compareType==='bar'?'shadow':'line'},valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`},
+      grid:{left:68,right:28,top:30,bottom:48},
+      xAxis:{type:'category',data:data.map(x=>x.year),axisLabel:{color:'#203f53',fontWeight:600,fontSize:SC(9.5)},axisTick:{show:false}},
+      yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+      series:[{
+        type:state.compareType,
+        smooth:state.compareType==='line'?.25:false,
+        symbol:'circle',symbolSize:7,barMaxWidth:34,
+        data:data.map((x,i)=>state.compareType==='bar'
+          ?{value:x.value,itemStyle:{color:YEAR_COLORS[i%YEAR_COLORS.length],borderRadius:[5,5,0,0]}}
+          :x.value),
+        lineStyle:state.compareType==='line'?{width:3,color:'#1479a8'}:undefined,
+        itemStyle:state.compareType==='line'?{color:'#e11d48',borderColor:'#fff',borderWidth:2}:undefined,
+        label:{show:true,position:'top',color:'#173c53',fontWeight:700,fontSize:SC(8.5),formatter:p=>formatCompact(p.value)}
+      }]
+    },true);
+    return;
+  }
+
+  const months=TH_MONTHS_SHORT;
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'axis'},
+    legend:{top:4,type:'scroll',pageButtonItemGap:6,pageIconSize:10,textStyle:{color:'#23475c',fontWeight:600,fontSize:SC(8.8)},itemWidth:10,itemHeight:7,itemGap:12},
+    grid:{left:62,right:18,top:48,bottom:44},
+    xAxis:{type:'category',data:months,axisTick:{show:false},axisLabel:{color:'#203f53',fontWeight:600,fontSize:SC(9)}},
+    yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+    series:rows.map((r,i)=>({
+      name:String(r.year),type:state.compareType,smooth:state.compareType==='line'?.20:false,
+      symbol:rows.length>5?'none':'circle',symbolSize:5,barMaxWidth:14,
+      data:r.months,
+      lineStyle:state.compareType==='line'?{width:rows.length>5?2:2.5,color:YEAR_COLORS[i%YEAR_COLORS.length]}:undefined,
+      itemStyle:{color:YEAR_COLORS[i%YEAR_COLORS.length],borderRadius:state.compareType==='bar'?[4,4,0,0]:0},
+      emphasis:{focus:'series',lineStyle:{width:3.5}}
+    }))
+  },true);
+}
+function updateAnalyticsView(){
+  const share=state.analyticsView==='share';
+  $('shareChart').classList.toggle('hidden',!share);
+  $('shareLegendList').classList.toggle('hidden',!share);
+  $('compareChart').classList.toggle('hidden',share);
+  $('compareControls').classList.toggle('hidden',share);
+  $('shareTypeTools').classList.toggle('hidden',!share);
+  $('compareTypeTools').classList.toggle('hidden',share);
+  $('analyticsTitle').textContent=share?'Market Share':'เปรียบเทียบหลายปี';
+  $('analyticsSubtitle').textContent=share
+    ?'ดูสัดส่วนบริษัทตามเงื่อนไขปัจจุบัน'
+    :'เลือกปีที่ต้องการเปรียบเทียบ แล้วสลับกราฟเส้น/แท่งได้';
+  document.querySelectorAll('[data-analytics-view]').forEach(b=>b.classList.toggle('active',b.dataset.analyticsView===state.analyticsView));
+  if(share&&state.lastResult)renderShareChart(state.lastResult.companyAgg,state.lastResult.total);
+  if(!share)renderCompareChart();
+  setTimeout(()=>scheduleChartLayout(),30);
+}
+
+/* ---------- table ---------- */
+function renderTable(result){
+  const rows=result.table,total=result.total;
+  $('tableCountBadge').textContent=`${result.searchCount.toLocaleString('th-TH')} RECORDS`;
+  $('tableSummary').textContent=state.tableQuery?`พบ ${result.searchCount.toLocaleString('th-TH')} รายการจากคำค้นหา`:`ข้อมูลตามตัวกรอง ${result.rawCount.toLocaleString('th-TH')} รายการ`;
+  $('tableBody').innerHTML=rows.length?rows.map(r=>{
+    const share=total?r.volume/total*100:0,color=companyColor(r.company);
+    return `<tr><td>${r.year}</td><td>${TH_MONTHS[r.month-1]}</td><td>${escapeHtml(displayProduct(r.product))}</td><td>${escapeHtml(r.area)}</td><td><div class="company-cell"><span class="brand-dot" style="background:${color}"></span>${escapeHtml(r.company)}</div></td><td class="num">${formatNumber(r.volume,2)}</td><td class="num"><div class="share-bar"><span>${share.toFixed(2)}%</span><span class="share-track"><span class="share-fill" style="display:block;width:${Math.min(100,share)}%"></span></span></div></td></tr>`;
+  }).join(''):`<tr><td colspan="7" class="empty-row">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`;
+  const pages=Math.max(1,Math.ceil(result.searchCount/PAGE_SIZE)),start=(result.page-1)*PAGE_SIZE,end=Math.min(start+PAGE_SIZE,result.searchCount);
+  $('pageInfo').textContent=result.searchCount?`แสดง ${(start+1).toLocaleString('th-TH')}–${end.toLocaleString('th-TH')} จาก ${result.searchCount.toLocaleString('th-TH')} รายการ · หน้า ${result.page}/${pages}`:'ไม่มีข้อมูล';
+  $('prevPage').disabled=result.page<=1;$('nextPage').disabled=result.page>=pages;
+}
+
+/* ---------- KPI ---------- */
+function renderKpis(r){
+  $('kpiTotal').textContent=formatNumber(r.total,1);
+  $('kpiTotalSub').innerHTML=`<strong>${expectedUnit()}</strong> · ${periodText()} · ${productLabel()}`;
+  const c=r.companyAgg[0],a=r.areaAgg[0];
+  $('kpiCompany').textContent=c?.name||'—';
+  $('kpiCompanySub').innerHTML=c?`<strong>${formatNumber(c.value,1)} ${expectedUnit()}</strong> · ${r.total?(c.value/r.total*100).toFixed(1):'0.0'}%`:'ไม่มีข้อมูล';
+  $('kpiArea').textContent=a?.name||'—';
+  $('kpiAreaSub').innerHTML=a?`<strong>${formatNumber(a.value,1)} ${expectedUnit()}</strong> · ${r.total?(a.value/r.total*100).toFixed(1):'0.0'}%`:'ไม่มีข้อมูล';
+  $('kpiCompanyCount').textContent=r.companyAgg.length.toLocaleString('th-TH');
+}
+
+/* ---------- render ---------- */
+function filterPayload(){
+  return {year:state.year,month:state.month,product:state.product,secondary:state.secondary,search:state.tableQuery,page:state.tablePage,pageSize:PAGE_SIZE};
+}
+async function requestRender(){
+  const token=++state.renderToken;
+  updateUnitUI();
+  $('datasetState').textContent=`${state.mode==='province'?'Province':'Business'} · ${periodText()} · ${productLabel()} · ${scopeLabel()}`;
+  await ensureDataset(state.mode);
+  const m=await workerCall({type:'query',mode:state.mode,filters:filterPayload()});
+  if(token!==state.renderToken)return;
+  const r=m.result;state.lastResult=r;
+  renderKpis(r);renderCompanyChart(r.companyAgg,r.total);renderShareChart(r.companyAgg,r.total);renderAreaChart(r.areaAgg);renderTable(r);
+  if(state.mode==='province')await renderMap(r.areaAgg,r.total);
+  if(state.analyticsView==='compare')await renderCompareChart();
+  setTimeout(()=>scheduleChartLayout(),20);
+}
+
+/* ---------- CSV export ---------- */
+async function exportCsv(){
+  if(!state.lastResult)return;
+  const btn=$('exportCsv'),old=btn.textContent;btn.textContent='กำลังสร้าง...';btn.disabled=true;
+  try{
+    const m=await workerCall({type:'export',mode:state.mode,filters:filterPayload()});
+    const total=state.lastResult.total;
+    const header=['ปี พ.ศ.','เดือน','ผลิตภัณฑ์',state.mode==='province'?'จังหวัด':'สาขาธุรกิจ','บริษัท',`ปริมาณ (${expectedUnit()})`,'Market Share (%)'];
+    const lines=[header,...m.rows.map(r=>[r[0],TH_MONTHS[r[1]-1],displayProduct(r[2]),r[3],r[4],Number(r[5]).toFixed(3),total?(r[5]/total*100).toFixed(4):'0'])];
+    const csv='\ufeff'+lines.map(a=>a.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\r\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=`doeb-${state.mode}-${state.year}-${state.month||'all'}.csv`;a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),0);
+  }finally{btn.textContent=old;btn.disabled=false}
+}
+
+/* ---------- events ---------- */
+
+function applyFontScale(value,rerender=true){
+  const pct=Math.max(80,Math.min(145,Number(value)||100));
+  state.fontScale=pct/100;
+  document.documentElement.style.setProperty('--font-scale',state.fontScale);
+  $('fontScaleRange').value=String(pct);
+  $('fontScaleValue').value=pct+'%';
+  localStorage.setItem('doeb_font_scale',String(pct));
+  if(rerender&&state.lastResult){
+    renderCompanyChart(state.lastResult.companyAgg,state.lastResult.total);
+    renderShareChart(state.lastResult.companyAgg,state.lastResult.total);
+    renderAreaChart(state.lastResult.areaAgg);
+    if(state.mode==='province')renderMap(state.lastResult.areaAgg,state.lastResult.total);
+    if(state.analyticsView==='compare')renderCompareChart();
+    scheduleChartLayout();
+  }
+}
+
+function bindEvents(){
+
+  function showShareCompany(event){
+    const item=event.target.closest('[data-share-company]');
+    if(!item)return;
+    const chart=state.charts.shareChart;
+    if(!chart)return;
+    const index=Number(item.dataset.shareCompany);
+    const count=$('shareLegendList').children.length;
+    const dataIndex=state.shareType==='bar'?count-1-index:index;
+    chart.dispatchAction({type:'downplay',seriesIndex:0});
+    chart.dispatchAction({type:'highlight',seriesIndex:0,dataIndex});
+    chart.dispatchAction({type:'showTip',seriesIndex:0,dataIndex});
+  }
+  $('shareLegendList').addEventListener('click',showShareCompany);
+  $('shareLegendList').addEventListener('focusin',showShareCompany);
+
+  document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',async()=>{
+    if(state.mode===btn.dataset.mode)return;
+    state.mode=btn.dataset.mode;state.secondary='';state.tablePage=1;state.tableQuery='';$('tableSearch').value='';
+    updateModeUI();refreshMonthOptions();await refreshAvailability();await requestRender();
+    if(state.analyticsView==='compare')await renderCompareChart();
+  }));
+  $('yearFilter').addEventListener('change',async e=>{
+    state.year=+e.target.value;state.month='';state.secondary='';state.tablePage=1;
+    refreshMonthOptions();await refreshAvailability();requestRender();
+  });
+  $('monthFilter').addEventListener('change',e=>{state.month=e.target.value;state.tablePage=1;requestRender()});
+  $('productFilter').addEventListener('change',async e=>{
+    state.product=e.target.value;state.secondary='';state.tablePage=1;
+    await refreshAvailability();requestRender();
+  });
+  $('secondaryFilter').addEventListener('change',e=>{state.secondary=e.target.value;state.tablePage=1;requestRender()});
+  $('resetFilters').addEventListener('click',async()=>{
+    const [y,m]=String(state.index.latest_period||'').split('-').map(Number);
+    state.year=y;state.month=String(m);state.product=ALL_OIL;state.secondary='';state.tableQuery='';state.tablePage=1;
+    $('yearFilter').value=String(y);$('tableSearch').value='';
+    refreshMonthOptions();$('monthFilter').value=String(m);
+    await refreshAvailability();requestRender();
+  });
+  let searchTimer;
+  $('tableSearch').addEventListener('input',e=>{
+    clearTimeout(searchTimer);state.tableQuery=e.target.value;state.tablePage=1;
+    searchTimer=setTimeout(requestRender,180);
+  });
+  $('prevPage').addEventListener('click',()=>{if(state.tablePage>1){state.tablePage--;requestRender()}});
+  $('nextPage').addEventListener('click',()=>{state.tablePage++;requestRender()});
+  $('exportCsv').addEventListener('click',exportCsv);
+  $('fontScaleRange').addEventListener('input',e=>applyFontScale(e.target.value,true));
+
+  document.querySelectorAll('[data-analytics-view]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.analyticsView=btn.dataset.analyticsView;
+    updateAnalyticsView();
+  }));
+  document.querySelectorAll('[data-share-type]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.shareType=btn.dataset.shareType;
+    document.querySelectorAll('[data-share-type]').forEach(b=>b.classList.toggle('active',b===btn));
+    if(state.lastResult)renderShareChart(state.lastResult.companyAgg,state.lastResult.total);
+  }));
+  document.querySelectorAll('[data-area-type]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.areaType=btn.dataset.areaType;
+    document.querySelectorAll('[data-area-type]').forEach(b=>b.classList.toggle('active',b===btn));
+    if(state.lastResult)renderAreaChart(state.lastResult.areaAgg);
+  }));
+  document.querySelectorAll('[data-compare-type]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.compareType=btn.dataset.compareType;
+    document.querySelectorAll('[data-compare-type]').forEach(b=>b.classList.toggle('active',b===btn));
+    renderCompareChart();
+  }));
+  document.querySelectorAll('[data-compare-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.compareMode=btn.dataset.compareMode;
+    document.querySelectorAll('[data-compare-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+    renderCompareChart();
+  }));
+
+  $('compareYearBtn').addEventListener('click',e=>{
+    e.stopPropagation();
+    renderCompareYearMenu();
+    $('compareYearMenu').classList.toggle('hidden');
+  });
+  $('compareYearMenu').addEventListener('click',e=>{
+    e.stopPropagation();
+    const action=e.target.closest('[data-year-action]')?.dataset.yearAction;
+    const years=[...(state.index?.years||[])].sort((a,b)=>b-a);
+    if(action==='latest3')state.compareYears=years.slice(0,3);
+    if(action==='all')state.compareYears=[...years];
+    if(action==='clear')state.compareYears=[];
+    if(action){
+      renderCompareYearMenu();renderCompareChart();return;
+    }
+    if(e.target.matches('input[type="checkbox"]')){
+      const y=+e.target.value;
+      if(e.target.checked){if(!state.compareYears.includes(y))state.compareYears.push(y)}
+      else state.compareYears=state.compareYears.filter(x=>x!==y);
+      if(!state.compareYears.length)state.compareYears=[state.year];
+      updateCompareYearButton();renderCompareChart();
+    }
+  });
+  document.addEventListener('click',()=>$('compareYearMenu').classList.add('hidden'));
+
+
+  const fontControl=$('fontScaleRange').closest('.font-control');
+  const fontControlHome=document.createComment('font control home');
+  fontControl.before(fontControlHome);
+  const chartFontToolbar=document.createElement('div');
+  chartFontToolbar.className='chart-font-toolbar';
+  const chartFontLabel=document.createElement('label');
+  chartFontLabel.htmlFor='fontScaleRange';
+  chartFontLabel.textContent='ขนาดตัวอักษร';
+  chartFontToolbar.appendChild(chartFontLabel);
+
+  function closeChartModal(){
+    fontControlHome.after(fontControl);
+    chartFontToolbar.remove();
+    const card=document.querySelector('.panel.chart-modal');
+    if(card)card.classList.remove('chart-modal');
+    document.querySelector('.chart-modal-backdrop')?.remove();
+    document.body.classList.remove('chart-modal-active');
+    scheduleChartLayout();
+  }
+  function openChartModal(card){
+    if(!card)return;
+    const alreadyOpen=card.classList.contains('chart-modal');
+    closeChartModal();
+    if(alreadyOpen)return;
+
+    const backdrop=document.createElement('div');
+    backdrop.className='chart-modal-backdrop';
+    backdrop.addEventListener('click',closeChartModal);
+    document.body.appendChild(backdrop);
+
+    card.classList.add('chart-modal');
+    chartFontToolbar.appendChild(fontControl);
+    card.appendChild(chartFontToolbar);
+    document.body.classList.add('chart-modal-active');
+    scheduleChartLayout();
+  }
+
+  document.querySelectorAll('.fullscreen-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    openChartModal($(btn.dataset.fullscreen));
+  }));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape')closeChartModal();
+  });
+}
+
+/* ---------- bootstrap ---------- */
+async function boot(){
+  try{
+    const {idx,candidate}=await discoverData();
+    state.index=idx;state.dataPaths=candidate;
+    const years=[...(idx.years||[])].sort((a,b)=>b-a);
+    const [ly,lm]=String(idx.latest_period||'').split('-').map(Number);
+    state.year=ly||years[0];state.month=lm?String(lm):'';
+
+    $('yearFilter').innerHTML='';years.forEach(y=>$('yearFilter').appendChild(option(y,String(y))));
+    $('yearFilter').value=String(state.year);
+
+    $('productFilter').innerHTML='';
+    $('productFilter').appendChild(option(ALL_OIL,'น้ำมันทุกชนิด (ไม่รวม LPG)'));
+    $('productFilter').value=ALL_OIL;
+
+    $('latestPeriod').textContent=ly&&lm?`${TH_MONTHS[lm-1]} ${ly}`:'—';
+    state.compareYears=years.slice(0,3);
+    renderCompareYearMenu();
+    const savedScale=localStorage.getItem('doeb_font_scale')||'100';
+    applyFontScale(savedScale,false);
+    refreshMonthOptions();updateUnitUI();updateModeUI();bindEvents();
+
+    $('loadingMessage').textContent='กำลังโหลดข้อมูลรายจังหวัดจาก province.csv.gz โดยตรง...';
+    await ensureDataset('province');
+    await refreshAvailability();
+    await requestRender();
+    $('loadingOverlay').style.display='none';
+  }catch(err){
+    console.error(err);
+    $('loaderRing').style.display='none';$('progressWrap').style.display='none';
+    $('loadingTitle').textContent='ไม่สามารถเริ่ม Dashboard ได้';$('loadingMessage').textContent='';
+    const box=$('errorBox');box.style.display='block';
+    box.innerHTML=`<strong>${escapeHtml(err.message)}</strong><div style="margin-top:6px;color:#8e5b65;font-size:10px">ให้เปิดผ่าน HTTP Server เช่น <code>python -m http.server 8000</code> และตรวจว่า assets/data/ มี index.json, province.csv.gz และ business.csv.gz</div>`;
+  }
+}
+boot();
+})();
+</script>
+</body>
+</html>
