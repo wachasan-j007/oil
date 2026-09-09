@@ -426,7 +426,7 @@ select option{color:#101820;background:#fff}
 
 /* ให้กราฟมีพื้นหลังแยกจากเว็บ ไม่จมหายกับสีขาว */
 .company-scroll,
-#shareChart,#compareChart,#mapChart,#areaChart{
+#shareChart,#compareChart,#mapChart,#areaChart,#entityCompareChart{
   background:#e8f0f5;
   border:1px solid #c9d9e3;
   border-radius:14px;
@@ -676,7 +676,7 @@ body.chart-modal-active{
 .panel.chart-modal .company-scroll{position:relative;flex:1 1 0;min-height:0;max-height:none!important;margin:0 0 10px}
 .panel.chart-modal #companyChart{position:absolute!important;inset:0;width:auto!important;height:auto!important;min-height:0}
 .panel.chart-modal #shareChart,.panel.chart-modal #compareChart,
-.panel.chart-modal #mapChart,.panel.chart-modal #areaChart{height:auto!important;min-height:0;flex:1}
+.panel.chart-modal #mapChart,.panel.chart-modal #areaChart,.panel.chart-modal #entityCompareChart{height:auto!important;min-height:0;flex:1}
 .panel.chart-modal .legend-list{flex:none;grid-template-columns:repeat(auto-fit,minmax(min(210px,100%),1fr));padding:4px 14px 12px}
 .panel.chart-modal .map-error{height:auto;min-height:0;flex:1}
 @media(max-width:1180px){.chart-grid,.geo-grid{grid-template-columns:minmax(0,1fr)}}
@@ -707,6 +707,117 @@ body.chart-modal-active{
 /* Company names remain accessible even when a donut slice is very small. */
 button.legend-item{width:100%;text-align:left;font:inherit;cursor:pointer}
 button.legend-item:hover,button.legend-item:focus-visible{background:#e3f1f7;border-color:#2587aa}
+
+
+/* ============================================================
+   V7 — Section hierarchy, modal filters, flexible comparison
+   ============================================================ */
+.section-heading{
+  display:flex;align-items:flex-end;justify-content:space-between;gap:14px;
+  margin:23px 2px 10px;padding:0 2px 9px;border-bottom:1px solid #c4d4de;
+}
+.section-heading:first-of-type{margin-top:5px}
+.section-heading-main{display:flex;align-items:center;gap:10px;min-width:0}
+.section-index{
+  width:29px;height:29px;border-radius:9px;display:grid;place-items:center;flex:0 0 auto;
+  background:#dbeaf0;border:1px solid #bdd4df;color:#174f6b;
+  font-size:11px;font-weight:800
+}
+.section-heading h2{
+  margin:0;font-family:'Kanit',sans-serif;font-size:calc(16px * var(--font-scale));
+  font-weight:600;color:#0d3047
+}
+.section-heading p{
+  margin:2px 0 0;color:#5b7283;font-size:calc(9.5px * var(--font-scale));line-height:1.45
+}
+.section-tag{
+  padding:5px 9px;border-radius:999px;background:#edf5f8;border:1px solid #cddde6;
+  color:#45677b;font-size:calc(8.5px * var(--font-scale));white-space:nowrap
+}
+
+/* Filter dock shown inside expanded chart */
+.chart-modal-filterbar{
+  flex:none;display:grid;
+  grid-template-columns:110px 125px minmax(180px,1.2fr) minmax(160px,1fr) minmax(160px,1fr) auto;
+  gap:7px;align-items:end;padding:9px 12px;
+  background:#e5eef3;border-bottom:1px solid #c3d4de
+}
+.chart-modal-filterbar .field{gap:3px}
+.chart-modal-filterbar .field-label{font-size:calc(8.6px * var(--font-scale))}
+.chart-modal-filterbar select{height:34px;font-size:calc(9.3px * var(--font-scale))}
+.chart-modal-filterbar .modal-reset{
+  height:34px;padding:0 10px;border:1px solid #c1d2dd;border-radius:9px;
+  background:#f5f9fb;color:#476376;font-size:calc(9px * var(--font-scale));cursor:pointer
+}
+.chart-modal-filterbar .modal-reset:hover{background:#fff;color:#174f6b}
+.panel.chart-modal .card-head{top:0}
+@media(max-width:980px){
+  .chart-modal-filterbar{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .chart-modal-filterbar .modal-reset{grid-column:3}
+}
+@media(max-width:600px){
+  .chart-modal-filterbar{grid-template-columns:1fr 1fr;padding:7px 9px}
+  .chart-modal-filterbar .modal-reset{grid-column:1/-1}
+}
+
+/* Flexible entity comparison */
+.compare-builder-card{margin-bottom:14px;overflow:hidden}
+.entity-compare-controls{
+  display:grid;grid-template-columns:190px minmax(240px,1fr) auto auto auto;
+  gap:8px;align-items:end;padding:13px 18px 9px
+}
+.entity-compare-controls .field-label{font-size:calc(9.2px * var(--font-scale))}
+.entity-add-btn,.entity-clear-btn{
+  height:39px;padding:0 13px;border-radius:10px;cursor:pointer;font-weight:700;
+  font-size:calc(9.5px * var(--font-scale))
+}
+.entity-add-btn{
+  border:1px solid #9fc7d7;background:#dff0f5;color:#105675
+}
+.entity-add-btn:hover{background:#d3eaf1}
+.entity-clear-btn{
+  border:1px solid #d3dee5;background:#f4f7f9;color:#647b8d
+}
+.entity-clear-btn:hover{background:#eaf1f5;color:#34586d}
+.entity-mode-tools{align-self:end}
+.entity-selected{
+  display:flex;gap:7px;flex-wrap:wrap;min-height:41px;padding:2px 18px 10px
+}
+.entity-chip{
+  display:inline-flex;align-items:center;gap:7px;max-width:330px;padding:6px 8px 6px 10px;
+  border-radius:999px;background:#eef5f8;border:1px solid #c7d9e3;color:#1e455d;
+  font-size:calc(9px * var(--font-scale));font-weight:600
+}
+.entity-chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.entity-chip button{
+  width:20px;height:20px;border:0;border-radius:50%;background:#d9e7ee;color:#446579;
+  cursor:pointer;line-height:1;font-size:13px
+}
+.entity-chip button:hover{background:#c8dce6;color:#173e55}
+.entity-empty{
+  color:#718696;font-size:calc(9px * var(--font-scale));padding:7px 0
+}
+.entity-compare-context{
+  padding:0 18px 8px;color:#566f81;font-size:calc(9px * var(--font-scale))
+}
+#entityCompareChart{
+  width:calc(100% - 20px);height:460px;margin:10px;
+  background:#e8f0f5;border:1px solid #c9d9e3;border-radius:14px;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 3px 10px rgba(39,74,97,.045)
+}
+.panel.chart-modal #entityCompareChart{
+  height:auto!important;min-height:0;flex:1
+}
+@media(max-width:980px){
+  .entity-compare-controls{grid-template-columns:1fr 1fr auto}
+  .entity-mode-tools{grid-column:1/3}
+}
+@media(max-width:650px){
+  .section-heading{align-items:flex-start;flex-direction:column}
+  .entity-compare-controls{grid-template-columns:1fr}
+  .entity-mode-tools{grid-column:auto}
+  .entity-add-btn,.entity-clear-btn{width:100%}
+}
 
 </style>
 </head>
@@ -801,6 +912,14 @@ button.legend-item:hover,button.legend-item:focus-visible{background:#e3f1f7;bor
     </div>
   </section>
 
+
+  <div class="section-heading">
+    <div class="section-heading-main">
+      <span class="section-index">01</span>
+      <div><h2>ภาพรวมข้อมูล</h2><p>ตัวชี้วัดสำคัญตามเงื่อนไขที่เลือก</p></div>
+    </div>
+    <span class="section-tag">OVERVIEW</span>
+  </div>
   <section class="kpi-grid">
     <article class="glass panel kpi-card">
       <div class="kpi-head"><span class="kpi-label">ปริมาณจำหน่ายรวม</span><span class="kpi-icon">Σ</span></div>
@@ -824,6 +943,14 @@ button.legend-item:hover,button.legend-item:focus-visible{background:#e3f1f7;bor
     </article>
   </section>
 
+
+  <div class="section-heading">
+    <div class="section-heading-main">
+      <span class="section-index">02</span>
+      <div><h2>ผู้ค้าและโครงสร้างตลาด</h2><p>ดูปริมาณจำหน่ายรายบริษัท สัดส่วนตลาด และแนวโน้มหลายปี</p></div>
+    </div>
+    <span class="section-tag">MARKET</span>
+  </div>
   <section class="chart-grid">
     <article class="glass panel" id="companyCard">
       <div class="card-head">
@@ -888,6 +1015,14 @@ button.legend-item:hover,button.legend-item:focus-visible{background:#e3f1f7;bor
     </article>
   </section>
 
+
+  <div class="section-heading">
+    <div class="section-heading-main">
+      <span class="section-index">03</span>
+      <div><h2>พื้นที่การจำหน่าย</h2><p>วิเคราะห์การกระจายตัวรายจังหวัดหรือรายสาขาธุรกิจ</p></div>
+    </div>
+    <span class="section-tag">GEOGRAPHY</span>
+  </div>
   <section class="geo-grid" id="geoGrid">
     <article class="glass panel map-card-strong" id="mapCard">
       <div class="card-head">
@@ -928,6 +1063,66 @@ button.legend-item:hover,button.legend-item:focus-visible{background:#e3f1f7;bor
       <div id="areaChart" class="chart"></div>
     </article>
   </section>
+
+
+  <div class="section-heading">
+    <div class="section-heading-main">
+      <span class="section-index">04</span>
+      <div><h2>เครื่องมือเปรียบเทียบ</h2><p>เพิ่มหรือลบจังหวัด บริษัท หรือสาขาธุรกิจ แล้วเปรียบเทียบในกราฟเดียวกัน</p></div>
+    </div>
+    <span class="section-tag">COMPARE</span>
+  </div>
+
+  <section class="glass panel compare-builder-card" id="entityCompareCard">
+    <div class="card-head">
+      <div class="card-title">
+        <h2>Flexible Comparison</h2>
+        <p id="entityCompareSubtitle">เลือกรายการที่ต้องการเปรียบเทียบได้หลายรายการ และลบออกได้ตลอดเวลา</p>
+      </div>
+      <div class="chart-head-actions">
+        <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+        <div class="data-count" id="entityCompareCount">0 รายการ</div>
+        <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="entityCompareCard" title="ขยายกราฟ" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="entity-compare-controls">
+      <label class="field">
+        <span class="field-label">เปรียบเทียบตาม</span>
+        <span class="select-wrap"><select id="entityCompareDimension"></select></span>
+      </label>
+
+      <label class="field">
+        <span class="field-label" id="entityCompareEntityLabel">เลือกรายการ</span>
+        <span class="select-wrap"><select id="entityCompareEntity"></select></span>
+      </label>
+
+      <button class="entity-add-btn" id="entityCompareAdd" type="button">+ เพิ่มรายการ</button>
+
+      <div class="tool-group entity-mode-tools">
+        <button class="chart-tool active" data-entity-compare-mode="monthly" type="button">รายเดือน</button>
+        <button class="chart-tool" data-entity-compare-mode="total" type="button">ยอดรวม</button>
+      </div>
+
+      <button class="entity-clear-btn" id="entityCompareClear" type="button">ล้างทั้งหมด</button>
+    </div>
+
+    <div class="entity-selected" id="entityCompareSelected">
+      <span class="entity-empty">ยังไม่ได้เลือกรายการเปรียบเทียบ</span>
+    </div>
+    <div class="entity-compare-context" id="entityCompareContext">—</div>
+    <div id="entityCompareChart" class="chart"></div>
+  </section>
+
+  <div class="section-heading">
+    <div class="section-heading-main">
+      <span class="section-index">05</span>
+      <div><h2>รายละเอียดข้อมูล</h2><p>ค้นหา ตรวจสอบ และส่งออกข้อมูลตามตัวกรองปัจจุบัน</p></div>
+    </div>
+    <span class="section-tag">DATA TABLE</span>
+  </div>
 
   <section class="glass panel table-card">
     <div class="card-head">
@@ -1034,7 +1229,11 @@ const state={
   areaType:'bar',
   compareType:'line',
   compareMode:'monthly',
-  compareYears:[]
+  compareYears:[],
+  entityCompareDimension:'company',
+  entityCompareSelections:[],
+  entityCompareMode:'monthly',
+  entityCompareOptions:{companies:[],areas:[]}
 };
 
 const PRODUCT_ORDER=[
@@ -1181,7 +1380,7 @@ async function refreshAvailability(){
   if(state.product!==current){
     const m2=await workerCall({
       type:'availability',mode:state.mode,
-      filters:{year:state.year,product:state.product,secondary:state.secondary}
+      filters:{year:state.year,product:state.product,company:state.company,secondary:state.secondary}
     });
     state.availableAreas=m2.result.areas||[];
     state.availableCompanies=m2.result.companies||[];
@@ -1429,6 +1628,54 @@ function compareYears(mode,f){
   }));
 }
 
+
+function compareEntities(mode,f){
+  const s=stores[mode];if(!s)throw new Error('Dataset '+mode+' ยังไม่ได้โหลด');
+  const {allowed,unitCode}=codesForProduct(s,f.product);
+  const dimension=f.dimension==='area'?'area':'company';
+  const selected=[...(f.entities||[])];
+  const entityCodes=new Map();
+  if(dimension==='company'){
+    selected.forEach(name=>{const code=s.companies.indexOf(name);if(code>=0)entityCodes.set(code,name)});
+  }else{
+    selected.forEach(name=>{const code=s.areas.indexOf(name);if(code>=0)entityCodes.set(code,name)});
+  }
+  const oppositeAreaCode=(dimension==='company'&&f.secondary)?s.areas.indexOf(f.secondary):-1;
+  const oppositeCompanyCode=(dimension==='area'&&f.company)?s.companies.indexOf(f.company):-1;
+  const byEntity=new Map(selected.map(name=>[name,new Float64Array(12)]));
+
+  for(let i=0;i<s.count;i++){
+    if(s.year[i]!==Number(f.year))continue;
+    if(unitCode<0||s.unit[i]!==unitCode)continue;
+    if(!allowed.has(s.product[i]))continue;
+    if(oppositeAreaCode>=0&&s.area[i]!==oppositeAreaCode)continue;
+    if(oppositeCompanyCode>=0&&s.company[i]!==oppositeCompanyCode)continue;
+    const code=dimension==='company'?s.company[i]:s.area[i];
+    const name=entityCodes.get(code);
+    if(name===undefined)continue;
+    const v=s.volume[i];if(!Number.isFinite(v)||v===0)continue;
+    byEntity.get(name)[s.month[i]-1]+=v;
+  }
+  return selected.map(name=>({name,months:Array.from(byEntity.get(name)||new Float64Array(12))}));
+}
+
+function entityOptions(mode,f){
+  const s=stores[mode];if(!s)throw new Error('Dataset '+mode+' ยังไม่ได้โหลด');
+  const {allowed,unitCode}=codesForProduct(s,f.product);
+  const companies=new Set(),areas=new Set();
+  const areaCode=f.secondary?s.areas.indexOf(f.secondary):-1;
+  const companyCode=f.company?s.companies.indexOf(f.company):-1;
+  for(let i=0;i<s.count;i++){
+    if(s.year[i]!==Number(f.year))continue;
+    if(unitCode<0||s.unit[i]!==unitCode)continue;
+    if(!allowed.has(s.product[i]))continue;
+    const v=s.volume[i];if(!Number.isFinite(v)||v===0)continue;
+    if(areaCode<0||s.area[i]===areaCode)companies.add(s.companies[s.company[i]]);
+    if(companyCode<0||s.company[i]===companyCode)areas.add(s.areas[s.area[i]]);
+  }
+  return {companies:[...companies],areas:[...areas]};
+}
+
 function exportRows(mode,f){
   const s=stores[mode];if(!s)throw new Error('Dataset ยังไม่ได้โหลด');
   const {allowed,unitCode}=codesForProduct(s,f.product);
@@ -1461,6 +1708,10 @@ onmessage=async e=>{
       postMessage({type:'availabilityResult',id:m.id,result:availability(m.mode,m.filters)});
     }else if(m.type==='compare'){
       postMessage({type:'compareResult',id:m.id,result:compareYears(m.mode,m.filters)});
+    }else if(m.type==='compareEntities'){
+      postMessage({type:'compareEntitiesResult',id:m.id,result:compareEntities(m.mode,m.filters)});
+    }else if(m.type==='entityOptions'){
+      postMessage({type:'entityOptionsResult',id:m.id,result:entityOptions(m.mode,m.filters)});
     }else if(m.type==='export'){
       postMessage({type:'exportResult',id:m.id,rows:exportRows(m.mode,m.filters)});
     }
@@ -1588,7 +1839,7 @@ function fitChartLayout(){
   }
 }
 const chartLayoutObserver=new ResizeObserver(scheduleChartLayout);
-document.querySelectorAll('.chart-grid>.panel,.geo-grid>.panel,.chart,.company-scroll,.card-head,#compareControls,#shareLegendList').forEach(el=>chartLayoutObserver.observe(el));
+document.querySelectorAll('.chart-grid>.panel,.geo-grid>.panel,.compare-builder-card,.chart,.company-scroll,.card-head,#compareControls,#shareLegendList,#entityCompareSelected').forEach(el=>chartLayoutObserver.observe(el));
 document.fonts.ready.then(scheduleChartLayout);
 window.addEventListener('resize',scheduleChartLayout);
 
@@ -1875,6 +2126,133 @@ function updateAnalyticsView(){
   setTimeout(()=>scheduleChartLayout(),30);
 }
 
+
+/* ---------- Flexible entity comparison ---------- */
+function entityDimensionLabel(){
+  if(state.entityCompareDimension==='company')return 'บริษัท / ผู้ค้า';
+  return state.mode==='province'?'จังหวัด':'สาขาธุรกิจ';
+}
+function renderEntityCompareDimensionOptions(){
+  const sel=$('entityCompareDimension');
+  const current=state.entityCompareDimension;
+  sel.innerHTML='';
+  sel.appendChild(option('company','บริษัท / ผู้ค้า'));
+  sel.appendChild(option('area',state.mode==='province'?'จังหวัด':'สาขาธุรกิจ'));
+  if([...sel.options].some(o=>o.value===current))sel.value=current;
+}
+async function refreshEntityCompareOptions(){
+  if(!state.loaded[state.mode])return;
+  const m=await workerCall({
+    type:'entityOptions',mode:state.mode,
+    filters:{year:state.year,product:state.product,company:state.company,secondary:state.secondary}
+  });
+  state.entityCompareOptions=m.result||{companies:[],areas:[]};
+  const raw=state.entityCompareDimension==='company'
+    ?(state.entityCompareOptions.companies||[])
+    :(state.entityCompareOptions.areas||[]);
+  const items=[...raw].sort((a,b)=>String(a).localeCompare(String(b),'th'));
+  const sel=$('entityCompareEntity');
+  sel.innerHTML='';
+  if(!items.length){
+    sel.appendChild(option('','ไม่มีรายการตามตัวกรอง',true));
+  }else{
+    sel.appendChild(option('','เลือกรายการ...'));
+    items.forEach(v=>sel.appendChild(option(v,v)));
+  }
+  $('entityCompareEntityLabel').textContent=`เลือก${entityDimensionLabel()}`;
+  $('entityCompareSubtitle').textContent=`เลือก${entityDimensionLabel()}ได้หลายรายการ เพิ่ม/ลบได้ตลอดเวลา`;
+}
+function renderEntityCompareChips(){
+  const wrap=$('entityCompareSelected');
+  const items=state.entityCompareSelections;
+  $('entityCompareCount').textContent=`${items.length.toLocaleString('th-TH')} รายการ`;
+  if(!items.length){
+    wrap.innerHTML='<span class="entity-empty">ยังไม่ได้เลือกรายการเปรียบเทียบ</span>';
+    return;
+  }
+  wrap.innerHTML=items.map((name,i)=>`
+    <span class="entity-chip" title="${escapeHtml(name)}">
+      <span>${escapeHtml(name)}</span>
+      <button type="button" data-remove-entity="${i}" aria-label="ลบ ${escapeHtml(name)}">×</button>
+    </span>`).join('');
+}
+async function renderEntityCompareChart(){
+  renderEntityCompareChips();
+  const c=getChart('entityCompareChart');
+  const items=state.entityCompareSelections;
+  const opposite=state.entityCompareDimension==='company'
+    ?(state.secondary|| (state.mode==='province'?'ทั่วประเทศ':'ทุกสาขาธุรกิจ'))
+    :(state.company||'ทุกบริษัท');
+  const comparePeriod=state.entityCompareMode==='total'?periodText():`แนวโน้มรายเดือน ${state.year}`;
+  $('entityCompareContext').textContent=`${entityDimensionLabel()} · ${comparePeriod} · ${productLabel()} · ${opposite} · ${expectedUnit()}`;
+
+  if(!items.length){
+    c.clear();
+    c.setOption({
+      graphic:[{type:'text',left:'center',top:'middle',style:{
+        text:`เพิ่ม${entityDimensionLabel()}อย่างน้อย 1 รายการเพื่อเริ่มเปรียบเทียบ`,
+        fill:'#6b8191',font:`500 ${SC(11)}px Kanit`
+      }}]
+    });
+    return;
+  }
+
+  const m=await workerCall({
+    type:'compareEntities',mode:state.mode,
+    filters:{
+      year:state.year,product:state.product,company:state.company,secondary:state.secondary,
+      dimension:state.entityCompareDimension,entities:items
+    }
+  });
+  const rows=m.result||[];
+
+  if(state.entityCompareMode==='total'){
+    const monthIndex=state.month===''?-1:Number(state.month)-1;
+    const data=rows.map(r=>({
+      name:r.name,
+      value:monthIndex>=0?(r.months[monthIndex]||0):r.months.reduce((a,b)=>a+b,0)
+    }));
+    const arr=[...data].reverse();
+    c.setOption({
+      tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'}},
+      legend:{show:false},
+      grid:{left:Math.min(230,Math.max(150,$('entityCompareChart').clientWidth*.24)),right:75,top:24,bottom:35},
+      xAxis:{type:'value',name:expectedUnit(),axisLabel:{color:AX,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+      yAxis:{type:'category',data:arr.map(x=>x.name),axisTick:{show:false},axisLine:{show:false},
+        axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:600,fontSize:SC(9.5),width:190,overflow:'truncate'}},
+      series:[{type:'bar',barMaxWidth:22,data:arr.map((x,i)=>({
+        value:x.value,itemStyle:{color:YEAR_COLORS[(arr.length-1-i)%YEAR_COLORS.length],borderRadius:[0,5,5,0]}
+      })),label:{show:true,position:'right',color:'#27495e',fontWeight:700,fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+    },true);
+    return;
+  }
+
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'axis'},
+    legend:{top:5,type:'scroll',left:12,right:12,textStyle:{color:'#23475c',fontWeight:600,fontSize:SC(8.8)}},
+    grid:{left:65,right:22,top:52,bottom:42},
+    xAxis:{type:'category',data:TH_MONTHS_SHORT,axisTick:{show:false},
+      axisLabel:{color:'#203f53',fontWeight:600,fontSize:SC(9)}},
+    yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9)},
+      axisLabel:{color:AX,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+    series:rows.map((r,i)=>({
+      name:r.name,type:'line',smooth:.20,
+      symbol:rows.length>7?'none':'circle',symbolSize:5,
+      data:r.months,
+      lineStyle:{width:rows.length>7?2:2.6,color:YEAR_COLORS[i%YEAR_COLORS.length]},
+      itemStyle:{color:YEAR_COLORS[i%YEAR_COLORS.length]},
+      emphasis:{focus:'series',lineStyle:{width:3.5}}
+    }))
+  },true);
+}
+async function resetEntityComparisonForMode(){
+  state.entityCompareDimension='company';
+  state.entityCompareSelections=[];
+  renderEntityCompareDimensionOptions();
+  await refreshEntityCompareOptions();
+  await renderEntityCompareChart();
+}
+
 /* ---------- table ---------- */
 function renderTable(result){
   const rows=result.table,total=result.total;
@@ -1916,6 +2294,8 @@ async function requestRender(){
   renderKpis(r);renderCompanyChart(r.companyAgg,r.total);renderShareChart(r.companyAgg,r.total);renderAreaChart(r.areaAgg);renderTable(r);
   if(state.mode==='province')await renderMap(r.areaAgg,r.total);
   if(state.analyticsView==='compare')await renderCompareChart();
+  await refreshEntityCompareOptions();
+  await renderEntityCompareChart();
   setTimeout(()=>scheduleChartLayout(),20);
 }
 
@@ -1950,6 +2330,7 @@ function applyFontScale(value,rerender=true){
     renderAreaChart(state.lastResult.areaAgg);
     if(state.mode==='province')renderMap(state.lastResult.areaAgg,state.lastResult.total);
     if(state.analyticsView==='compare')renderCompareChart();
+    renderEntityCompareChart();
     scheduleChartLayout();
   }
 }
@@ -1973,8 +2354,8 @@ function bindEvents(){
 
   document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',async()=>{
     if(state.mode===btn.dataset.mode)return;
-    state.mode=btn.dataset.mode;state.company='';state.secondary='';state.tablePage=1;state.tableQuery='';$('tableSearch').value='';
-    updateModeUI();refreshMonthOptions();await refreshAvailability();await requestRender();
+    state.mode=btn.dataset.mode;state.company='';state.secondary='';state.entityCompareSelections=[];state.entityCompareDimension='company';state.tablePage=1;state.tableQuery='';$('tableSearch').value='';
+    updateModeUI();renderEntityCompareDimensionOptions();refreshMonthOptions();await refreshAvailability();await requestRender();
     if(state.analyticsView==='compare')await renderCompareChart();
   }));
   $('yearFilter').addEventListener('change',async e=>{
@@ -2010,6 +2391,36 @@ function bindEvents(){
   $('nextPage').addEventListener('click',()=>{state.tablePage++;requestRender()});
   $('exportCsv').addEventListener('click',exportCsv);
   $('fontScaleRange').addEventListener('input',e=>applyFontScale(e.target.value,true));
+
+  $('entityCompareDimension').addEventListener('change',async e=>{
+    state.entityCompareDimension=e.target.value;
+    state.entityCompareSelections=[];
+    await refreshEntityCompareOptions();
+    await renderEntityCompareChart();
+  });
+  $('entityCompareAdd').addEventListener('click',async()=>{
+    const value=$('entityCompareEntity').value;
+    if(!value)return;
+    if(!state.entityCompareSelections.includes(value))state.entityCompareSelections.push(value);
+    $('entityCompareEntity').value='';
+    await renderEntityCompareChart();
+  });
+  $('entityCompareSelected').addEventListener('click',async e=>{
+    const btn=e.target.closest('[data-remove-entity]');
+    if(!btn)return;
+    const index=Number(btn.dataset.removeEntity);
+    if(Number.isInteger(index))state.entityCompareSelections.splice(index,1);
+    await renderEntityCompareChart();
+  });
+  $('entityCompareClear').addEventListener('click',async()=>{
+    state.entityCompareSelections=[];
+    await renderEntityCompareChart();
+  });
+  document.querySelectorAll('[data-entity-compare-mode]').forEach(btn=>btn.addEventListener('click',async()=>{
+    state.entityCompareMode=btn.dataset.entityCompareMode;
+    document.querySelectorAll('[data-entity-compare-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+    await renderEntityCompareChart();
+  }));
 
   document.querySelectorAll('[data-analytics-view]').forEach(btn=>btn.addEventListener('click',()=>{
     state.analyticsView=btn.dataset.analyticsView;
@@ -2072,9 +2483,85 @@ function bindEvents(){
   chartFontLabel.textContent='ขนาดตัวอักษร';
   chartFontToolbar.appendChild(chartFontLabel);
 
+  let activeModalFilterbar=null;
+
+  function syncMainFilterControls(){
+    $('yearFilter').value=String(state.year);
+    refreshMonthOptions();
+    $('monthFilter').value=String(state.month);
+    if([...$('productFilter').options].some(o=>o.value===state.product))$('productFilter').value=state.product;
+    if([...$('companyFilter').options].some(o=>o.value===state.company))$('companyFilter').value=state.company;
+    if([...$('secondaryFilter').options].some(o=>o.value===state.secondary))$('secondaryFilter').value=state.secondary;
+  }
+
+  function makeModalSelect(label,sourceId,key){
+    const field=document.createElement('label');
+    field.className='field';
+    const lab=document.createElement('span');
+    lab.className='field-label';lab.textContent=label;
+    const wrap=document.createElement('span');wrap.className='select-wrap';
+    const sel=document.createElement('select');
+    const source=$(sourceId);
+    sel.innerHTML=source.innerHTML;
+    sel.value=source.value;
+    sel.dataset.modalFilter=key;
+    wrap.appendChild(sel);field.append(lab,wrap);
+    return field;
+  }
+
+  function buildModalFilterbar(){
+    const bar=document.createElement('div');
+    bar.className='chart-modal-filterbar';
+    bar.appendChild(makeModalSelect('ปี พ.ศ.','yearFilter','year'));
+    bar.appendChild(makeModalSelect('เดือน','monthFilter','month'));
+    bar.appendChild(makeModalSelect('ผลิตภัณฑ์','productFilter','product'));
+    bar.appendChild(makeModalSelect('บริษัท / ผู้ค้า','companyFilter','company'));
+    bar.appendChild(makeModalSelect(state.mode==='province'?'จังหวัด':'สาขาธุรกิจ','secondaryFilter','secondary'));
+    const reset=document.createElement('button');
+    reset.type='button';reset.className='modal-reset';reset.textContent='ล้างตัวกรอง';
+    bar.appendChild(reset);
+
+    bar.addEventListener('change',async e=>{
+      const sel=e.target.closest('select[data-modal-filter]');
+      if(!sel)return;
+      const key=sel.dataset.modalFilter;
+      if(key==='year'){
+        state.year=+sel.value;state.month='';state.company='';state.secondary='';
+        refreshMonthOptions();
+      }else if(key==='month')state.month=sel.value;
+      else if(key==='product'){
+        state.product=sel.value;state.company='';state.secondary='';
+      }else if(key==='company')state.company=sel.value;
+      else if(key==='secondary')state.secondary=sel.value;
+      state.tablePage=1;
+      await refreshAvailability();
+      syncMainFilterControls();
+      await requestRender();
+      // rebuild modal choices so dependent dropdowns stay correct
+      if(activeModalFilterbar){
+        const replacement=buildModalFilterbar();
+        activeModalFilterbar.replaceWith(replacement);
+        activeModalFilterbar=replacement;
+      }
+    });
+    reset.addEventListener('click',async()=>{
+      const [y,m]=String(state.index.latest_period||'').split('-').map(Number);
+      state.year=y;state.month=String(m);state.product=ALL_OIL;state.company='';state.secondary='';state.tablePage=1;
+      await refreshAvailability();syncMainFilterControls();await requestRender();
+      if(activeModalFilterbar){
+        const replacement=buildModalFilterbar();
+        activeModalFilterbar.replaceWith(replacement);
+        activeModalFilterbar=replacement;
+      }
+    });
+    return bar;
+  }
+
   function closeChartModal(){
     fontControlHome.after(fontControl);
     chartFontToolbar.remove();
+    activeModalFilterbar?.remove();
+    activeModalFilterbar=null;
     const card=document.querySelector('.panel.chart-modal');
     if(card)card.classList.remove('chart-modal');
     document.querySelector('.chart-modal-backdrop')?.remove();
@@ -2093,6 +2580,9 @@ function bindEvents(){
     document.body.appendChild(backdrop);
 
     card.classList.add('chart-modal');
+    activeModalFilterbar=buildModalFilterbar();
+    const head=card.querySelector('.card-head');
+    head.insertAdjacentElement('afterend',activeModalFilterbar);
     chartFontToolbar.appendChild(fontControl);
     card.appendChild(chartFontToolbar);
     document.body.classList.add('chart-modal-active');
@@ -2129,7 +2619,9 @@ async function boot(){
     renderCompareYearMenu();
     const savedScale=localStorage.getItem('eppo_font_scale')||'100';
     applyFontScale(savedScale,false);
-    refreshMonthOptions();updateUnitUI();updateModeUI();bindEvents();
+    refreshMonthOptions();updateUnitUI();updateModeUI();
+    renderEntityCompareDimensionOptions();
+    bindEvents();
 
     $('loadingMessage').textContent='กำลังโหลดข้อมูลรายจังหวัดจาก province.csv.gz โดยตรง...';
     await ensureDataset('province');
