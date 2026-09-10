@@ -13,7 +13,21 @@ function pctFmt(n, digits=1){
   if(!Number.isFinite(v)) return '-';
   return v.toLocaleString('th-TH',{minimumFractionDigits:digits, maximumFractionDigits:digits})+'%';
 }
-/* ปริมาณถูกโหลดจาก Supabase/PostgreSQL ใน app.js แล้ว */
+async function buildVolumeDataset(){
+  const provsIdx={}, provsList=[]; const pid=p=>(p in provsIdx)?provsIdx[p]:(provsIdx[p]=provsList.length, provsList.push(p), provsIdx[p]);
+  const prodsIdx={}, prodsList=[]; const rid=p=>(p in prodsIdx)?prodsIdx[p]:(prodsIdx[p]=prodsList.length, prodsList.push(p), prodsIdx[p]);
+  let rows;
+  try{ rows = await fetchSheetRows('assets/data/volume_all.xlsx'); }catch(e){ console.error('โหลด volume_all.xlsx ไม่สำเร็จ:', e); throw new Error('โหลด volume_all.xlsx ไม่สำเร็จ — ตรวจสอบว่าวางไฟล์ไว้ที่ assets/data/volume_all.xlsx'); }
+  const recs=[]; const yearsSet=new Set();
+  for(let i=1;i<rows.length;i++){
+    const row=rows[i]; if(!row||row[0]==null) continue;
+    const [yearBE, month, prov, prod, vol] = row;
+    const v = parseFloat(vol); if(!prov||!prod||isNaN(v)) continue;
+    yearsSet.add(+yearBE);
+    recs.push([+yearBE, +month, pid(String(prov).trim()), rid(String(prod).trim()), Math.round(v*1000)/1000]);
+  }
+  return { years:[...yearsSet].sort((a,b)=>a-b), provinces:provsList, products:prodsList, recs };
+}
 function buildVolumeIndices(){
   const vd = state.volData; if(!vd) return;
   const byProv = {}, monthKeys = new Set();
@@ -50,9 +64,19 @@ function volYearMonth(){
   return {y, m};
 }
 function renderVolumeAll(){
-  renderVolKPI(); renderVolMap(); renderVolTopBottomRegion(); renderVolTrend();
-  renderVolCompare(); renderVolRanking();
-  renderShareCharts();
+  if(!state.volumeReady){ void ensureVolumeData(); return; }
+  // FAST: สร้างเฉพาะกราฟของ tab ที่กำลังเปิด
+  const activeTab=document.querySelector('.tab-btn.active')?.dataset.page || 'volume';
+  if(activeTab==='share'){
+    renderShareCharts();
+    return;
+  }
+  renderVolKPI();
+  renderVolMap();
+  renderVolTopBottomRegion();
+  renderVolTrend();
+  renderVolCompare();
+  renderVolRanking();
 }
 function currentVolProdIdx(){
   if(state.filterVolProductRaw==null || !state.volData) return -1;
@@ -127,12 +151,21 @@ function renderVolRanking(){
   $('volRankTable').innerHTML = `<thead><tr><th>อันดับ</th><th>จังหวัด</th><th style="text-align:right">ปริมาณ (ล้านลิตร)</th><th style="text-align:right">สัดส่วน</th></tr></thead><tbody>${rows}</tbody>`;
   state._volRankExport = arr;
 }
-function exportVolExcel(){
+async function exportVolExcel(){
+  const button=$('volExportExcel');
+  button.disabled=true;
+  try{
+    await loadXlsx();
   const rows = (state._volRankExport||[]).map((r,i)=>({'อันดับ':i+1, 'จังหวัด':r.prov, 'ปริมาณ (ล้านลิตร)':r.v}));
   const ws = XLSX.utils.json_to_sheet(rows);
   const wb = XLSX.utils.book_new();
   XLSX.utils.book_append_sheet(wb, ws, 'ปริมาณจำหน่าย');
   XLSX.writeFile(wb, 'pttor-volume-ranking.xlsx');
+  }catch(error){
+    alert(error.message || String(error));
+  }finally{
+    button.disabled=false;
+  }
 }
 function renderVolMap(){
   const vd = state.volData, {y,m} = volYearMonth();

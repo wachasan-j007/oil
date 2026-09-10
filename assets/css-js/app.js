@@ -163,7 +163,7 @@ function modernizeOption(option){
 const charts = {};
 function getChart(id){
   if(!charts[id]){
-    charts[id] = echarts.init($(id), 'orInsight', {renderer:'canvas'});
+    charts[id] = echarts.init($(id), null, {renderer:'canvas'});
     const _origSetOption = charts[id].setOption.bind(charts[id]);
     charts[id].setOption = function(option, ...rest){
       try { modernizeOption(option); } catch(e){ /* never block a render */ }
@@ -224,44 +224,170 @@ window.addEventListener('resize', ()=>Object.values(charts).forEach(c=>c.resize(
 })();
 
 const CACHE_DB = 'pttor-insight-cache', CACHE_STORE = 'kv';
-const PRICE_CACHE_PREFIX = 'or-price-supabase-v1';
-const VOLUME_CACHE_PREFIX = 'or-volume-pttor-supabase-v1';
+const PRICE_CACHE_PREFIX = 'or-price-supabase-v2-year';
+const VOLUME_CACHE_PREFIX = 'or-volume-pttor-supabase-v2';
 
-/* Price data source: same pattern as the Volume Supabase dashboard.
-   Publishable key is intentionally browser-safe. Never put service_role here. */
+// Public browser key. Do not replace with a service_role or secret key.
 const SUPABASE_URL = 'https://gyusawedgtzqgsnxztok.supabase.co';
 const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_DQD4NWas1VRl7eMOnbWLLA_hfOSVqoC';
-const priceDb = supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
-});
+const priceRequests = new Map();
+let volumeRequest = null;
+
+async function requestJSON(url, options={}, timeoutMs=45000){
+  const controller = new AbortController();
+  const timer = setTimeout(()=>controller.abort(), timeoutMs);
+  try{
+    const response = await fetch(url, {...options, signal:controller.signal});
+    const raw = await response.text();
+    let data;
+    try{ data = JSON.parse(raw); }catch{
+      throw new Error(response.ok ? 'ข้อมูลที่ได้รับไม่ใช่ JSON' : 'เซิร์ฟเวอร์ตอบกลับ HTTP '+response.status);
+    }
+    if(!response.ok){
+      const error = new Error(data.message || 'HTTP '+response.status);
+      error.code = data.code;
+      error.status = response.status;
+      throw error;
+    }
+    return data;
+  }catch(error){
+    if(controller.signal.aborted) throw new Error('เซิร์ฟเวอร์ใช้เวลานานเกิน '+timeoutMs/1000+' วินาที กรุณาลองใหม่');
+    if(error instanceof TypeError) throw new Error('เชื่อมต่อข้อมูลไม่ได้ กรุณาตรวจสอบอินเทอร์เน็ตและการเข้าถึง Supabase');
+    throw error;
+  }finally{
+    clearTimeout(timer);
+  }
+}
+const priceDb = {
+  async rpc(name, args={}){
+    try{
+      const data = await requestJSON(SUPABASE_URL+'/rest/v1/rpc/'+name, {
+        method:'POST',
+        headers:{apikey:SUPABASE_PUBLISHABLE_KEY, 'Content-Type':'application/json'},
+        body:JSON.stringify(args)
+      }, name.endsWith('_meta') ? 12000 : 45000);
+      return {data, error:null};
+    }catch(error){
+      if(error.code==='PGRST202' || error.code==='42883'){
+        error.message = 'ยังไม่มีคำสั่ง '+name+' ในฐานข้อมูล กรุณารัน sql_fast_dashboard_rpc.sql ใน Supabase SQL Editor';
+      }else if(error.status===401 || error.status===403){
+        error.message = 'Supabase ไม่อนุญาตให้อ่านข้อมูล กรุณาตรวจสอบ publishable key และสิทธิ์ EXECUTE ของ '+name;
+      }else if(error.code==='57014'){
+        error.message = 'คำสั่ง '+name+' ใช้เวลานานเกินกำหนด กรุณารัน sql_fast_dashboard_rpc.sql ฉบับปรับปรุง';
+      }
+      return {data:null, error};
+    }
+  }
+};
 function idbOpen(){
-  return new Promise((res,rej)=>{
+  return new Promise((resolve,reject)=>{
     const req = indexedDB.open(CACHE_DB, 1);
-    req.onupgradeneeded = ()=> req.result.createObjectStore(CACHE_STORE);
-    req.onsuccess = ()=> res(req.result);
-    req.onerror = ()=> rej(req.error);
+    let settled = false;
+    const finish = (error, db)=>{
+      if(settled){ if(db) db.close(); return; }
+      settled = true;
+      clearTimeout(timer);
+      error ? reject(error) : resolve(db);
+    };
+    const timer = setTimeout(()=>finish(new Error('Cache open timeout')), 1500);
+    req.onupgradeneeded = ()=>req.result.createObjectStore(CACHE_STORE);
+    req.onsuccess = ()=>finish(null, req.result);
+    req.onerror = ()=>finish(req.error);
+    req.onblocked = ()=>finish(new Error('Cache is blocked'));
   });
 }
-async function idbGet(key){
+async function cacheTransaction(mode, operation){
+  let db;
   try{
-    const db = await idbOpen();
-    return await new Promise((res,rej)=>{
-      const tx = db.transaction(CACHE_STORE,'readonly');
-      const rq = tx.objectStore(CACHE_STORE).get(key);
-      rq.onsuccess = ()=>res(rq.result);
-      rq.onerror = ()=>rej(rq.error);
+    db = await idbOpen();
+    return await new Promise((resolve,reject)=>{
+      const tx = db.transaction(CACHE_STORE,mode);
+      const timer = setTimeout(()=>{ tx.abort(); reject(new Error('Cache timeout')); }, 2500);
+      let result;
+      tx.oncomplete = ()=>{ clearTimeout(timer); resolve(result); };
+      tx.onerror = tx.onabort = ()=>{ clearTimeout(timer); reject(tx.error || new Error('Cache transaction failed')); };
+      const req = operation(tx.objectStore(CACHE_STORE));
+      if(req) req.onsuccess = ()=>{ result=req.result; };
     });
-  }catch(e){ return null; }
+  }catch(error){
+    // Storage is optional: blocked/private/full storage must not block the dashboard.
+    return null;
+  }finally{
+    if(db) db.close();
+  }
 }
-async function idbSet(key,val){
-  try{
-    const db = await idbOpen();
-    await new Promise((res,rej)=>{
-      const tx = db.transaction(CACHE_STORE,'readwrite');
-      tx.objectStore(CACHE_STORE).put(val, key);
-      tx.oncomplete = res; tx.onerror = ()=>rej(tx.error);
-    });
-  }catch(e){ }
+function idbGet(key){ return cacheTransaction('readonly', store=>store.get(key)); }
+function idbSet(key,value){ return cacheTransaction('readwrite', store=>store.put(value,key)); }
+function showLoadError(error){
+  console.error(error);
+  const overlay = $('loadingOverlay');
+  overlay.style.display='flex';
+  overlay.querySelector('.spinner').hidden=true;
+  $('loadingText').textContent = error.message || String(error);
+  $('retryLoad').hidden=false;
+}
+function showVolumeStatus(message, retry=false){
+  document.querySelectorAll('#page-volume, #page-share').forEach(page=>{
+    page.classList.toggle('data-unavailable', !state.volumeReady);
+    const panel=page.querySelector('.data-load-status');
+    panel.hidden=!message;
+    panel.querySelector('span').textContent=message;
+    panel.querySelector('button').hidden=!retry;
+    panel.querySelector('button').onclick=()=>ensureVolumeData();
+  });
+}
+async function ensureVolumeData(){
+  if(state.volumeReady) return true;
+  if(volumeRequest) return volumeRequest;
+  volumeRequest=(async()=>{
+    showVolumeStatus('กำลังโหลดข้อมูลปริมาณจำหน่าย...');
+    try{
+      const meta=await loadVolumeMetaFromSupabase();
+      state.volumeMeta=meta;
+      const version=String(meta.data_version || meta.latest_period || 'v1').replace(/[^0-9A-Za-z_-]+/g,'_');
+      const key=VOLUME_CACHE_PREFIX+'-'+version;
+      let ds=await idbGet(key);
+      if(!ds || !Array.isArray(ds.recs) || !ds.recs.length){
+        ds=await buildVolumeDatasetFromSupabase(meta);
+        if(!ds.recs.length) throw new Error('ไม่พบรายการปริมาณจำหน่าย');
+        void idbSet(key,ds);
+      }
+      state.volData=ds;
+      buildVolumeIndices();
+      state.volumeReady=true;
+      if(state.onVolumeReady) state.onVolumeReady();
+      showVolumeStatus('');
+      renderAll();
+      return true;
+    }catch(error){
+      console.error(error);
+      showVolumeStatus(error.message || String(error),true);
+      return false;
+    }finally{
+      volumeRequest=null;
+    }
+  })();
+  return volumeRequest;
+}
+let xlsxRequest;
+function loadXlsx(){
+  if(window.XLSX) return Promise.resolve(window.XLSX);
+  if(xlsxRequest) return xlsxRequest;
+  xlsxRequest=new Promise((resolve,reject)=>{
+    const script=document.createElement('script');
+    const timer=setTimeout(()=>fail(),15000);
+    function fail(){
+      clearTimeout(timer);
+      script.remove();
+      xlsxRequest=null;
+      reject(new Error('โหลดเครื่องมือ Export Excel ไม่สำเร็จ กรุณาลองใหม่'));
+    }
+    script.src='https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+    script.onload=()=>{ clearTimeout(timer); window.XLSX ? resolve(window.XLSX) : fail(); };
+    script.onerror=fail;
+    document.head.appendChild(script);
+  });
+  return xlsxRequest;
 }
 
 function toISO(dateStr){
@@ -276,6 +402,7 @@ async function fetchSheetRows(url){
     if(!r.ok) throw new Error('โหลดไฟล์ไม่สำเร็จ: '+url);
     return r.arrayBuffer();
   });
+  await loadXlsx();
   const wb = XLSX.read(buf, {type:'array'});
   const ws = wb.Sheets[wb.SheetNames[0]];
   return XLSX.utils.sheet_to_json(ws, {header:1, raw:true, defval:null});
@@ -284,7 +411,7 @@ async function fetchSheetRows(url){
 
 
 async function loadVolumeMetaFromSupabase(){
-  $('loadingText').textContent = 'กำลังเชื่อมต่อข้อมูลปริมาณ ปตท. น้ำมันและการค้าปลีก จาก Supabase...';
+  showVolumeStatus('กำลังเชื่อมต่อข้อมูลปริมาณจำหน่าย...');
   const {data,error} = await priceDb.rpc('or_volume_meta');
   if(error) throw new Error('อ่านข้อมูลปริมาณ Supabase ไม่สำเร็จ: '+(error.message||error));
   if(!data || !Array.isArray(data.years) || !data.years.length){
@@ -301,21 +428,25 @@ async function buildVolumeDatasetFromSupabase(meta){
   const recs=[];
   const years=[...(meta.years||[])].map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
 
-  for(let i=0;i<years.length;i++){
-    const yearBE=years[i];
-    $('loadingText').textContent = `กำลังอ่านปริมาณ ปตท. น้ำมันและการค้าปลีก ปี ${yearBE} จาก PostgreSQL (${i+1}/${years.length}) ...`;
-    const {data,error}=await priceDb.rpc('or_volume_dashboard_year',{p_year_be:yearBE});
-    if(error) throw new Error(`โหลดปริมาณปี ${yearBE} ไม่สำเร็จ: `+(error.message||error));
-    const rows=Array.isArray(data?.rows)?data.rows:[];
-    for(const r of rows){
-      if(!Array.isArray(r) || r.length<4) continue;
-      const month=Number(r[0]);
-      const prov=String(r[1]??'').trim();
-      const prod=String(r[2]??'').trim();
-      const vol=Number(r[3]);
-      if(!prov || !prod || !Number.isFinite(month) || !Number.isFinite(vol)) continue;
-      // RPC คืนหน่วยเป็น "ล้านลิตร" ให้ตรงกับ volume.js เดิม
-      recs.push([yearBE, month, pid(prov), rid(prod), Math.round(vol*1000)/1000]);
+  const CONCURRENCY=4;
+  for(let start=0; start<years.length; start+=CONCURRENCY){
+    const batchYears=years.slice(start,start+CONCURRENCY);
+    showVolumeStatus('กำลังโหลดปริมาณปี '+batchYears[0]+'–'+batchYears[batchYears.length-1]+' ('+Math.min(start+batchYears.length,years.length)+'/'+years.length+' ปี)...');
+    const batch=await Promise.all(batchYears.map(async yearBE=>{
+      const {data,error}=await priceDb.rpc('or_volume_dashboard_year',{p_year_be:yearBE});
+      if(error) throw new Error(`โหลดปริมาณปี ${yearBE} ไม่สำเร็จ: `+(error.message||error));
+      return {yearBE, rows:Array.isArray(data?.rows)?data.rows:[]};
+    }));
+    for(const {yearBE,rows} of batch){
+      for(const r of rows){
+        if(!Array.isArray(r) || r.length<4) continue;
+        const month=Number(r[0]);
+        const prov=String(r[1]??'').trim();
+        const prod=String(r[2]??'').trim();
+        const vol=Number(r[3]);
+        if(!prov || !prod || !Number.isFinite(month) || !Number.isFinite(vol)) continue;
+        recs.push([yearBE, month, pid(prov), rid(prod), Math.round(vol*1000)/1000]);
+      }
     }
   }
   return {years, provinces:provsList, products:prodsList, recs};
@@ -379,35 +510,63 @@ function mergeCompactPriceYear(globalDs, part){
   }
 }
 
-async function buildDatasetFromSupabase(meta){
-  const ds={
+function newEmptyPriceDataset(){
+  return {
     dates:[], provinces:[], districts:[], products:[],
     district_prices:[], bangkok_prices:[], transport_cost:{},
     _datesIdx:{}, _provsIdx:{}, _distsIdx:{}, _prodsIdx:{}
   };
+}
 
-  const years=[...(meta.years||[])].map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
-  for(let i=0;i<years.length;i++){
-    const yearBE=years[i];
-    $('loadingText').textContent = `กำลังอ่านราคาปี ${yearBE} จาก PostgreSQL ผ่าน Supabase (${i+1}/${years.length}) ...`;
-    const {data,error}=await priceDb.rpc('or_price_dashboard_year',{p_year_be:yearBE});
-    if(error) throw new Error(`โหลดราคาปี ${yearBE} ไม่สำเร็จ: `+(error.message||error));
-    mergeCompactPriceYear(ds,data||{});
-  }
-
-  // Sort global dates and remap date indexes after merging yearly parts.
+function sortAndRemapPriceDates(ds){
   const order=ds.dates.map((iso,i)=>i).sort((a,b)=>ds.dates[a].localeCompare(ds.dates[b]));
-  const oldToNew={}; order.forEach((oldIdx,newIdx)=>oldToNew[oldIdx]=newIdx);
+  let alreadySorted=true;
+  for(let i=0;i<order.length;i++){ if(order[i]!==i){ alreadySorted=false; break; } }
+  if(alreadySorted) return;
+  const oldToNew={};
+  order.forEach((oldIdx,newIdx)=>oldToNew[oldIdx]=newIdx);
   ds.dates=order.map(i=>ds.dates[i]);
   ds.district_prices.forEach(r=>{r[0]=oldToNew[r[0]];});
   ds.bangkok_prices.forEach(r=>{r[0]=oldToNew[r[0]];});
+  ds._datesIdx={};
+  ds.dates.forEach((iso,i)=>{ds._datesIdx[iso]=i;});
+}
 
-  $('loadingText').textContent = 'กำลังโหลดค่าอ้างอิงค่าขนส่ง สนพ. ...';
-  const transportRaw = await fetch('assets/data/transport-cost-2549.json').then(r=>{
-    if(!r.ok) throw new Error('โหลด transport-cost-2549.json ไม่สำเร็จ');
-    return r.json();
-  });
+function priceYearVersion(meta,yearBE){
+  const yv=meta?.year_versions || {};
+  const latestYear=Math.max(...(meta?.years||[]).map(Number).filter(Number.isFinite));
+  return String(
+    yv[String(yearBE)] ||
+    yv[yearBE] ||
+    (yearBE===latestYear ? meta?.data_version : '') ||
+    'v1'
+  ).replace(/[^0-9A-Za-z_-]+/g,'_');
+}
 
+async function getPriceYearPart(meta,yearBE){
+  const key=PRICE_CACHE_PREFIX+'-'+yearBE+'-'+priceYearVersion(meta,yearBE);
+  if(priceRequests.has(key)) return priceRequests.get(key);
+  const pending=(async()=>{
+    const cached=await idbGet(key);
+    if(cached?.dates?.length && Array.isArray(cached.district_prices) && Array.isArray(cached.bangkok_prices)){
+      $('loadingText').textContent='ใช้แคชราคาปี '+yearBE+' ...';
+      return cached;
+    }
+    $('loadingText').textContent='กำลังอ่านราคาปี '+yearBE+' จาก PostgreSQL (ครั้งแรกอาจใช้เวลาหลายวินาที)...';
+    const {data,error}=await priceDb.rpc('or_price_dashboard_year',{p_year_be:yearBE});
+    if(error) throw new Error('โหลดราคาปี '+yearBE+' ไม่สำเร็จ: '+error.message);
+    if(!data?.dates?.length || !Array.isArray(data.district_prices) || !Array.isArray(data.bangkok_prices)){
+      throw new Error('ข้อมูลราคาปี '+yearBE+' ว่างหรือรูปแบบไม่ถูกต้อง');
+    }
+    void idbSet(key,data);
+    return data;
+  })();
+  priceRequests.set(key,pending);
+  try{ return await pending; }finally{ priceRequests.delete(key); }
+}
+
+function applyTransportCostToDataset(ds,transportRaw){
+  ds.transport_cost={};
   const distLookup={};
   ds.districts.forEach((dd,i)=>{distLookup[ds.provinces[dd[0]]+'|'+dd[1]]=i;});
   const altIdx={};
@@ -415,61 +574,91 @@ async function buildDatasetFromSupabase(meta){
     const [prov,dist]=key.split('|');
     if(dist.startsWith('เมือง') && dist!=='เมือง') altIdx[prov+'|เมือง']=distLookup[key];
   }
-  for(const key in transportRaw){
+  for(const key in (transportRaw||{})){
     if(key in distLookup) ds.transport_cost[distLookup[key]]=transportRaw[key];
     else if(key in altIdx) ds.transport_cost[altIdx[key]]=transportRaw[key];
   }
+}
 
-  delete ds._datesIdx; delete ds._provsIdx; delete ds._distsIdx; delete ds._prodsIdx;
+async function buildDatasetFromSupabase(meta){
+  const ds=newEmptyPriceDataset();
+  const years=[...(meta.years||[])].map(Number).filter(Number.isFinite).sort((a,b)=>a-b);
+  const latestYearBE=years[years.length-1];
+  if(!latestYearBE) throw new Error('ไม่พบปีข้อมูลราคา');
+
+  // FAST: หน้าแรกโหลดเฉพาะปีล่าสุด ไม่โหลดทุกปีย้อนหลัง
+  const part=await getPriceYearPart(meta,latestYearBE);
+  mergeCompactPriceYear(ds,part||{});
+  sortAndRemapPriceDates(ds);
+
+  const transportRaw = state.transportRaw;
+  applyTransportCostToDataset(ds,transportRaw);
+
+  state.loadedPriceYears=new Set([latestYearBE]);
+
+  delete ds._datesIdx;
+  delete ds._provsIdx;
+  delete ds._distsIdx;
+  delete ds._prodsIdx;
   return ds;
 }
 
+async function ensurePriceYearLoaded(yearBE){
+  yearBE=Number(yearBE);
+  if(!Number.isFinite(yearBE) || !state.data) return;
+  state.loadedPriceYears ||= new Set();
+  if(state.loadedPriceYears.has(yearBE)) return;
+
+  const part=await getPriceYearPart(state.priceMeta,yearBE);
+  if(state.loadedPriceYears.has(yearBE)) return;
+  const ds=state.data;
+  ds._datesIdx={}; ds.dates.forEach((x,i)=>{ds._datesIdx[x]=i;});
+  ds._provsIdx={}; ds.provinces.forEach((x,i)=>{ds._provsIdx[x]=i;});
+  ds._prodsIdx={}; ds.products.forEach((x,i)=>{ds._prodsIdx[x]=i;});
+  ds._distsIdx={};
+  ds.districts.forEach((dd,i)=>{ds._distsIdx[ds.provinces[dd[0]]+'|'+dd[1]]=i;});
+
+  mergeCompactPriceYear(ds,part);
+  sortAndRemapPriceDates(ds);
+  applyTransportCostToDataset(ds,state.transportRaw||{});
+
+  delete ds._datesIdx;
+  delete ds._provsIdx;
+  delete ds._distsIdx;
+  delete ds._prodsIdx;
+
+  state.loadedPriceYears.add(yearBE);
+  buildIndices();
+}
 
 async function loadData(){
+  if(location.protocol==='file:'){
+    throw new Error('กรุณาเปิดผ่าน Start_Dashboard.cmd แล้วเข้า http://127.0.0.1:8000/DashboardOR.html');
+  }
+  if(typeof echarts==='undefined'){
+    throw new Error('โหลดเครื่องมือกราฟไม่สำเร็จ กรุณาตรวจสอบการเข้าถึง cdn.jsdelivr.net แล้วลองใหม่');
+  }
   $('sidebar').classList.remove('open');
-  state.sidebarState = {type:null, key:null};
-  echarts.registerMap; 
-  $('loadingText').textContent = 'กำลังโหลดแผนที่ประเทศไทย...';
-  const geo = await fetch('assets/data/thailand_th.geojson').then(r=>r.json());
-  state.geo = geo;
-  echarts.registerMap('thailand', geo);
-
-  const priceMeta = await loadPriceMetaFromSupabase();
-  state.priceMeta = priceMeta;
-  const version = String(priceMeta.data_version || priceMeta.latest_price_at || 'v1').replace(/[^0-9A-Za-z_-]+/g,'_');
-  const priceCacheKey = `${PRICE_CACHE_PREFIX}-${version}`;
-  let ds = await idbGet(priceCacheKey);
-  if(!ds){
-    ds = await buildDatasetFromSupabase(priceMeta);
-    $('loadingText').textContent = 'กำลังบันทึกแคชราคาจาก SQL เพื่อเปิดครั้งถัดไปให้เร็วขึ้น...';
-    await idbSet(priceCacheKey, ds);
-  } else {
-    $('loadingText').textContent = 'พบแคชราคาเวอร์ชันล่าสุดแล้ว...';
-  }
-  state.data = ds;
+  state.sidebarState={type:null,key:null};
+  $('loadingText').textContent='กำลังโหลดข้อมูลราคาและแผนที่...';
+  const [priceMeta,geo,transportRaw]=await Promise.all([
+    loadPriceMetaFromSupabase(),
+    requestJSON('assets/data/thailand_th.geojson',{},15000),
+    requestJSON('assets/data/transport-cost-2549.json',{},15000)
+  ]);
+  state.priceMeta=priceMeta;
+  state.geo=geo;
+  state.transportRaw=transportRaw;
+  echarts.registerMap('thailand',geo);
+  state.data=await buildDatasetFromSupabase(priceMeta);
   buildIndices();
-
-  const volumeMeta = await loadVolumeMetaFromSupabase();
-  state.volumeMeta = volumeMeta;
-  const volumeVersion = String(volumeMeta.data_version || volumeMeta.latest_period || 'v1').replace(/[^0-9A-Za-z_-]+/g,'_');
-  const volumeCacheKey = `${VOLUME_CACHE_PREFIX}-${volumeVersion}`;
-  let volDs = await idbGet(volumeCacheKey);
-  if(!volDs){
-    volDs = await buildVolumeDatasetFromSupabase(volumeMeta);
-    $('loadingText').textContent = 'กำลังบันทึกแคชปริมาณจาก SQL เพื่อเปิดครั้งถัดไปให้เร็วขึ้น...';
-    await idbSet(volumeCacheKey, volDs);
-  } else {
-    $('loadingText').textContent = 'พบแคชปริมาณ ปตท. น้ำมันและการค้าปลีก เวอร์ชันล่าสุดแล้ว...';
-  }
-  state.volData = volDs;
+  // Volume is requested only when its tab is opened; failure cannot block prices.
+  state.volData={years:[],provinces:[],products:[],recs:[]};
+  state.volumeReady=false;
   buildVolumeIndices();
-
-  initFilters(); // จะเปิด tab ตาม location.hash ให้เองถ้ามี (กันหน้าเด้งตอนรีเฟรช)
+  initFilters();
   $('loadingOverlay').style.display='none';
-  const hashPageOnLoad = location.hash.slice(1);
-  if(!hashPageOnLoad || !document.querySelector('.tab-btn[data-page="'+hashPageOnLoad+'"]')){
-    renderAll();
-  }
+  renderAll();
 }
 
 
@@ -586,7 +775,7 @@ function initFilters(){
 
   const yearSel = $('fYear');
   const priceYears = (state.priceMeta?.years?.length ? state.priceMeta.years.map(y=>String(Number(y)-543)) : [...new Set(d.dates.map(x=>x.slice(0,4)))]).sort();
-  const volumeYears = state.volData ? state.volData.years.map(y=>String(+y-543)).sort() : [];
+  let volumeYears = [];
 
   const monthSel = $('fMonth');
   function fillYearOptions(isVolPage){
@@ -637,13 +826,24 @@ function initFilters(){
   state.filterPriceYear = String(initY);
   state.filterPriceMonth = String(initM);
   const latestVolYearBE = state.volData?.years?.[state.volData.years.length-1];
-  const latestVolYearCE = latestVolYearBE ? String(+latestVolYearBE-543) : String(initY);
+  let latestVolYearCE = latestVolYearBE ? String(+latestVolYearBE-543) : String(initY);
   const latestVolMonths = state.volData?.recs
     ?.filter(r=>r[0]===latestVolYearBE)
     .map(r=>+r[1]) || [];
-  const latestVolMonth = latestVolMonths.length ? String(Math.max(...latestVolMonths)) : '6';
+  let latestVolMonth = latestVolMonths.length ? String(Math.max(...latestVolMonths)) : '';
   state.filterVolYear = latestVolYearCE;
   state.filterVolMonth = latestVolMonth;
+  state.onVolumeReady=()=>{
+    volumeYears=state.volData.years.map(y=>String(+y-543)).sort();
+    latestVolYearCE=volumeYears[volumeYears.length-1];
+    const months=state.volData.recs.filter(r=>r[0]===Number(latestVolYearCE)+543).map(r=>r[1]);
+    latestVolMonth=months.length ? String(Math.max(...months)) : '';
+    state.filterVolYear=latestVolYearCE;
+    state.filterVolMonth=latestVolMonth;
+    const page=document.querySelector('.tab-btn.active')?.dataset.page || 'overview';
+    syncDateFilterOptions(page);
+    refreshProvinceOptions();
+  };
 
   yearSel.value = state.filterPriceYear;
   monthSel.value = state.filterPriceMonth;
@@ -660,7 +860,8 @@ function initFilters(){
   function refreshProvinceOptions(){
     const region = state.filterRegion;
     provSel.innerHTML = '<option value="">ทั้งหมด</option>';
-    let provs = [...d.provinces];
+    const page=document.querySelector('.tab-btn.active')?.dataset.page;
+    let provs = [...((page==='volume' || page==='share') && state.volumeReady ? state.volData.provinces : d.provinces)];
     if(region) provs = provs.filter(p=>regionOf(p)===region);
     provs.sort((a,b)=>a.localeCompare(b,'th'));
     provs.forEach(p=>{
@@ -707,26 +908,56 @@ function initFilters(){
     return false;
   };
 
-  function updateDateFromPickers(){
+  let dateRequest=0;
+  async function updateDateFromPickers(){
+    const request=++dateRequest;
     const activeTab = document.querySelector('.tab-btn.active')?.dataset.page;
     const isVolPage = activeTab==='volume' || activeTab==='share';
-    
+
     if(isVolPage){
       state.filterVolYear = yearSel.value;
       state.filterVolMonth = monthSel.value;
-    } else {
-      state.filterPriceYear = yearSel.value;
-      state.filterPriceMonth = monthSel.value;
-      const yearBE = +yearSel.value + 543;
-      state.filterDay = daySel.value;
-      if(daySel.value===''){
-        state.filterDateISO = buildISO(yearBE, +monthSel.value, 31);
-      } else {
-        state.filterDateISO = buildISO(yearBE, +monthSel.value, +daySel.value);
-      }
+      if(state.volData) renderVolumeAll();
+      return;
     }
-    if(isVolPage && state.volData) renderVolumeAll();
-    else renderAll();
+
+    const previousYear=state.filterPriceYear;
+    const previousMonth=state.filterPriceMonth;
+    state.filterPriceYear = yearSel.value;
+    state.filterPriceMonth = monthSel.value;
+    const yearBE = +yearSel.value + 543;
+
+    // FAST: ปีเก่ายังไม่โหลด จะดึงเฉพาะตอนผู้ใช้เลือกปีนั้น
+    if(!(state.loadedPriceYears?.has(yearBE))){
+      const overlay=$('loadingOverlay');
+      overlay.style.display='flex';
+      $('loadingText').textContent=`กำลังโหลดราคาปี ${yearBE} ครั้งแรก...`;
+      try{
+        await ensurePriceYearLoaded(yearBE);
+        refreshProvinceOptions();
+        refreshDistrictOptions();
+      }catch(err){
+        console.error(err);
+        if(request!==dateRequest) return;
+        state.filterPriceYear=previousYear;
+        state.filterPriceMonth=previousMonth;
+        yearSel.value=previousYear;
+        monthSel.value=previousMonth;
+        overlay.style.display='none';
+        alert(err.message||String(err));
+        return;
+      }
+      if(request!==dateRequest) return;
+      overlay.style.display='none';
+    }
+
+    state.filterDay = daySel.value;
+    if(daySel.value===''){
+      state.filterDateISO = buildISO(yearBE, +monthSel.value, 31);
+    } else {
+      state.filterDateISO = buildISO(yearBE, +monthSel.value, +daySel.value);
+    }
+    renderAll();
   }
 
   window.refreshProvinceOptions = refreshProvinceOptions;
@@ -924,6 +1155,7 @@ function initFilters(){
     // สลับรายการปี/เดือนให้ตรงกับชุดข้อมูลของแต่ละหน้า
     // ราคาและปริมาณใช้ปีจาก Supabase PostgreSQL โดยปริมาณกรองเฉพาะ ปตท. น้ำมันและการค้าปลีก
     syncDateFilterOptions(page);
+    refreshProvinceOptions();
 
     if(isVolPage && state.volData) renderVolumeAll();
     else renderAll(); // ให้รีเฟรชหน้าราคาด้วยกรณีสลับกลับมา
@@ -994,13 +1226,17 @@ function chartTheme(){
 }
 
 
-loadData();
+function startDashboard(){
+  $('retryLoad').onclick=()=>location.reload();
+  loadData().catch(showLoadError);
+}
+if(document.readyState==='loading'){
+  document.addEventListener('DOMContentLoaded',startDashboard,{once:true});
+}else{
+  startDashboard();
+}
 $('refreshData').onclick = async ()=>{
-  const db = await idbOpen();
-  await new Promise((res)=>{
-    const tx = db.transaction(CACHE_STORE,'readwrite');
-    tx.objectStore(CACHE_STORE).clear();
-    tx.oncomplete = res;
-  });
+  $('refreshData').disabled=true;
+  await cacheTransaction('readwrite',store=>store.clear());
   location.reload();
 };

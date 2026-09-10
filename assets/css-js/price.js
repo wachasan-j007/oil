@@ -2,11 +2,23 @@
    price.js — ราคาขายปลีก: overview, trend, transport, ranking,
    compare. Depends on app.js (must load after it).
    ============================================================ */
+function selectedPriceYearBounds(){
+  const d=state.data;
+  if(!d?.dates?.length) return null;
+  const year=(state.filterDateISO || d.dates[d.dates.length-1]).slice(0,4);
+  const dates=d.dates.filter(x=>x.startsWith(year+'-'));
+  if(!dates.length) return null;
+  return {year,startISO:dates[0],endISO:dates[dates.length-1]};
+}
+
 function dailyForwardFillAvg(distIdxs, prodIdx){
   const d = state.data;
-  if(!d.dates.length) return [];
-  const startISO = d.dates[0], endISO = d.dates[d.dates.length-1];
-  const events = distIdxs.map(di => (d._byDistProd[di+'-'+prodIdx]||[]).map(([dIdx,p])=>[d.dates[dIdx],p]));
+  const bounds=selectedPriceYearBounds();
+  if(!bounds) return [];
+  const {year,startISO,endISO}=bounds;
+  const events = distIdxs.map(di => (d._byDistProd[di+'-'+prodIdx]||[])
+    .filter(([dIdx])=>d.dates[dIdx]?.startsWith(year+'-'))
+    .map(([dIdx,p])=>[d.dates[dIdx],p]));
   const ptr = events.map(()=>0);
   const cur = events.map(()=>null);
   const result = [];
@@ -27,11 +39,14 @@ function dailyForwardFillAvg(distIdxs, prodIdx){
 }
 function dailyForwardFillAvgAll(distIdxs){
   const d = state.data;
-  if(!d.dates.length) return [];
-  const startISO = d.dates[0], endISO = d.dates[d.dates.length-1];
+  const bounds=selectedPriceYearBounds();
+  if(!bounds) return [];
+  const {year,startISO,endISO}=bounds;
   const nProds = d.products.length;
   const events = distIdxs.map(di => {
-    return d.products.map((_,pi)=> (d._byDistProd[di+'-'+pi]||[]).map(([dIdx,p])=>[d.dates[dIdx],p]));
+    return d.products.map((_,pi)=> (d._byDistProd[di+'-'+pi]||[])
+      .filter(([dIdx])=>d.dates[dIdx]?.startsWith(year+'-'))
+      .map(([dIdx,p])=>[d.dates[dIdx],p]));
   });
   const ptr = distIdxs.map(()=> d.products.map(()=>0));
   const cur = distIdxs.map(()=> d.products.map(()=>null));
@@ -47,7 +62,7 @@ function dailyForwardFillAvgAll(distIdxs){
       }
     }
     let sum=0, n=0;
-    for(let j=0;j<distIdxs.length;j++){
+    for(let j=0;j<cur.length;j++){
       for(let pi=0;pi<nProds;pi++){
         if(cur[j][pi]!=null){ sum+=cur[j][pi]; n++; }
       }
@@ -212,20 +227,28 @@ function provinceAverages(snapshot){
 function renderAll(){
   if(!state.data) return;
   if(state.sidebarState.type==null) $('sidebar').classList.remove('open');
-  renderKPI();
-  renderRegionOverview();
-  renderMap();
-  renderTopBottom();
-  renderRegionPie();
-  renderMomChart();
-  renderProductMonthlyTrend();
-  renderTransport();
-  renderRanking();
-  renderCompare();
-  {
-    const activeTab = document.querySelector('.tab-btn.active')?.dataset.page;
-    if((activeTab==='volume' || activeTab==='share') && state.volData) renderVolumeAll();
+
+  // FAST: render เฉพาะหน้าที่ผู้ใช้กำลังเปิด ไม่สร้างกราฟทุก tab พร้อมกัน
+  const activeTab = document.querySelector('.tab-btn.active')?.dataset.page || 'overview';
+  if(activeTab==='overview'){
+    renderKPI();
+    renderRegionOverview();
+    renderMap();
+    renderTopBottom();
+    renderRegionPie();
+  }else if(activeTab==='trend'){
+    renderMomChart();
+    renderProductMonthlyTrend();
+  }else if(activeTab==='transport'){
+    renderTransport();
+  }else if(activeTab==='ranking'){
+    renderRanking();
+  }else if(activeTab==='compare'){
+    renderCompare();
+  }else if((activeTab==='volume' || activeTab==='share') && state.volData){
+    renderVolumeAll();
   }
+
   if(state.sidebarState.type==='province') openProvinceSidebar(state.sidebarState.key);
   else if(state.sidebarState.type==='district') openDistrictSidebar(state.sidebarState.key);
   else if(state.sidebarState.type==='vol_province') openVolProvinceSidebar(state.sidebarState.key);
@@ -797,8 +820,10 @@ function renderProductMonthlyTrend(){
   const distSet = new Set(distIdxs);
 
   const byMonth = {}; 
+  const targetYear=(state.filterDateISO || d.dates[d.dates.length-1]).slice(0,4);
   d.district_prices.forEach(([di, distIdx, prodIdx, price])=>{
     if(!distSet.has(distIdx)) return;
+    if(!d.dates[di]?.startsWith(targetYear+'-')) return;
     const ym = d.dates[di].slice(0,7);
     byMonth[ym] ||= { sum: new Array(d.products.length).fill(0), count: new Array(d.products.length).fill(0) };
     byMonth[ym].sum[prodIdx] += price;
@@ -1053,8 +1078,10 @@ function renderMomChart(){
   }
   const distSet = new Set(distIdxs);
   const byMonth = {};
+  const targetYear=(state.filterDateISO || d.dates[d.dates.length-1]).slice(0,4);
   d.district_prices.forEach(([di, distIdx, prodIdx, price])=>{
     if(!distSet.has(distIdx)) return;
+    if(!d.dates[di]?.startsWith(targetYear+'-')) return;
     const ym = d.dates[di].slice(0,7);
     byMonth[ym] = byMonth[ym] || { sum: new Array(d.products.length).fill(0), count: new Array(d.products.length).fill(0) };
     byMonth[ym].sum[prodIdx] += price;
