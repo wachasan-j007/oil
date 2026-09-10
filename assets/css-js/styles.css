@@ -261,7 +261,12 @@ body.sidebar-collapsed .sb-collapse-btn{transform:rotate(180deg); align-self:cen
   background:transparent; cursor:pointer; font-family:inherit;
 }
 .chip.active{background:var(--blue-600); color:#fff; border-color:var(--blue-600);}
-.reset-btn{margin-left:auto; font-size:12px; color:var(--text-dim); background:none; border:none; cursor:pointer; text-decoration:underline;}
+.reset-btn{
+  margin-left:auto; font-family:inherit; font-size:12px; color:var(--text);
+  background:var(--surface-soft); border:1px solid var(--border); cursor:pointer;
+  text-decoration:none; padding:7px 12px; border-radius:9px; transition:all .15s;
+}
+.reset-btn:hover{border-color:var(--or-light); background:var(--blue-100); color:var(--or-light);}
 
 /* ---------- >>> NEW SYMMETRICAL ALIGNMENT SYSTEM <<< ---------- */
 /* ระบบปรับสมมาตร Grid & Flexbox เต็มรูปแบบ เพื่อให้ซ้าย-ขวาเท่ากันเป๊ะ */
@@ -417,3 +422,16 @@ table.data-table tbody tr:hover{background:var(--blue-100);}
 h1,.page-title{font-size:calc(22px * var(--ui-scale)); font-weight:700;}
 .card h3{font-weight:600;}
 .kpi-card .value{font-weight:700;}
+
+
+/* ---------- Volume/share readability polish ---------- */
+#volTopBottomChart{min-height:340px;}
+#volRegionPie{min-height:320px;}
+#shareByRegionChart{min-height:460px;}
+@media(max-width:760px){
+  .filterbar{gap:8px 10px;}
+  .filterbar label{min-width:calc(50% - 6px);}
+  .filterbar select,.filterbar input{width:100%; min-width:0;}
+  .search-wrap{width:100%;}
+  .reset-btn{width:100%; margin-left:0;}
+}
