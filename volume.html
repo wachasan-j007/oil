@@ -1,0 +1,2865 @@
+<!doctype html>
+<html lang="th" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#f4f7fb">
+<script>
+try{document.documentElement.dataset.theme=localStorage.getItem('eppo_theme')==='dark'?'dark':'light'}catch(e){}
+</script>
+<title>แดชบอร์ดวิเคราะห์ปริมาณการจำหน่ายผลิตภัณฑ์ปิโตรเลียม | สนพ.</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root{--font-scale:1;--site-font-weight:400;--site-heading-weight:600}
+*{box-sizing:border-box}
+html{font-size:calc(16px * var(--font-scale));background:var(--bg);scroll-behavior:smooth}
+body{margin:0;min-height:100vh;color:var(--text);font-family:Inter,Kanit,system-ui,sans-serif}
+button,input,select{font:inherit;color:inherit}
+.hidden{display:none!important}
+button{transition:background .15s}
+button:hover{filter:brightness(.98)}
+.app-header{position:sticky;top:0;z-index:80}
+.header-inner{margin:auto;display:flex;align-items:center;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;min-width:0}
+.brand-logo{display:grid;place-items:center;color:#fff;flex:none}
+.brand-logo svg{width:25px;height:25px}
+.brand-copy{min-width:0}.brand-copy h1{font-family:Kanit,sans-serif;font-weight:500;margin:0;color:#163b5d}.brand-copy p{margin:3px 0 0;color:var(--muted)}
+.header-status{display:flex;align-items:center}
+.header-select-control{display:flex;align-items:center;gap:5px;border:1px solid var(--line)}
+.header-select-control select{border:0;padding:0 4px;width:auto;height:28px;background:transparent;font-size:10px}
+.control-symbol{font-size:11px}
+.pill{display:flex;align-items:center;gap:6px;padding:0 10px;border:1px solid var(--line);background:#f8fafd}
+.pill strong{color:#274f75}
+.shell{margin:0 auto}
+.control-center{position:sticky;z-index:65}
+.control-top{display:flex;align-items:center;justify-content:space-between}
+.tab-switch{display:flex;gap:3px}
+.tab-btn{display:flex;align-items:center;gap:7px;border:0;border-radius:8px;background:transparent;font-family:Kanit,sans-serif}
+.tab-btn svg{width:14px;height:14px;flex:none}
+.dataset-line{display:flex;align-items:center;gap:8px;color:var(--muted);min-width:0}
+.dataset-line .pulse{width:6px;height:6px;background:#0cabb9;border-radius:50%;flex:none}
+.dataset-line span:last-child{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+.filter-grid,.kpi-grid{display:grid}
+.field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.select-wrap{position:relative;display:block}
+.select-wrap:after{content:"⌄";position:absolute;right:10px;top:50%;transform:translateY(-55%);pointer-events:none;color:#8399b0;font-size:12px}
+select,input[type="search"]{width:100%;padding:0 27px 0 10px;border:1px solid var(--line);appearance:none}
+.unit-badge{display:flex;align-items:center;justify-content:center;gap:7px;border:1px solid var(--line)}
+.unit-badge svg{width:13px;height:13px}
+.reset-btn{border:1px solid var(--line);border-radius:9px;padding:0 12px}
+.glass{border-radius:var(--radius)}
+.card-head{display:flex;justify-content:space-between}
+.card-title h2{font-family:Kanit,sans-serif;margin:0;color:#173d5e}
+.kpi-head{display:flex;justify-content:space-between;gap:8px}
+.kpi-value{text-shadow:none}
+.footer strong{font-weight:500}
+.year-check{display:flex;align-items:center;gap:7px;padding:5px;font-size:12px}
+.brand-copy h1,.section-heading h2,.card-title h2,.product-top-name{font-weight:var(--site-heading-weight)}
+#shareChart{overflow:visible}
+#geoGrid:has(#mapCard.hidden){grid-template-columns:minmax(0,1fr)}
+
+/* Executive redesign: one responsive layout layer, shared spacing and chart geometry. */
+:root{--bg:#edf2f8;--panel:#fff;--panel-solid:#fff;--panel-soft:#f4f7fb;--line:#dce5ef;--text:#152944;--text-2:#334b65;--muted:#657990;--navy:#102c50;--blue:#147ee8;--cyan:#0bacbf;--green:#119b78;--radius:18px;--header-h:76px;--shadow:0 5px 20px rgba(24,50,82,.045);--site-font-weight:400;--site-heading-weight:600}
+html{scroll-padding-top:220px}
+html[data-theme] body{background:var(--bg);background-image:radial-gradient(ellipse at 90% 0,rgba(28,126,228,.09),transparent 42%)}
+body:before{display:none}
+body,button,input,select,table{font-weight:var(--site-font-weight)}
+button{cursor:pointer}
+button:disabled{opacity:.45;cursor:default}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline:3px solid #19a9e0;outline-offset:3px}
+.app-header,html[data-theme] .app-header{height:auto;min-height:76px;background:rgba(255,255,255,.97);border-bottom:1px solid var(--line);backdrop-filter:blur(18px)}
+.header-inner{max-width:1680px;min-height:76px;padding:12px 28px;gap:20px}
+.brand-logo{width:42px;height:42px;background:linear-gradient(145deg,#0d305a,#1589ca);border-radius:12px}
+.brand-copy h1{font-size:clamp(14px,1.3vw,20px);text-shadow:none;white-space:normal;line-height:1.45}
+.brand-copy p{font-size:9px;letter-spacing:.3px;line-height:1.5}
+.header-status{gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.font-control{display:flex;gap:5px;align-items:center;height:32px;padding:0 9px;background:#f5f8fc;border:1px solid var(--line);border-radius:9px}
+.font-control input{width:64px;accent-color:var(--blue)}
+.font-control output{font-size:10px;min-width:30px}
+.a-small{font-size:10px}.a-big{font-size:15px}
+.header-select-control{min-width:86px;border-radius:9px;height:32px;padding:0 6px;background:#f5f8fc;box-shadow:none}
+.header-select-control select{min-width:56px}
+.pill{height:32px;border-radius:9px;font-size:10px;box-shadow:none}
+.status-pill{display:none}
+.shell{max-width:1680px;padding:22px 28px 28px}
+.executive-hero{position:relative;display:flex;align-items:center;justify-content:space-between;gap:24px;overflow:hidden;padding:28px 32px;margin-bottom:18px;border-radius:22px;color:#fff;background:linear-gradient(115deg,#0c2549 0%,#113d6b 68%,#0d6182 100%);box-shadow:0 14px 32px rgba(17,49,83,.15)}
+.executive-hero:after{content:"";position:absolute;width:320px;height:320px;border:1px solid #ffffff12;border-radius:50%;right:-80px;top:-155px;box-shadow:0 0 0 45px #ffffff05,0 0 0 90px #ffffff04;pointer-events:none}
+.hero-eyebrow{display:flex;align-items:center;gap:9px;font-size:10px;letter-spacing:2px;color:#84d7f0;margin-bottom:7px}
+.hero-eyebrow:before{content:"";width:7px;height:7px;border-radius:50%;background:#2ed8c0;box-shadow:0 0 0 4px #2ed8c018}
+.executive-hero h2{margin:0;font-family:Kanit,sans-serif;font-size:clamp(24px,2.4vw,36px);font-weight:500;line-height:1.45}
+.executive-hero p{color:#b5cce4;margin:6px 0 0;font-size:12px;line-height:1.7}
+.hero-meta{z-index:1;min-width:200px;padding-left:26px;border-left:1px solid #ffffff26}
+.hero-meta small{color:#9fbfdc;font-size:11px}
+.hero-meta strong{display:block;font-size:21px;margin:6px 0;color:#fff;font-family:Kanit,sans-serif;font-weight:500}
+.hero-meta span{display:inline-flex;padding:5px 10px;background:#ffffff10;border:1px solid #ffffff20;border-radius:7px;font-size:10px;color:#a9e6ed;max-width:320px;overflow-wrap:anywhere}
+html[data-theme] .control-center{background:rgba(255,255,255,.98)}
+.control-center{top:calc(var(--header-h) + 8px);margin-bottom:18px;padding:13px 16px;border:1px solid var(--line);border-radius:15px;box-shadow:0 7px 24px rgba(26,54,86,.08)}
+.sticky-note{display:none}
+.control-top{margin-bottom:11px;flex-wrap:wrap;gap:8px}
+.tab-switch{background:#edf3fa;border:0;border-radius:10px;padding:3px}
+.tab-btn{font-size:12px;height:34px;padding:0 15px;color:#6a7c91}
+.tab-btn.active{background:var(--navy);color:#fff;box-shadow:0 3px 9px #102c501c}
+.dataset-line{font-size:10px;max-width:52%}
+.filter-grid{grid-template-columns:minmax(76px,.65fr) minmax(110px,.85fr) minmax(165px,1.6fr) minmax(140px,1.2fr) minmax(130px,1.1fr) auto auto;gap:10px}
+.field-label{font-size:calc(10px * var(--font-scale));color:#5e7288}
+select,input[type="search"]{height:40px;font-size:calc(11px * var(--font-scale));border-radius:9px;background:#f7f9fc;border-color:#dce5ef}
+.product-scope{font-size:9px;font-weight:400;color:var(--blue)}
+.unit-badge{min-width:0;padding:0 10px;height:40px;font-size:10px;border-radius:9px;background:#ebf7fb;border-color:#cbe7f1}
+.reset-btn{height:40px;font-size:11px;background:#fff}
+.section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 13px;padding:0}
+.section-heading-main{display:flex;align-items:center;gap:10px;min-width:0}
+.section-index{display:grid;place-items:center;width:29px;height:29px;flex:none;border-radius:9px;background:#dce9f8;color:#276bab;border:0;font:600 11px Inter,sans-serif}
+.section-heading h2{margin:0;font-family:Kanit,sans-serif;font-size:17px;color:#203a58;font-weight:500}
+.section-heading p{margin:2px 0 0;font-size:11px;color:var(--muted);line-height:1.6}
+.section-tag{font-size:9px;letter-spacing:1.6px;color:#7790a9;white-space:nowrap}
+.glass{background:var(--panel);border:1px solid var(--line);box-shadow:var(--shadow);backdrop-filter:none}
+.panel{min-width:0;overflow:hidden}
+.panel:hover{transform:none;box-shadow:0 8px 28px rgba(24,50,82,.075)}
+.card-head{padding:19px 20px 10px;gap:10px;flex-wrap:wrap;align-items:flex-start}
+.card-title{min-width:0;flex:1 1 200px}
+.card-title h2{font-size:calc(16px * var(--font-scale));font-weight:500;text-shadow:none;line-height:1.5}
+.card-title p{font-size:calc(10px * var(--font-scale));line-height:1.7;font-weight:400;margin:4px 0 0}
+.chart-head-actions,.chart-tools{display:flex;align-items:center;flex-wrap:wrap;justify-content:flex-end;gap:6px;max-width:100%;flex:0 1 auto}
+.chart-tools{max-width:100%}
+.chart-unit-badge,.data-count{font-size:9px;height:auto;min-height:25px;line-height:1.4;display:inline-flex;align-items:center;padding:4px 8px;white-space:normal;border-radius:7px;background:#f1f6fc;border:1px solid #e0e9f2;color:#57728e}
+.tool-group{display:inline-flex;flex-wrap:wrap;gap:2px;padding:3px;border:1px solid #e3eaf2;border-radius:8px;background:#f6f8fb}
+.chart-tool{font-size:10px;border:0;border-radius:6px;min-height:28px;padding:5px 9px;background:transparent;white-space:nowrap;color:#68809a}
+.chart-tool.active{background:#173f69;color:#fff;box-shadow:none}
+.chart-tool svg{width:14px;height:14px}
+.icon-tool{display:grid;place-items:center;width:29px;min-width:29px;padding:5px;background:#f0f5fa;border:1px solid #dfe8f2}
+.kpi-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;margin-bottom:12px}
+.kpi-card{min-height:139px;padding:18px 20px 16px;border-top:3px solid #d8e6f4}
+.kpi-card:after{display:none}
+.kpi-card:first-child{border:0;color:#fff;background:linear-gradient(120deg,#156bba,#1b90cc)}
+.kpi-card:first-child .kpi-label,.kpi-card:first-child .kpi-sub,.kpi-card:first-child .kpi-sub strong{color:#dbefff}
+.kpi-card:first-child .kpi-value{color:#fff}
+.kpi-card:first-child .kpi-icon{background:#ffffff1b;color:#fff}
+.kpi-card:nth-child(2){border-top-color:#0fa795}.kpi-card:nth-child(3){border-top-color:#7a70dc}.kpi-card:nth-child(4){border-top-color:#f4b34d}
+.kpi-head{margin-bottom:12px;align-items:start}
+.kpi-label{font-size:calc(11px * var(--font-scale));font-weight:500}
+.kpi-icon{width:26px;height:26px;display:grid;place-items:center;font-size:13px;border-radius:8px;background:#edf4fb;color:#2976b2;flex:none}
+.kpi-value{font-size:clamp(23px,2.3vw,36px);font-variant-numeric:tabular-nums;font-weight:600;line-height:1.2;letter-spacing:-1px;color:#123555;overflow-wrap:anywhere}
+.kpi-value.name{font-size:clamp(15px,1.5vw,20px);line-height:1.5;letter-spacing:0}
+.kpi-sub{font-size:calc(10px * var(--font-scale));line-height:1.65;margin-top:8px;color:#6a7e91;overflow-wrap:anywhere}
+.leader-strip{display:grid;grid-template-columns:1fr 1fr .65fr;gap:0;border:1px solid var(--line);background:#fff;border-radius:13px;margin-bottom:14px;overflow:hidden}
+.leader-item{padding:13px 18px;min-width:0;border-right:1px solid var(--line)}
+.leader-item:last-child{border:0}
+.leader-item small{display:block;color:var(--muted);font-size:10px;margin-bottom:4px}
+.leader-item strong{display:block;color:#23486c;font-size:13px;font-weight:500;overflow-wrap:anywhere}
+.leader-item .kpi-sub{margin-top:3px;font-size:10px}
+.overview-grid{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(270px,1fr);gap:14px;margin:16px 0 0}
+.trend-card{border-top:3px solid var(--blue)}
+.trend-legend{display:flex;gap:18px;flex-wrap:wrap;padding:0 22px 0;font-size:11px;color:#637b92}
+.trend-legend span{display:flex;align-items:center;gap:7px}
+.trend-legend i{width:18px;height:3px;display:inline-block;background:#177edd;border-radius:2px}
+.trend-legend span:last-child i{background:#98adc6}
+#nationalTrendChart{height:300px;min-height:0;margin:0;width:100%;background:transparent}
+.chart-footnote{padding:8px 20px 15px;color:#6a8198;font-size:10px;line-height:1.7}
+.insight-card{background:linear-gradient(145deg,#113659,#154b69);color:#fff;border:0;padding:20px;display:flex;flex-direction:column}
+.insight-card .insight-eyebrow{font:500 9px Inter,sans-serif;letter-spacing:1.8px;color:#83d6e9}
+.insight-card h2{font-family:Kanit,sans-serif;font-size:18px;font-weight:500;margin:5px 0 17px;color:#fff}
+.insight-metric{padding:13px 0;border-top:1px solid #ffffff1c}
+.insight-metric span{font-size:11px;color:#b4d0e4}
+.insight-metric strong{display:block;font-size:25px;line-height:1.4;margin:3px 0;color:#fff;font-variant-numeric:tabular-nums}
+.insight-metric p{font-size:10px;color:#a9c6dd;margin:0;line-height:1.7}
+.insight-meter{height:5px;background:#ffffff16;border-radius:4px;margin:9px 0 0;overflow:hidden}
+.insight-meter i{display:block;background:linear-gradient(90deg,#2bacfa,#36dfc0);height:100%;width:0;border-radius:4px;transition:width .3s}
+.insight-note{font-size:10px;line-height:1.8;color:#aed0e4;padding-top:12px;margin-top:auto}
+.chart-grid,.geo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start;margin-bottom:14px}
+.chart{width:100%;max-width:100%;min-height:0;background:transparent;border:0;border-radius:0;margin:0}
+.company-scroll{max-height:460px;overflow:auto;margin:0 6px 8px;scrollbar-width:thin}
+#companyChart{height:400px}
+#shareChart{height:268px}
+#compareChart,#entityCompareChart{height:370px}
+#mapCard,#areaCard{height:auto!important;min-height:0!important}
+#mapChart{height:460px!important;min-height:0!important;background:radial-gradient(ellipse at center,#edf6ff,#f9fbfe 68%);border-radius:0}
+#areaChart{height:460px!important;min-height:0!important}
+.map-card-strong{background:#fff;box-shadow:var(--shadow)}
+.legend-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px;padding:0 18px 16px;max-height:180px;overflow:auto;margin:0;scrollbar-width:thin}
+.legend-entry{display:flex;align-items:center;gap:7px;border:1px solid #e8eef5;border-radius:7px;background:#f8fafd;padding:7px 8px;min-width:0;text-align:left}
+.legend-entry i{height:8px;width:8px;border-radius:3px;flex:none}
+.legend-entry span{font-size:10px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+.legend-entry b{font:600 10px Inter,sans-serif;color:#24496c;flex:none}
+.product-analysis-layout{display:grid;grid-template-columns:230px minmax(0,1fr);gap:6px;align-items:stretch;padding:0 14px 14px}
+.product-top-kpi{align-self:stretch;padding:22px 18px;border:1px solid #d5e7f7;background:linear-gradient(155deg,#eaf4ff,#f4fafc);border-radius:13px;display:flex;flex-direction:column;justify-content:center;min-width:0}
+.product-top-label{font-size:11px;color:#6b87a2;line-height:1.7}
+.product-top-name{font-size:21px;line-height:1.65;color:#194b79;margin:9px 0}
+.product-top-value{font-size:19px;line-height:1.7;color:#16426e;overflow-wrap:anywhere}
+.product-top-yoy{font-size:12px;margin-top:12px;line-height:1.7}
+.product-top-period{font-size:10px;line-height:1.8;color:#7290a8;margin-top:12px}
+.positive{color:#078b79!important}.negative{color:#d4566c!important}
+#productCompareChart{height:450px;min-width:0;min-height:0;background:none}
+.compare-controls,.entity-compare-controls{display:flex;align-items:end;flex-wrap:wrap;gap:9px;margin:0;padding:8px 20px 12px}
+.entity-compare-controls .field{flex:1 1 160px}
+.entity-add-btn,.entity-clear-btn,.export-btn,.page-btn,.year-picker-btn,.modal-reset{padding:9px 13px;min-height:36px;border:1px solid #d9e5f1;background:#f7fafe;border-radius:8px;font-size:11px;color:#426583}
+.entity-add-btn,.export-btn{background:var(--navy);color:#fff;border-color:var(--navy)}
+.year-picker{position:relative}
+.year-menu{position:absolute;top:calc(100% + 5px);left:0;z-index:100;min-width:225px;max-height:280px;overflow:auto;padding:12px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px #1a385523}
+.year-actions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.year-actions button{font-size:10px;border:1px solid var(--line);background:#f3f7fa;border-radius:6px;padding:5px}
+.year-item{display:flex;gap:8px;padding:5px;font-size:12px}
+.compare-context,.entity-compare-context{font-size:10px;line-height:1.7;color:#6b8198}
+.entity-compare-context{padding:0 20px 8px}
+.entity-selected{display:flex;flex-wrap:wrap;gap:6px;padding:2px 20px 10px;min-height:0}
+.entity-empty{font-size:11px;color:#7890a5}
+.entity-chip{display:inline-flex;gap:7px;align-items:center;border:1px solid #cce0f3;background:#eff6fe;border-radius:8px;padding:5px 8px;font-size:11px}
+.entity-chip button{border:0;background:transparent;color:#446586}
+.table-tools{display:flex;flex-wrap:wrap;gap:12px;padding:8px 20px 16px;align-items:center}
+.search-box{position:relative;flex:1;min-width:200px}
+.search-box svg{position:absolute;left:12px;top:12px;width:16px;height:16px;color:#7a91a7}
+.search-box input{padding-left:36px}
+.table-summary{font-size:10px;color:#7890a5}
+.table-wrap{overflow:auto;max-height:540px;margin:0 18px;border:1px solid #e2eaf3;border-radius:9px}
+table{width:100%;border-collapse:collapse;white-space:nowrap;font-size:calc(11px * var(--font-scale))}
+thead{position:sticky;top:0;z-index:2}
+th{background:#edf4fb;color:#426384;font-weight:500;text-align:left;padding:12px}
+td{padding:11px 12px;border-top:1px solid #edf1f7;color:#536c84}
+tbody tr:nth-child(even){background:#fafcfe}tbody tr:hover{background:#edf6ff}
+.num{text-align:right;font-variant-numeric:tabular-nums}
+.company-cell{display:flex;align-items:center;gap:7px}
+.brand-dot{width:6px;height:6px;border-radius:50%;flex:none}
+.share-bar{display:flex;align-items:center;justify-content:flex-end;gap:8px}
+.share-track{display:block;width:50px;height:4px;background:#e4edf6;border-radius:3px;overflow:hidden}
+.share-fill{height:100%;background:#2e9bd1}
+.pagination{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;padding:15px 20px}
+.page-info{font-size:10px;color:#7189a1}.page-actions{display:flex;gap:7px}
+.footer{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;padding-top:22px;font-size:9px;color:#7f95a9}
+.map-error,.empty-row{padding:35px;text-align:center;color:#7e91a4;font-size:12px}
+.overlay{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:rgba(236,242,249,.93);backdrop-filter:blur(12px)}
+.loader-box{width:min(460px,90vw);padding:32px;background:#fff;border:1px solid var(--line);border-radius:22px;text-align:center;box-shadow:0 20px 60px #1b3d6b18}
+.loader-box h3{font:500 20px Kanit,sans-serif;color:#21466d}.loader-box p{font-size:12px;line-height:1.8;color:#748ba1}
+.loader-ring{width:40px;height:40px;border:3px solid #e6eff8;border-top-color:#168be0;border-radius:50%;margin:0 auto;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.progress{height:5px;background:#e9f1f8;border-radius:5px;margin-top:18px;overflow:hidden}.progress span{display:block;height:100%;background:linear-gradient(90deg,#2985e4,#0dbdb7);transition:width .3s}
+.error-box{display:none;padding:14px;background:#fff0f2;color:#b9425a;border-radius:8px;font-size:12px;text-align:left;overflow-wrap:anywhere}
+.render-error{display:flex;align-items:center;justify-content:space-between;gap:15px;padding:12px 16px;background:#fff0f2;color:#a2384d;border:1px solid #f3cdd5;border-radius:12px;margin-bottom:14px;font-size:12px;line-height:1.7}
+.render-error button{border:1px solid #e9bcc6;background:#fff;border-radius:7px;padding:6px 10px;flex:none}
+#dashboardContent[aria-busy="true"]{opacity:.48;pointer-events:none}
+.chart-modal-backdrop{position:fixed;inset:0;z-index:200;background:rgba(9,27,48,.67);backdrop-filter:blur(6px)}
+body.chart-modal-active{overflow:hidden}
+.panel.chart-modal{position:fixed!important;left:50%!important;top:50%!important;transform:translate(-50%,-50%)!important;width:min(96vw,1500px)!important;height:92dvh!important;max-height:92dvh!important;overflow:auto!important;z-index:210!important;display:block!important;background:#fff!important;border-radius:18px!important;box-shadow:0 25px 90px #00132955}
+.panel.chart-modal .card-head{position:sticky;top:0;background:#fff;z-index:4;border-bottom:1px solid var(--line);padding:17px 22px}
+.panel.chart-modal .fullscreen-btn{background:#173f69;color:#fff}
+.panel.chart-modal .company-scroll{position:relative;overflow:auto;max-height:none!important;margin:0 10px 10px}
+.panel.chart-modal #companyChart{position:relative!important;inset:auto!important;width:100%!important;height:var(--chart-height,500px)!important;min-height:360px!important}
+.panel.chart-modal #shareChart,.panel.chart-modal #compareChart,.panel.chart-modal #entityCompareChart{height:440px!important;min-height:340px!important;flex:none}
+.panel.chart-modal #mapChart,.panel.chart-modal #areaChart{height:540px!important;min-height:400px!important}
+.panel.chart-modal .product-analysis-layout{display:grid!important;grid-template-columns:230px minmax(0,1fr);padding:14px;min-height:0;flex:none}
+.panel.chart-modal #productCompareChart{height:var(--chart-height,500px)!important;min-height:340px!important;flex:none}
+.panel.chart-modal .legend-list{max-height:230px;padding:12px 22px 20px;grid-template-columns:repeat(3,minmax(0,1fr))}
+.chart-modal-filterbar{display:grid;grid-template-columns:repeat(5,minmax(0,1fr)) auto;gap:9px;padding:14px 22px;background:#f6f9fd}
+.chart-modal-filterbar select{width:100%;height:36px}.chart-modal-filterbar .modal-reset{align-self:end}
+.chart-font-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:12px 22px;background:#f6f9fd;font-size:11px}
+@media(min-width:1450px){.shell{padding-top:24px}.overview-grid{grid-template-columns:minmax(0,2.1fr) minmax(300px,1fr)}#nationalTrendChart{height:315px}}
+@media(max-width:1250px){.filter-grid{grid-template-columns:80px 115px minmax(170px,1.4fr) minmax(130px,1fr) minmax(125px,1fr)}.unit-badge,.reset-btn{height:31px}.unit-badge{grid-column:1/3}.reset-btn{grid-column:5}.header-inner{flex-wrap:wrap;gap:10px}.brand{flex:1 1 500px}.header-status{margin-left:auto}.product-analysis-layout{grid-template-columns:200px minmax(0,1fr)}}
+@media(max-width:980px){.shell{padding:16px}.header-inner{padding:10px 16px}.header-status{gap:5px}.overview-grid{grid-template-columns:minmax(0,1.5fr) minmax(240px,1fr)}.chart-grid,.geo-grid{grid-template-columns:minmax(0,1fr)}.card-title{flex-basis:220px}.filter-grid{grid-template-columns:85px 120px minmax(160px,1fr)}.company-field{grid-column:1/3}.secondary-field{grid-column:3}.unit-badge{grid-column:1/3}.reset-btn{grid-column:3}.dataset-line{max-width:100%}.executive-hero{padding:23px}.hero-meta{min-width:170px}.kpi-card{padding:15px}.leader-item{padding:12px}.chart-modal-filterbar{grid-template-columns:repeat(3,minmax(0,1fr))}.chart-modal-filterbar .modal-reset{grid-column:auto}.legend-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){html{scroll-padding-top:105px}.app-header{position:relative}.header-inner{gap:10px}.brand{flex-basis:100%}.brand-copy h1{font-size:15px}.brand-copy p{font-size:8px}.header-status{width:100%;justify-content:flex-start}.latest-pill{margin-left:auto}.shell{padding:12px}.executive-hero{padding:22px;gap:14px;align-items:flex-start;flex-direction:column;margin-bottom:12px}.executive-hero h2{font-size:26px}.executive-hero p{font-size:11px}.hero-meta{padding:10px 0 0;border-left:0;border-top:1px solid #ffffff20;width:100%;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.hero-meta strong{font-size:15px;margin:0}.hero-meta span{font-size:9px}.hero-meta small{font-size:10px}.control-center{position:relative;top:0;padding:12px;margin-bottom:14px}.control-top{display:block}.tab-switch{width:100%;margin-bottom:9px}.tab-btn{flex:1;justify-content:center;font-size:10px;padding:0 7px}.filter-grid{grid-template-columns:1fr 1fr;gap:9px}.product-field{grid-column:1/-1}.company-field{grid-column:1}.secondary-field{grid-column:2}.unit-badge{grid-column:1}.reset-btn{grid-column:2}.dataset-line{font-size:9px}.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.kpi-card{min-height:125px;padding:14px}.kpi-value{font-size:27px}.kpi-label{font-size:11px}.leader-strip{grid-template-columns:1fr 1fr}.leader-item:nth-child(2){border-right:0}.leader-item:last-child{grid-column:1/-1;display:flex;gap:10px;align-items:center;border-top:1px solid var(--line)}.leader-item:last-child small{margin:0}.leader-item:last-child .kpi-sub{margin-left:auto}.overview-grid{grid-template-columns:1fr;gap:12px}.insight-card{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;padding:18px}.insight-card h2,.insight-eyebrow,.insight-note{grid-column:1/-1}.insight-card h2{margin-bottom:10px}.insight-metric strong{font-size:23px}.product-analysis-layout,.panel.chart-modal .product-analysis-layout{grid-template-columns:minmax(0,1fr)!important}.product-top-kpi{padding:15px 18px;display:grid;grid-template-columns:1fr 1fr;gap:3px 14px}.product-top-label,.product-top-period{grid-column:1/-1}.product-top-name{font-size:17px;margin:3px 0}.product-top-value{font-size:17px;margin:3px 0}.product-top-yoy{margin:0;font-size:11px;grid-column:1/-1}.product-top-period{margin:3px 0 0;font-size:9px}.section-heading{margin-top:20px}.section-heading h2{font-size:16px}.section-heading p{font-size:10px}.section-tag{display:none}.card-head{padding:16px 15px 8px}.card-title h2{font-size:15px}.card-title{flex:1 1 160px}.chart-tools,.chart-head-actions{justify-content:flex-start}.legend-list{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 13px 14px}.table-tools{padding:8px 14px 12px}.table-summary{order:3;width:100%}.table-wrap{margin:0 12px}.panel.chart-modal{width:98vw!important;height:96dvh!important;max-height:96dvh!important;border-radius:12px!important}.panel.chart-modal .card-head{padding:12px}.chart-modal-filterbar{grid-template-columns:1fr 1fr;padding:12px}.chart-modal-filterbar .modal-reset{grid-column:auto}.panel.chart-modal .legend-list{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-font-toolbar{padding:12px}.font-control input{width:54px}}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation-duration:.01ms!important}}
+
+.filter-grid{align-items:end}.panel.chart-modal .fullscreen-btn{width:auto;padding:6px 9px;display:flex;gap:5px}.panel.chart-modal .fullscreen-btn:after{content:"ปิด";font:11px Kanit,sans-serif}
+
+/* Shared, contrast-tested surfaces for the two supported themes. */
+:root,html[data-theme="light"]{
+  color-scheme:light;--bg:#f3f5f8;--panel:#fff;--panel-solid:#fff;--panel-soft:#f5f7fa;
+  --line:#dce3eb;--text:#1c2c40;--text-2:#354b63;--muted:#52677d;
+  --navy:#214b76;--blue:#1769aa;--cyan:#187e91;--accent-soft:#eaf2fa;
+  --positive:#087460;--negative:#b73550;--error-bg:#fff0f2;--error-text:#a52d45;
+  --shadow:0 3px 16px rgba(25,42,63,.04);--site-font-weight:400;--site-heading-weight:600;
+}
+html[data-theme="dark"]{
+  color-scheme:dark;--bg:#101923;--panel:#182430;--panel-solid:#182430;--panel-soft:#202f3e;
+  --line:#35485a;--text:#e8eff7;--text-2:#c8d6e5;--muted:#a9bbce;
+  --navy:#245a86;--blue:#80bdff;--cyan:#76d2dd;--accent-soft:#243c52;
+  --positive:#6cddbd;--negative:#ff9db0;--error-bg:#402530;--error-text:#ffc0cc;
+  --shadow:0 3px 16px rgba(0,0,0,.12);
+}
+html[data-theme] body{background:var(--bg);background-image:none;line-height:1.6}
+html[data-theme] .app-header,html[data-theme] .control-center{background:var(--panel);backdrop-filter:none}
+.brand-copy h1,.card-title h2,.section-heading h2,.product-top-name,.loader-box h3,
+.kpi-value,.leader-item strong,.product-top-value,.pill strong{color:var(--text);font-weight:600}
+.brand-copy p,.field-label,.card-title p,.dataset-line,.section-heading p,.section-tag,
+.kpi-sub,.leader-item small,.product-top-label,.product-top-period,.compare-context,
+.entity-compare-context,.entity-empty,.table-summary,.page-info,.footer,.chart-footnote,
+.map-error,.empty-row,.loader-box p,.trend-legend{color:var(--muted)}
+.font-control,.header-select-control,.pill,select,input[type="search"],.tool-group,
+.icon-tool,.year-actions button,.year-menu-head button,.entity-clear-btn,.page-btn,
+.year-picker-btn,.modal-reset,.legend-entry{background:var(--panel-soft);border-color:var(--line);color:var(--text-2)}
+select option{background:var(--panel);color:var(--text)}
+.reset-btn,.leader-strip,.year-menu,.map-card-strong,.loader-box{background:var(--panel);color:var(--text);border-color:var(--line)}
+.chart-tool,.tab-btn{color:var(--text-2)}
+.tab-switch,.chart-modal-filterbar,.chart-font-toolbar{background:var(--panel-soft)}
+.tab-btn.active,.chart-tool.active,.entity-add-btn,.export-btn{background:var(--navy);color:#fff}
+.unit-badge,.chart-unit-badge,.data-count,.section-index,.entity-chip{background:var(--accent-soft);border-color:var(--line);color:var(--text-2)}
+.entity-chip button,.legend-entry b{color:var(--text)}
+.product-scope{color:var(--blue)}
+.product-top-kpi{background:var(--panel-soft);border-color:var(--line)}
+.positive{color:var(--positive)!important}.negative{color:var(--negative)!important}
+.table-wrap,td,.legend-entry,.leader-item{border-color:var(--line)}
+th{background:var(--panel-soft);color:var(--text-2);font-weight:600}
+td{color:var(--text-2)}
+tbody tr:nth-child(even){background:var(--panel-soft)}
+tbody tr:hover{background:var(--accent-soft)}
+.share-track,.progress{background:var(--line)}
+.error-box,.render-error{background:var(--error-bg);color:var(--error-text);border-color:var(--negative)}
+.render-error button{background:var(--panel);color:var(--error-text);border-color:var(--line)}
+.overlay{background:var(--bg)}
+.panel.chart-modal{background:var(--panel)!important}
+.panel.chart-modal .card-head{background:var(--panel)}
+#mapChart{background:var(--panel-soft);height:460px!important}
+.executive-hero{background:#203d5a;box-shadow:none;border-radius:16px;padding:24px 28px}
+.executive-hero:after{display:none}
+.insight-card{background:#203d5a;box-shadow:none}
+.kpi-card:first-child{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--blue);color:var(--text)}
+.kpi-card:first-child .kpi-value{color:var(--text)}
+.kpi-card:first-child .kpi-label,.kpi-card:first-child .kpi-sub,.kpi-card:first-child .kpi-sub strong{color:var(--muted)}
+.kpi-icon,.kpi-card:first-child .kpi-icon{background:var(--accent-soft);color:var(--blue)}
+.kpi-card{border-top-width:2px;min-height:148px}
+.brand-copy p,.dataset-line,.section-heading p,.card-title p,.kpi-sub,.chart-footnote,
+.product-top-period,.compare-context,.entity-compare-context,.table-summary,.page-info{font-size:calc(12px * var(--font-scale))}
+.field-label,.kpi-label,.chart-tool,.legend-entry span,.legend-entry b,
+.chart-unit-badge,.data-count{font-size:calc(11px * var(--font-scale))}
+select,input[type="search"],table{font-size:calc(12px * var(--font-scale))}
+.card-title h2,.section-heading h2{font-size:calc(17px * var(--font-scale));font-weight:600}
+.card-head{padding:22px 22px 14px;gap:12px}
+.panel{border-radius:16px}
+.chart-grid,.geo-grid{gap:20px}
+.overview-grid{gap:20px;margin-bottom:20px}
+.section-heading{margin-top:28px}
+.legend-list{gap:8px;padding:12px 20px 20px;max-height:220px;border-top:1px solid var(--line)}
+.legend-entry{padding:9px 10px;align-items:flex-start}
+.legend-entry span{white-space:normal;overflow-wrap:anywhere;line-height:1.5}
+.legend-entry i{margin-top:5px}
+.chart-frame{min-width:0;overflow:hidden}
+.chart-frame:has(>.hidden){display:none}
+.chart-legend{display:flex;align-items:center;flex-wrap:wrap;gap:8px 18px;padding:12px 18px;margin:0 12px 12px;border-bottom:1px solid var(--line);max-height:132px;overflow:auto;scrollbar-width:thin}
+.chart-legend:empty{display:none}
+.chart-legend-item{display:inline-flex;align-items:center;gap:8px;max-width:100%;padding:3px 0;border:0;background:transparent;color:var(--text-2);font:500 calc(12px * var(--font-scale)) Inter,Kanit,sans-serif;text-align:left;line-height:1.6}
+.chart-legend-item span{overflow-wrap:anywhere;min-width:0}
+.chart-legend-item i{display:block;flex:none;width:16px;height:4px;border-radius:3px;background:var(--series-color)}
+.chart-legend-item[aria-pressed="false"]{opacity:.6;text-decoration:line-through}
+.chart-legend-item:hover{color:var(--text)}
+.map-legend .chart-legend-item i{height:10px;width:10px}
+.trend-legend{padding:10px 22px 16px;font-size:12px}
+.year-menu-head{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px}
+.year-menu-head button{border:1px solid var(--line);border-radius:6px;padding:5px 8px}
+input[type="search"]::placeholder{color:var(--muted);opacity:1}
+@media(max-width:700px){
+  .card-head{padding:18px 16px 12px}.chart-legend{padding:10px 4px;gap:8px 14px}
+  .legend-list,.panel.chart-modal .legend-list{grid-template-columns:1fr}
+  .executive-hero{padding:22px}.chart-grid,.geo-grid{gap:16px}
+  .header-select-control select{font-size:12px}
+}
+
+
+
+/* Market intelligence: layered surfaces and a quiet chart canvas. */
+:root,html[data-theme="light"]{
+ --bg:#f1f4fa;--panel:#fff;--panel-solid:#fff;--panel-soft:#f4f6fb;--text:#1d2943;--text-2:#40516e;--muted:#5c6b83;--line:#e0e6f0;
+ --blue:#3860cf;--navy:#3559bb;--cyan:#147c8c;--accent-soft:#edf1fd;
+ --card-top:#fff;--card-bottom:#fbfcff;--header-surface:rgba(255,255,255,.9);
+ --ambient-blue:rgba(103,132,247,.13);--ambient-teal:rgba(87,190,190,.09);
+ --card-shadow:0 4px 7px rgba(30,49,83,.025),0 16px 36px -20px rgba(30,49,83,.22);
+ --card-inset:inset 0 1px 0 rgba(255,255,255,.85);--focus-ring:#406cdd;
+ --well-bg:#f0f4fc;--well-end:#f8faff;--well-border:#dce5f6;
+ --icon-blue:#eaf0ff;--icon-teal:#e3f5f0;--icon-violet:#efeafa;--icon-amber:#fff2df;
+}
+html[data-theme="dark"]{
+ --bg:#0d1424;--panel:#172237;--panel-solid:#172237;--panel-soft:#1d2b43;--text:#edf2ff;--text-2:#c6d2e9;--muted:#a6b5d0;--line:#2b3c58;
+ --blue:#91b2ff;--navy:#3e62bd;--cyan:#84d6de;--accent-soft:#273852;
+ --card-top:#1a2940;--card-bottom:#152035;--header-surface:rgba(16,25,43,.93);
+ --ambient-blue:rgba(75,94,200,.15);--ambient-teal:rgba(20,116,125,.09);
+ --card-shadow:0 4px 8px rgba(0,0,0,.12),0 20px 40px -20px rgba(0,0,0,.48);
+ --card-inset:inset 0 1px 0 rgba(175,200,255,.065);--focus-ring:#a5c2ff;
+ --well-bg:#253c5b;--well-end:#1a2d45;--well-border:#3b5276;
+ --icon-blue:#2c4069;--icon-teal:#244740;--icon-violet:#3b335d;--icon-amber:#493d2d;
+}
+html[data-theme] body{background:radial-gradient(ellipse at 20% 0,var(--ambient-blue),transparent 42%),radial-gradient(ellipse at 95% 30%,var(--ambient-teal),transparent 36%),var(--bg);background-attachment:fixed}
+button{transition:background .18s,box-shadow .18s,border-color .18s,color .18s}
+button:hover{filter:none}
+button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible{outline-color:var(--focus-ring)}
+html[data-theme] .app-header{background:var(--header-surface);backdrop-filter:blur(20px);border-bottom:1px solid var(--line)}
+.header-inner{max-width:1600px;min-height:78px;padding:14px 32px}
+.brand-logo{width:44px;height:44px;border-radius:14px;background:linear-gradient(145deg,#6085f4,#344ca8);box-shadow:0 5px 12px #335bc32b,inset 0 1px 0 #ffffff60}
+.brand-copy h1{font-size:clamp(14px,1.15vw,18px);font-weight:500;line-height:1.5}
+.brand-copy p{font-size:10px;margin-top:3px}
+.header-status{gap:12px;flex-wrap:nowrap}
+.font-control{height:34px;background:transparent;border:0;padding:0;gap:5px;color:var(--muted)}
+.font-control input{width:54px;accent-color:var(--blue)}
+.font-control output{font-size:10px}
+.latest-pill{background:transparent;border:0;border-left:1px solid var(--line);border-radius:0;padding-left:15px;color:var(--muted);font-size:11px;white-space:nowrap}
+.latest-pill strong{font-weight:500}
+.theme-toggle{display:inline-flex;align-items:center;gap:8px;padding:4px 0;background:none;border:0;color:var(--text-2);font-size:12px;font-weight:500;flex:none;min-height:36px}
+.theme-toggle-track{display:block;position:relative;width:56px;height:30px;border:1px solid #ced9f1;border-radius:18px;background:#e2e9f7;box-shadow:inset 0 2px 4px #283b7020}
+.theme-toggle-track svg{position:absolute;top:7px;width:14px;height:14px;z-index:2}
+.theme-sun{left:7px;color:#b3731a}.theme-moon{right:7px;color:#66789c}
+.theme-toggle-thumb{position:absolute;left:3px;top:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 2px 5px #19365b30;transition:transform .2s,background .2s}
+.theme-toggle[aria-checked="true"] .theme-toggle-track{background:#314675;border-color:#4c6499}
+.theme-toggle[aria-checked="true"] .theme-toggle-thumb{transform:translateX(26px);background:#dce8ff}
+.theme-toggle[aria-checked="true"] .theme-moon{color:#34508f}
+.theme-toggle[aria-checked="true"] .theme-sun{color:#b9c7e6}
+.shell{max-width:1600px;padding:26px 32px 32px}
+.executive-hero{position:relative;overflow:visible;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:6px 2px 26px;margin:0;background:transparent;border:0;border-radius:0;box-shadow:none;color:var(--text)}
+.executive-hero:after{display:none}
+.hero-eyebrow{display:flex;align-items:center;gap:8px;color:var(--blue);font:600 10px Inter,sans-serif;letter-spacing:1.7px;margin-bottom:10px}
+.hero-eyebrow:before{display:none}
+.hero-live-dot{width:7px;height:7px;background:#22ac99;border:2px solid #8ae0d1;box-shadow:0 0 0 3px #1cae9412;border-radius:50%}
+.executive-hero h2{font-size:clamp(26px,2.5vw,36px);font-weight:500;letter-spacing:-.4px;color:var(--text);line-height:1.4}
+.executive-hero p{color:var(--muted);font-size:12px;margin:8px 0 0;line-height:1.7}
+.hero-meta{position:relative;min-width:245px;max-width:34%;padding:16px 18px 16px 68px;background:linear-gradient(130deg,var(--card-top),var(--card-bottom));border:1px solid var(--line);border-radius:16px;box-shadow:var(--card-shadow),var(--card-inset)}
+.hero-calendar{position:absolute;left:17px;top:21px;display:grid;place-items:center;width:36px;height:39px;border-radius:10px;background:var(--icon-blue);color:var(--blue)}
+.hero-calendar svg{width:23px;height:23px}
+.hero-meta small{color:var(--muted);font-size:10px}
+.hero-meta strong{font-size:18px;font-weight:500;color:var(--text);line-height:1.4;margin:3px 0 5px}
+.hero-meta span{padding:0;background:none;border:0;border-radius:0;color:var(--muted);font-size:10px;line-height:1.6}
+html[data-theme] .control-center{background:var(--header-surface);backdrop-filter:blur(20px);border:1px solid var(--line);box-shadow:var(--card-shadow),var(--card-inset)}
+.control-center{padding:15px 18px 17px;border-radius:18px;margin-bottom:24px;top:calc(var(--header-h) + 10px)}
+.control-top{margin-bottom:14px;gap:14px}
+.tab-switch{background:var(--panel-soft);padding:4px;border-radius:11px;box-shadow:inset 0 1px 3px #162d5910}
+.tab-btn{font-size:12px;border-radius:8px;height:34px;padding:0 18px}
+.tab-btn.active{background:linear-gradient(125deg,#3e65cd,#304fae);box-shadow:0 3px 8px #294d9528;color:#fff}
+.dataset-line{font-size:11px}
+.field-label{font-size:11px;font-weight:400}
+.filter-grid{gap:12px}
+select,input[type="search"]{background:var(--panel-soft);border:1px solid var(--line);box-shadow:inset 0 1px 2px #14213a04;border-radius:10px;height:42px;font-size:calc(12px * var(--font-scale));color:var(--text-2)}
+select:hover,input[type="search"]:hover{border-color:var(--blue)}
+.unit-badge,.reset-btn{height:42px;border-radius:10px;font-size:11px}
+.unit-badge{background:var(--accent-soft);border-color:transparent;color:var(--text-2)}
+.reset-btn{background:var(--panel);border-color:var(--line);color:var(--muted)}
+.reset-btn:hover{background:var(--accent-soft);color:var(--text)}
+#dashboardContent{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
+#dashboardContent>.kpi-grid,#dashboardContent>.leader-strip,#dashboardContent>.overview-grid,#dashboardContent>.chart-grid,#dashboardContent>.geo-grid{margin:0}
+.glass{background:linear-gradient(155deg,var(--card-top),var(--card-bottom));border:1px solid var(--line);box-shadow:var(--card-shadow),var(--card-inset);border-radius:20px}
+.panel:hover{transform:none;box-shadow:var(--card-shadow),var(--card-inset)}
+.kpi-grid{gap:18px}
+.kpi-card{position:relative;isolation:isolate;min-height:155px;padding:20px 22px;border:1px solid var(--line)!important;overflow:hidden}
+.kpi-card:after{display:block;position:absolute;content:"";width:120px;height:120px;border-radius:50%;right:-60px;top:-60px;background:var(--icon-blue);opacity:.45;z-index:-1;pointer-events:none}
+.kpi-card:nth-child(2):after{background:var(--icon-teal)}.kpi-card:nth-child(3):after{background:var(--icon-violet)}.kpi-card:nth-child(4):after{background:var(--icon-amber)}
+.kpi-card:first-child{background:radial-gradient(ellipse at 100% 0,#70a3ef66,transparent 70%),linear-gradient(125deg,#3559bc,#3d73cf);color:#fff;box-shadow:0 10px 22px -8px #355abe60,inset 0 1px 0 #b5ceff60;border-color:#547dce!important}
+.kpi-card:first-child:after{width:200px;height:200px;top:26px;right:-80px;background:transparent;border:1px solid #ffffff18;box-shadow:0 0 0 22px #ffffff06}
+.kpi-head{margin-bottom:14px;align-items:center;position:relative}
+.kpi-label{font-size:calc(12px * var(--font-scale));font-weight:400;color:var(--text-2)}
+.kpi-card:first-child .kpi-label,.kpi-card:first-child .kpi-sub,.kpi-card:first-child .kpi-sub strong{color:#f0f5ff}
+.kpi-card:first-child .kpi-value{color:#fff}
+.kpi-icon{width:30px;height:30px;border-radius:10px;font-size:17px;line-height:1}
+.kpi-card:first-child .kpi-icon{background:#ffffff20;color:#fff}
+.kpi-card:nth-child(2) .kpi-icon{background:var(--icon-teal);color:var(--positive)}
+.kpi-card:nth-child(3) .kpi-icon{background:var(--icon-violet);color:#8460cd}
+html[data-theme="dark"] .kpi-card:nth-child(3) .kpi-icon{color:#c5acff}
+.kpi-card:nth-child(4) .kpi-icon{background:var(--icon-amber);color:#b07416}
+html[data-theme="dark"] .kpi-card:nth-child(4) .kpi-icon{color:#f1c071}
+.kpi-value{font-size:clamp(26px,2.6vw,39px);font-weight:600;letter-spacing:-1.2px;position:relative}
+.kpi-sub{font-size:calc(11px * var(--font-scale));line-height:1.8;margin-top:7px;position:relative}
+.leader-strip{background:var(--header-surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 3px 12px #17306103;grid-template-columns:1.2fr 1fr .75fr}
+.leader-item{padding:13px 22px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center}
+.leader-item small{font-size:10px;margin:0;grid-column:1/-1}
+.leader-item strong{font-size:12px;font-weight:500}
+.leader-item .kpi-sub{font-size:10px;margin:0;white-space:nowrap;color:var(--muted)}
+.overview-grid{grid-template-columns:minmax(0,2.2fr) minmax(280px,1fr);gap:22px}
+.trend-card{border-top:1px solid var(--line)}
+.card-head{padding:23px 24px 15px;gap:12px;align-items:center}
+.card-title{flex:1 1 180px}
+.card-title h2{font-size:calc(17px * var(--font-scale));font-weight:500;letter-spacing:-.1px;line-height:1.6}
+.card-title p{font-size:calc(11px * var(--font-scale));margin-top:3px;color:var(--muted)}
+.chart-unit-badge,.data-count{background:var(--panel-soft);border:0;color:var(--muted);border-radius:6px;font-size:10px;min-height:25px}
+.icon-tool{background:var(--panel-soft);border:1px solid var(--line);color:var(--muted);border-radius:8px;width:30px;height:30px}
+.icon-tool:hover{background:var(--accent-soft);color:var(--blue);border-color:var(--blue)}
+.trend-legend{padding:0 24px 8px;gap:20px;font-size:11px}
+.trend-legend b{font-weight:500}
+.chart-footnote{font-size:11px;padding:8px 24px 20px}
+.insight-card{position:relative;isolation:isolate;border:1px solid #385385;background:radial-gradient(ellipse at 100% 0,#406eb577,transparent 62%),linear-gradient(155deg,#253f6d,#192c4d);padding:25px 26px;box-shadow:0 12px 26px -15px #17366688,inset 0 1px 0 #ffffff16}
+.insight-card:after{content:"";position:absolute;width:220px;height:220px;border:1px solid #ffffff0a;border-radius:50%;right:-130px;bottom:-20px;box-shadow:0 0 0 35px #ffffff03,0 0 0 70px #ffffff02;z-index:-1;pointer-events:none}
+.insight-eyebrow{display:flex;align-items:center;gap:7px;font-size:9px;letter-spacing:1.6px;color:#a8cfff!important}
+.insight-eyebrow span{width:5px;height:5px;background:#7ee1ce;border-radius:50%;box-shadow:0 0 0 3px #7ee1ce15}
+.insight-card h2{font-size:20px;font-weight:500;margin:6px 0 20px}
+.insight-metric{padding:16px 0;border-top:1px solid #aacbff26}
+.insight-metric span{font-size:12px;color:#d0def2}
+.insight-metric strong{font-size:30px;letter-spacing:-.5px;margin:4px 0 5px}
+.insight-metric p,.insight-note{color:#b6cae5;font-size:11px}
+.insight-meter{height:5px;border-radius:4px;margin:12px 0;background:#ffffff18}
+.insight-meter i{background:linear-gradient(90deg,#76a8ff,#79dbc9)}
+.product-analysis-layout{grid-template-columns:230px minmax(0,1fr);padding:3px 20px 20px;gap:14px}
+.product-top-kpi{position:relative;isolation:isolate;overflow:hidden;padding:28px 22px;border-radius:15px;border:1px solid var(--well-border);background:radial-gradient(ellipse at 100% 0,var(--ambient-blue),transparent 65%),linear-gradient(150deg,var(--well-bg),var(--well-end));box-shadow:inset 0 1px 0 #ffffff0a}
+.product-top-kpi:after{content:"";position:absolute;width:200px;height:200px;border:1px solid var(--well-border);border-radius:50%;right:-132px;bottom:-80px;box-shadow:0 0 0 24px #7395e407;z-index:-1}
+.product-top-symbol{display:grid;place-items:center;width:44px;height:48px;border-radius:14px;background:var(--panel);color:var(--blue);box-shadow:0 4px 12px #33508610;margin-bottom:22px;border:1px solid var(--well-border)}
+.product-top-symbol svg{width:29px;height:29px}
+.product-top-label{font-size:11px;color:var(--muted)}
+.product-top-name{font-size:21px;font-weight:500;line-height:1.65;margin:10px 0}
+.product-top-value{font:600 19px Inter,Kanit,sans-serif;line-height:1.7;color:var(--blue)}
+.product-top-yoy{font-size:12px;margin-top:16px}
+.product-top-period{font-size:11px;margin-top:20px;padding-top:16px;border-top:1px solid var(--well-border)}
+.chart-legend{border-bottom:1px solid var(--line);gap:8px 20px;padding:8px 12px 14px;margin:0 12px 12px}
+.chart-legend-item{font-size:calc(11px * var(--font-scale));font-weight:400}
+.chart-legend-item i{width:18px}
+.chart-legend-item[aria-pressed="false"]{opacity:1;color:var(--muted)}
+.chart-legend-item[aria-pressed="false"] i{opacity:.4}
+.chart-grid,.geo-grid{gap:22px;align-items:stretch}
+.legend-list{gap:7px;padding:14px 22px 20px;border-top:1px solid var(--line);max-height:228px;background:transparent}
+.legend-entry{border:1px solid transparent;background:var(--panel-soft);border-radius:8px;padding:8px 10px}
+.legend-entry:hover{border-color:var(--line);background:var(--accent-soft)}
+.legend-entry span,.legend-entry b{font-size:calc(11px * var(--font-scale))}
+.tool-group{padding:3px;border:0;background:var(--panel-soft);border-radius:9px;gap:2px}
+.chart-tool{font-size:11px;border-radius:7px;padding:6px 10px;min-height:28px}
+.chart-tool.active{background:var(--navy);color:#fff;box-shadow:0 2px 5px #14244020}
+.chart-tools{row-gap:8px}
+#mapChart{background:radial-gradient(ellipse at 50% 40%,var(--panel-soft),transparent 75%)}
+.compare-controls,.entity-compare-controls{padding:8px 24px 14px;gap:10px}
+.entity-selected{padding:2px 24px 12px}
+.entity-chip{padding:6px 10px;border-color:var(--line);border-radius:20px;background:var(--accent-soft);color:var(--text-2)}
+.entity-compare-context{padding:0 24px 12px}
+.entity-add-btn,.export-btn{background:linear-gradient(125deg,#3e65cd,#304fae);color:#fff;border:0;box-shadow:0 3px 7px #26489220}
+.entity-clear-btn,.year-picker-btn,.page-btn{background:var(--panel-soft);border-color:var(--line);color:var(--text-2)}
+.table-tools{padding:3px 24px 18px}
+.table-wrap{margin:0 24px;border-radius:12px;border-color:var(--line)}
+th{font-size:11px;font-weight:500;padding:14px 12px;letter-spacing:.15px}
+td{font-size:12px;padding:13px 12px}
+.pagination{padding:18px 24px}
+.footer{padding-top:24px;color:var(--muted);font-size:10px}
+.panel.chart-modal{background:linear-gradient(155deg,var(--card-top),var(--card-bottom))!important;border:1px solid var(--line);border-radius:22px!important}
+.panel.chart-modal .card-head{background:var(--panel);border-bottom:1px solid var(--line)}
+.chart-modal-filterbar,.chart-font-toolbar{background:var(--panel-soft)}
+@media(min-width:1450px){.shell{padding-top:28px}.overview-grid{grid-template-columns:minmax(0,2.3fr) minmax(300px,1fr)}}
+@media(max-width:1250px){
+ .header-inner{gap:12px;flex-wrap:wrap}.brand{flex:1 1 540px}.header-status{margin-left:auto}
+ .filter-grid{grid-template-columns:80px 115px minmax(160px,1.4fr) minmax(130px,1fr) minmax(125px,1fr)}
+ .unit-badge{grid-column:1/3;height:32px}.reset-btn{grid-column:5;height:32px}
+ .leader-item{grid-template-columns:1fr}.leader-item .kpi-sub{white-space:normal}
+ .product-analysis-layout{grid-template-columns:210px minmax(0,1fr)}
+}
+@media(max-width:980px){
+ .shell{padding:22px 20px}.header-inner{padding:12px 20px}.executive-hero h2{font-size:28px}
+ .overview-grid{grid-template-columns:minmax(0,1.6fr) minmax(240px,1fr)}.chart-grid,.geo-grid{grid-template-columns:minmax(0,1fr)}
+ .filter-grid{grid-template-columns:90px 130px minmax(160px,1fr)}
+ .company-field{grid-column:1/3}.secondary-field{grid-column:3}.reset-btn{grid-column:3}
+ .hero-meta{min-width:225px}.kpi-card{padding:18px}.kpi-grid{gap:12px}
+ .card-head{padding:20px}.legend-list{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media(max-width:700px){
+ .app-header{position:relative}.header-inner{padding:14px 16px;gap:12px}.brand{flex-basis:100%}
+ .brand-logo{width:38px;height:40px;border-radius:12px}.brand-copy h1{font-size:14px}.brand-copy p{font-size:9px}
+ .header-status{width:100%;gap:16px;justify-content:flex-start}.latest-pill{margin-left:auto;font-size:10px;padding-left:12px}
+ .shell{padding:20px 14px 24px}.executive-hero{padding:0 2px 22px;gap:18px;align-items:flex-start;flex-direction:column}
+ .hero-eyebrow{font-size:9px;letter-spacing:1.2px;margin-bottom:8px}.executive-hero h2{font-size:28px;max-width:100%;line-height:1.4}
+ .executive-hero p{font-size:12px;max-width:320px}
+ .hero-meta{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;row-gap:3px;max-width:100%;width:100%;min-width:0;padding:12px 14px 12px 59px;border:1px solid var(--line)}
+ .hero-calendar{left:14px;top:15px;width:32px;height:34px}.hero-calendar svg{width:21px;height:21px}
+ .hero-meta small{font-size:10px}.hero-meta strong{font-size:16px;margin:0;text-align:right}.hero-meta span{grid-column:1/-1;font-size:10px}
+ .control-center{position:relative;top:0;padding:12px;margin-bottom:18px;border-radius:16px}
+ .control-top{display:block;margin-bottom:12px}.tab-switch{width:100%;margin-bottom:10px}.tab-btn{font-size:10px;padding:0 8px;justify-content:center;flex:1}
+ .dataset-line{font-size:10px;max-width:100%}.filter-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.field-label{font-size:11px}
+ .product-field{grid-column:1/-1}.company-field{grid-column:1}.secondary-field{grid-column:2}
+ .unit-badge{grid-column:1;height:36px}.reset-btn{grid-column:2;height:36px}select,input[type="search"]{height:42px}
+ #dashboardContent{gap:18px}.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ .kpi-card{padding:15px;min-height:151px;border-radius:16px}.kpi-head{gap:5px;align-items:flex-start;margin-bottom:15px}
+ .kpi-label{font-size:11px;line-height:1.6}.kpi-icon{width:25px;height:25px;border-radius:8px;font-size:14px}
+ .kpi-value{font-size:27px;letter-spacing:-.8px}.kpi-sub{font-size:10px;margin-top:8px}
+ .leader-strip{grid-template-columns:1fr 1fr;border-radius:14px}.leader-item{padding:12px 14px}
+ .leader-item strong{font-size:12px}.leader-item small{font-size:10px}.leader-item .kpi-sub{font-size:10px}
+ .leader-item:last-child{display:flex;gap:10px}.leader-item:last-child .kpi-sub{margin-left:auto}
+ .overview-grid{grid-template-columns:1fr;gap:18px}.insight-card{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;padding:22px}
+ .insight-card h2,.insight-eyebrow,.insight-note{grid-column:1/-1}.insight-card h2{font-size:19px;margin-bottom:14px}
+ .insight-metric strong{font-size:27px}.insight-metric span{font-size:11px}
+ .glass{border-radius:18px}.card-head{padding:20px 18px 14px}.card-title{flex:1 1 160px}
+ .card-title h2{font-size:calc(16px * var(--font-scale))}.card-title p{font-size:calc(11px * var(--font-scale))}
+ .chart-tools,.chart-head-actions{justify-content:flex-start}
+ .product-analysis-layout,.panel.chart-modal .product-analysis-layout{grid-template-columns:minmax(0,1fr)!important;padding:0 14px 16px;gap:16px}
+ .product-top-kpi{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 14px;padding:18px;align-items:center}
+ .product-top-symbol{display:none}.product-top-label{grid-column:1/-1;font-size:11px}
+ .product-top-name{font-size:17px;margin:5px 0;line-height:1.6}.product-top-value{font-size:17px;line-height:1.6}
+ .product-top-yoy{grid-column:1/-1;margin-top:3px;font-size:11px}.product-top-period{grid-column:1/-1;font-size:10px;line-height:1.7;margin-top:7px;padding-top:10px}
+ .chart-legend{padding:7px 0 12px;margin:0 14px 10px;gap:7px 16px}
+ .legend-list{grid-template-columns:1fr;padding:12px 18px 18px}
+ .chart-footnote{padding:8px 18px 18px}.trend-legend{padding:0 18px 8px}
+ .compare-controls,.entity-compare-controls{padding:6px 18px 12px}
+ .entity-selected,.entity-compare-context{padding-left:18px;padding-right:18px}
+ .table-tools{padding:4px 18px 14px}.table-wrap{margin:0 14px}.pagination{padding:16px 18px}
+ .chart-modal-filterbar{padding:12px}.panel.chart-modal{width:98vw!important;border-radius:14px!important}
+}
+@media(prefers-reduced-motion:reduce){.theme-toggle-thumb{transition:none}}
+
+
+</style>
+</head>
+
+<body>
+<div class="overlay" id="loadingOverlay">
+  <div class="loader-box">
+    <div class="loader-ring" id="loaderRing"></div>
+    <h3 id="loadingTitle">กำลังเตรียม Dashboard</h3>
+    <p id="loadingMessage">กำลังเชื่อมต่อฐานข้อมูล Supabase...</p>
+    <div class="progress" id="progressWrap"><span id="progressBar"></span></div>
+    <div class="error-box" id="errorBox"></div>
+  </div>
+</div>
+
+<header class="app-header">
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+          <path d="M7 4h7a3 3 0 0 1 3 3v13H7z"/><path d="M9 7h6v4H9z"/>
+          <path d="M17 9h2l2 3v5a2 2 0 0 1-2 2h-2"/><path d="M10 20v-3h4v3"/>
+        </svg>
+      </div>
+      <div class="brand-copy">
+        <h1>แดชบอร์ดวิเคราะห์ปริมาณการจำหน่ายผลิตภัณฑ์ปิโตรเลียม</h1>
+        <p>สำนักงานนโยบายและแผนพลังงาน (สนพ.) · Energy Policy and Planning Office</p>
+      </div>
+    </div>
+    <div class="header-status">
+      <div class="font-control" title="เลื่อนเพื่อปรับขนาดตัวอักษรและตัวหนังสือในกราฟ">
+        <span class="a-small">A</span>
+        <input id="fontScaleRange" type="range" min="80" max="145" step="1" value="100" aria-label="ขนาดตัวอักษร">
+        <span class="a-big">A</span>
+        <output id="fontScaleValue">100%</output>
+      </div>
+      <button class="theme-toggle" id="themeToggle" type="button" role="switch" aria-checked="false" aria-label="ธีมมืด" title="เปลี่ยนธีมสว่าง / มืด">
+        <span class="theme-toggle-track" aria-hidden="true">
+          <svg class="theme-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5"/></svg>
+          <svg class="theme-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M20.5 14.2A8.5 8.5 0 0 1 9.8 3.5 8.5 8.5 0 1 0 20.5 14.2Z"/></svg>
+          <span class="theme-toggle-thumb"></span>
+        </span>
+        <span id="themeToggleLabel">สว่าง</span>
+      </button>
+      <div class="pill status-pill"><span class="status-dot"></span><strong>DATA READY</strong></div>
+      <div class="pill latest-pill">ล่าสุด <strong id="latestPeriod">—</strong></div>
+    </div>
+  </div>
+</header>
+
+<main class="shell">
+
+  <section class="executive-hero" aria-label="ภาพรวมการจำหน่าย">
+    <div>
+      <div class="hero-eyebrow"><span class="hero-live-dot"></span>PETROLEUM MARKET INTELLIGENCE</div>
+      <h2 id="overviewHeading">ภาพรวมการจำหน่ายทั้งประเทศ</h2>
+      <p>ติดตามปริมาณ แนวโน้ม และโครงสร้างตลาดผลิตภัณฑ์ปิโตรเลียม</p>
+    </div>
+    <div class="hero-meta"><div class="hero-calendar" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><rect x="3" y="5" width="18" height="16" rx="4"/><path d="M7 3v4m10-4v4M3 11h18m-13 4h3m2 0h3m-8 3h3"/></svg></div><small>ช่วงข้อมูลที่เลือก</small><strong id="heroPeriod">กำลังโหลด…</strong><span id="heroScope">ทุกจังหวัด · ทุกบริษัท</span></div>
+  </section>
+
+  <section class="control-center" id="controlCenter">
+    <span class="sticky-note">ตัวกรองติดหน้าจอ · เปลี่ยนได้ทุกตำแหน่ง</span>
+    <div class="control-top">
+      <div class="tab-switch">
+        <button class="tab-btn active" data-mode="province" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 21s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z"/><circle cx="12" cy="9" r="2.3"/></svg>
+          ยอดจำหน่ายรายจังหวัด
+        </button>
+        <button class="tab-btn" data-mode="business" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 21V7l8-4 8 4v14"/><path d="M8 21v-6h8v6"/><path d="M8 9h1M12 9h1M16 9h1"/></svg>
+          ยอดจำหน่ายรายสาขาธุรกิจ
+        </button>
+      </div>
+      <div class="dataset-line"><span class="pulse"></span><span id="datasetState">กำลังเชื่อมต่อข้อมูล...</span></div>
+    </div>
+
+    <div class="filter-grid">
+      <label class="field">
+        <span class="field-label">ปี พ.ศ.</span>
+        <span class="select-wrap"><select id="yearFilter"></select></span>
+      </label>
+
+      <label class="field">
+        <span class="field-label">เดือน</span>
+        <span class="select-wrap"><select id="monthFilter"></select></span>
+      </label>
+
+      <label class="field product-field">
+        <span class="field-label">ผลิตภัณฑ์ <span id="productScopeSummary" class="product-scope"></span></span>
+        <span class="select-wrap"><select id="productFilter"></select></span>
+      </label>
+
+      <label class="field company-field">
+        <span class="field-label">บริษัท / ผู้ค้า</span>
+        <span class="select-wrap"><select id="companyFilter"></select></span>
+      </label>
+
+      <label class="field secondary-field">
+        <span class="field-label" id="secondaryLabel">เจาะจงจังหวัด</span>
+        <span class="select-wrap"><select id="secondaryFilter"></select></span>
+      </label>
+
+      <div class="unit-badge" title="หน่วยสลับอัตโนมัติตามผลิตภัณฑ์">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M7 7h10M7 17h10"/></svg>
+        หน่วยปัจจุบัน <strong id="unitBadge">พันลิตร</strong>
+      </div>
+
+      <button class="reset-btn" id="resetFilters" type="button">ล้างตัวกรอง</button>
+    </div>
+  </section>
+
+
+  <div id="renderError" class="render-error hidden" role="alert"><span id="renderErrorText"></span><button id="retryRender" type="button">ลองอีกครั้ง</button></div>
+<div id="dashboardContent" aria-busy="false">
+<section class="kpi-grid" aria-label="ตัวชี้วัดสำคัญ">
+    <article class="glass panel kpi-card">
+      <div class="kpi-head"><span class="kpi-label">ปริมาณจำหน่ายรวม</span><span class="kpi-icon">Σ</span></div>
+      <div class="kpi-value" id="kpiTotal">—</div><div class="kpi-sub" id="kpiTotalSub">—</div>
+    </article>
+    <article class="glass panel kpi-card">
+      <div class="kpi-head"><span class="kpi-label">เปลี่ยนแปลงจากปีก่อน</span><span class="kpi-icon">↗</span></div>
+      <div class="kpi-value" id="kpiYoy">—</div><div class="kpi-sub" id="kpiYoySub">เปรียบเทียบเดือนเดียวกัน</div>
+    </article>
+    <article class="glass panel kpi-card">
+      <div class="kpi-head"><span class="kpi-label">ยอดสะสมตั้งแต่ต้นปี</span><span class="kpi-icon">↥</span></div>
+      <div class="kpi-value" id="kpiYtd">—</div><div class="kpi-sub" id="kpiYtdSub">กำลังอ่านข้อมูลรายเดือน…</div>
+    </article>
+    <article class="glass panel kpi-card">
+      <div class="kpi-head"><span class="kpi-label">ปริมาณเฉลี่ยต่อวัน</span><span class="kpi-icon">◷</span></div>
+      <div class="kpi-value" id="kpiDaily">—</div><div class="kpi-sub" id="kpiDailySub">คำนวณจากวันในช่วงข้อมูลที่มี</div>
+    </article>
+  </section>
+  <div class="leader-strip">
+    <div class="leader-item"><small>ผู้ค้าที่มียอดสูงสุด</small><strong id="kpiCompany">—</strong><div class="kpi-sub" id="kpiCompanySub">—</div></div>
+    <div class="leader-item"><small id="kpiAreaLabel">จังหวัดที่มียอดสูงสุด</small><strong id="kpiArea">—</strong><div class="kpi-sub" id="kpiAreaSub">—</div></div>
+    <div class="leader-item"><small>บริษัทที่มีการจำหน่าย</small><strong id="kpiCompanyCount">—</strong><div class="kpi-sub" id="coverageNote">ตามขอบเขตที่เลือก</div></div>
+  </div>
+  <section class="overview-grid">
+    <article class="glass panel trend-card" id="nationalTrendCard">
+      <div class="card-head">
+        <div class="card-title"><h2>แนวโน้มการจำหน่าย</h2><p id="trendSubtitle">แนวโน้มรายเดือน เทียบกับปีก่อน</p></div>
+        <div class="chart-head-actions"><span class="chart-unit-badge current-chart-unit">พันลิตร</span><button type="button" class="chart-tool icon-tool fullscreen-btn" data-fullscreen="nationalTrendCard" title="ขยายกราฟ" aria-label="ขยายกราฟแนวโน้ม">⛶</button></div>
+      </div>
+      <div class="trend-legend"><span><i></i><b id="trendCurrentYear">ปีที่เลือก</b></span><span><i></i><b id="trendPreviousYear">ปีก่อน</b></span></div>
+      <div id="nationalTrendChart" class="chart" role="img" aria-label="กราฟแนวโน้มปริมาณจำหน่ายรายเดือน"></div>
+      <div class="chart-footnote" id="trendNote" role="status">กำลังโหลดแนวโน้มรายเดือน…</div>
+    </article>
+    <aside class="glass panel insight-card">
+      <div class="insight-eyebrow"><span></span>MARKET PULSE</div><h2>สัญญาณตลาด</h2>
+      <div class="insight-metric"><span id="momLabel">เปลี่ยนแปลงจากเดือนก่อน</span><strong id="insightMom">—</strong><p id="insightMomNote">กำลังอ่านข้อมูล…</p></div>
+      <div class="insight-metric"><span>สัดส่วนผู้ค้า 5 อันดับแรก</span><strong id="insightTop5">—</strong><div class="insight-meter"><i id="top5Meter"></i></div><p id="insightTop5Note">ตามขอบเขตที่เลือก</p></div>
+      <div class="insight-note" id="insightCoverage">คำนวณจากข้อมูลการจำหน่ายตามตัวกรอง</div>
+    </aside>
+  </section>
+
+
+
+<section class="glass panel product-analysis-card" id="productAnalysisCard">
+    <div class="card-head">
+      <div class="card-title">
+        <h2>ปริมาณจำหน่ายตามผลิตภัณฑ์</h2>
+        <p id="productCompareSubtitle">ช่วงที่เลือกเทียบกับช่วงเดียวกันปีก่อน</p>
+      </div>
+      <div class="chart-head-actions">
+        <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+        <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="productAnalysisCard" title="ขยายกราฟ" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="product-analysis-layout">
+      <aside class="product-top-kpi">
+        <div class="product-top-symbol" aria-hidden="true"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M16 3C12 9 6 15 6 21a10 10 0 0 0 20 0C26 15 20 9 16 3Z"/><path d="M11 21a5 5 0 0 0 5 5"/></svg></div><div class="product-top-label">ผลิตภัณฑ์ที่มีปริมาณสูงสุด</div>
+        <div class="product-top-name" id="topProductName">—</div>
+        <div class="product-top-value" id="topProductValue">—</div>
+        <div class="product-top-yoy" id="topProductYoy">—</div>
+        <div class="product-top-period" id="topProductPeriod">—</div>
+      </aside>
+      <div id="productCompareChart" class="chart"></div>
+    </div>
+  </section>
+
+<section class="chart-grid">
+    <article class="glass panel" id="companyCard">
+      <div class="card-head">
+        <div class="card-title">
+          <h2>ยอดจำหน่ายแยกตามบริษัท</h2>
+          <p>เรียงตามปริมาณจำหน่าย · เลื่อนดูได้ครบทุกบริษัท</p>
+        </div>
+        <div class="chart-head-actions">
+          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+          <div class="data-count" id="companyCountBadge">0 บริษัท</div>
+          <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="companyCard" title="ขยายกราฟ" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div class="company-scroll" id="companyScroll">
+        <div id="companyChart" class="chart"></div>
+      </div>
+    </article>
+
+    <article class="glass panel analytics-card" id="analyticsCard">
+      <div class="card-head">
+        <div class="card-title">
+          <h2 id="analyticsTitle">Market Share</h2>
+          <p id="analyticsSubtitle">สัดส่วนบริษัทตามเงื่อนไขปัจจุบัน</p>
+        </div>
+        <div class="chart-tools">
+          <div class="tool-group analytics-view-switch">
+            <button class="chart-tool active" data-analytics-view="share" type="button">Market Share</button>
+            <button class="chart-tool" data-analytics-view="compare" type="button">เปรียบเทียบปี</button>
+          </div>
+          <div class="tool-group" id="shareTypeTools">
+            <button class="chart-tool active" data-share-type="donut" type="button">Donut</button>
+            <button class="chart-tool" data-share-type="bar" type="button">Bar</button>
+          </div>
+          <div class="tool-group hidden" id="compareTypeTools">
+            <button class="chart-tool active" data-compare-type="line" type="button">เส้น</button>
+            <button class="chart-tool" data-compare-type="bar" type="button">แท่ง</button>
+          </div>
+          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+          <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="analyticsCard" title="ขยายกราฟ (Esc เพื่อปิด)" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="compare-controls hidden" id="compareControls">
+        <div class="tool-group">
+          <button class="chart-tool active" data-compare-mode="monthly" type="button">รายเดือน</button>
+          <button class="chart-tool" data-compare-mode="annual" type="button">รายปี</button>
+        </div>
+        <div class="year-picker">
+          <button class="year-picker-btn" id="compareYearBtn" type="button">เลือกปี ▾</button>
+          <div class="year-menu hidden" id="compareYearMenu"></div>
+        </div>
+        <span class="compare-context" id="compareContext">—</span>
+      </div>
+
+      <div id="shareChart" class="chart"></div>
+      <div id="shareLegendList" class="legend-list"></div>
+      <div id="compareChart" class="chart hidden"></div>
+    </article>
+  </section>
+
+
+<section class="geo-grid" id="geoGrid">
+    <article class="glass panel map-card-strong" id="mapCard">
+      <div class="card-head">
+        <div class="card-title">
+          <h2>แผนที่ปริมาณจำหน่ายรายจังหวัด</h2>
+          <p>คลิกจังหวัดบนแผนที่เพื่อกรอง Dashboard ทั้งหน้า</p>
+        </div>
+        <div class="chart-head-actions">
+          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+          <div class="data-count">THAILAND</div>
+          <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="mapCard" title="ขยายกราฟ" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="mapChart" class="chart"></div>
+      <div id="mapError" class="map-error hidden">ไม่สามารถโหลด GeoJSON ได้ · กราฟอื่นยังใช้งานได้ตามปกติ</div>
+    </article>
+
+    <article class="glass panel" id="areaCard">
+      <div class="card-head">
+        <div class="card-title">
+          <h2 id="areaChartTitle">Top 10 จังหวัด</h2>
+          <p id="areaChartSubtitle">10 จังหวัดที่มีปริมาณจำหน่ายสูงสุด</p>
+        </div>
+        <div class="chart-tools">
+          <div class="tool-group">
+            <button class="chart-tool active" data-area-type="bar" type="button">แท่ง</button>
+            <button class="chart-tool" data-area-type="line" type="button">เส้น</button>
+          </div>
+          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+          <div class="data-count" id="areaCountBadge">TOP 10</div>
+          <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="areaCard" title="ขยายกราฟ" type="button">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+          </button>
+        </div>
+      </div>
+      <div id="areaChart" class="chart"></div>
+    </article>
+  </section>
+
+
+<section class="glass panel compare-builder-card" id="entityCompareCard">
+    <div class="card-head">
+      <div class="card-title">
+        <h2>เปรียบเทียบผู้ค้าและพื้นที่</h2>
+        <p id="entityCompareSubtitle">เลือกรายการที่ต้องการเปรียบเทียบได้หลายรายการ และลบออกได้ตลอดเวลา</p>
+      </div>
+      <div class="chart-head-actions">
+        <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
+        <div class="data-count" id="entityCompareCount">0 รายการ</div>
+        <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="entityCompareCard" title="ขยายกราฟ" type="button">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="entity-compare-controls">
+      <label class="field">
+        <span class="field-label">เปรียบเทียบตาม</span>
+        <span class="select-wrap"><select id="entityCompareDimension"></select></span>
+      </label>
+
+      <label class="field">
+        <span class="field-label" id="entityCompareEntityLabel">เลือกรายการ</span>
+        <span class="select-wrap"><select id="entityCompareEntity"></select></span>
+      </label>
+
+      <button class="entity-add-btn" id="entityCompareAdd" type="button">+ เพิ่มรายการ</button>
+
+      <div class="tool-group entity-mode-tools">
+        <button class="chart-tool active" data-entity-compare-mode="monthly" type="button">รายเดือน</button>
+        <button class="chart-tool" data-entity-compare-mode="total" type="button">ยอดรวม</button>
+      </div>
+
+      <button class="entity-clear-btn" id="entityCompareClear" type="button">ล้างทั้งหมด</button>
+    </div>
+
+    <div class="entity-selected" id="entityCompareSelected">
+      <span class="entity-empty">ยังไม่ได้เลือกรายการเปรียบเทียบ</span>
+    </div>
+    <div class="entity-compare-context" id="entityCompareContext">—</div>
+    <div id="entityCompareChart" class="chart"></div>
+  </section>
+
+<section class="glass panel table-card">
+    <div class="card-head">
+      <div class="card-title">
+        <h2>รายละเอียดปริมาณจำหน่าย</h2>
+        <p>ค้นหาบริษัท พื้นที่ หรือผลิตภัณฑ์ได้ทันที · Market Share คำนวณตามตัวกรองปัจจุบัน</p>
+      </div>
+      <div class="data-count" id="tableCountBadge">0 RECORDS</div>
+    </div>
+
+    <div class="table-tools">
+      <div class="search-box">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+        <input type="search" id="tableSearch" placeholder="ค้นหาบริษัท / จังหวัด / สาขาธุรกิจ / ผลิตภัณฑ์...">
+      </div>
+      <div class="table-summary" id="tableSummary">—</div>
+      <button class="export-btn" id="exportCsv" type="button">Export CSV</button>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>ปี พ.ศ.</th>
+            <th>เดือน</th>
+            <th>ผลิตภัณฑ์</th>
+            <th id="tableAreaHead">จังหวัด</th>
+            <th>บริษัท</th>
+            <th class="num" id="tableVolumeHead">ปริมาณ (พันลิตร)</th>
+            <th class="num">Market Share</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+
+    <div class="pagination">
+      <div class="page-info" id="pageInfo">—</div>
+      <div class="page-actions">
+        <button class="page-btn" id="prevPage" type="button">ก่อนหน้า</button>
+        <button class="page-btn" id="nextPage" type="button">ถัดไป</button>
+      </div>
+    </div>
+  </section>
+
+</div>
+  <footer class="footer">
+    <span>แดชบอร์ดวิเคราะห์ปริมาณการจำหน่ายผลิตภัณฑ์ปิโตรเลียม · สนพ.</span>
+    <span>Data source: <strong>ฐานข้อมูลการจำหน่าย · DOEB</strong></span>
+  </footer>
+</main>
+
+<script>
+(() => {
+'use strict';
+
+/* ============================================================
+   DATA SOURCE — SUPABASE v6 SLIM
+   ใส่ Project URL + Publishable key (anon/public) ของ Supabase ตรงนี้
+   ห้ามใส่ service_role, sb_secret, DATABASE_URL หรือรหัสผ่านฐานข้อมูล
+   ============================================================ */
+const SUPABASE_URL = 'https://gyusawedgtzqgsnxztok.supabase.co';
+const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_DQD4NWas1VRl7eMOnbWLLA_hfOSVqoC';
+
+const db = supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_PUBLISHABLE_KEY,
+  {
+    auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
+  }
+);
+
+const VIEW_BY_MODE = {
+  province:'dashboard_province_company_volume',
+  business:'dashboard_business_company_volume'
+};
+const AREA_COLUMN_BY_MODE = {
+  province:'province',
+  business:'business_sector'
+};
+
+/* ---------- FAST v2: session cache ----------
+   ลดการยิง RPC ซ้ำเวลาเปลี่ยนปี/ย้อนกลับปีเดิม
+   Cache อยู่แค่ใน Browser และหมดอายุเอง
+   Refresh หน้าเว็บ = ล้าง cache
+*/
+const DASH_CACHE_TTL = 5 * 60 * 1000; // 5 นาที
+const dashboardCache = {
+  query:new Map(),
+  availability:new Map(),
+  product:new Map()
+};
+
+function stableCacheKey(type,mode,f={}){
+  return JSON.stringify([
+    type,
+    mode,
+    f.year ?? null,
+    f.month ?? '',
+    f.product ?? '',
+    f.company ?? '',
+    f.secondary ?? '',
+    f.search ?? '',
+    f.page ?? 1,
+    f.pageSize ?? 50
+  ]);
+}
+
+function getDashCache(bucket,key){
+  const hit=dashboardCache[bucket].get(key);
+  if(!hit)return null;
+  if(Date.now()-hit.time>DASH_CACHE_TTL){
+    dashboardCache[bucket].delete(key);
+    return null;
+  }
+  return hit.value;
+}
+
+function setDashCache(bucket,key,value){
+  dashboardCache[bucket].set(key,{time:Date.now(),value});
+  return value;
+}
+
+function clearDashCache(){
+  dashboardCache.query.clear();
+  dashboardCache.availability.clear();
+  dashboardCache.product.clear();
+  trendCache.clear();
+}
+
+
+const $ = id => document.getElementById(id);
+const TH_MONTHS = ['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฎาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'];
+const TH_MONTHS_SHORT = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+const ALL_OIL='__ALL_OIL__';
+const LPG_NAME='ก๊าซแอลพีจี';
+const PAGE_SIZE=50;
+
+const state={
+  mode:'province',
+  year:null,
+  month:'',
+  product:ALL_OIL,
+  company:'',
+  secondary:'',
+  index:null,
+  dataPaths:null,
+  loaded:{province:false,business:false},
+  datasetMeta:{province:null,business:null},
+  charts:{},
+  mapReady:false,
+  tableQuery:'',
+  tablePage:1,
+  lastResult:null,
+  renderToken:0,
+  availableProducts:[],
+  availableCompanies:[],
+  availableAreas:[],
+  fontScale:1,
+  theme:'light',
+  lastProductResult:null,
+  analyticsView:'share',
+  shareType:'donut',
+  areaType:'bar',
+  compareType:'line',
+  compareMode:'monthly',
+  compareYears:[],
+  entityCompareDimension:'company',
+  entityCompareSelections:[],
+  entityCompareMode:'monthly',
+  entityCompareOptions:{companies:[],areas:[]}
+};
+
+const PRODUCT_ORDER=[
+  'น้ำมันเบนซิน',
+  'น้ำมันแก๊สโซฮอล์ 91',
+  'น้ำมันแก๊สโซฮอล์ 95',
+  'น้ำมันแก๊สโซฮอล์ 95 (ชนิดพิเศษ)',
+  'น้ำมันแก๊สโซฮอล์ E20',
+  'น้ำมันแก๊สโซฮอล์ E85',
+  'น้ำมันดีเซลหมุนเร็วธรรมดา',
+  'น้ำมันดีเซลหมุนเร็วธรรมดา (ชนิดพิเศษ)',
+  'น้ำมันดีเซลหมุนเร็ว บี20',
+  'ก๊าซแอลพีจี'
+];
+const BUSINESS_ORDER=[
+  'สถานีบริการ',
+  'ร้านค้าน้ำมัน ร้านค้า',
+  'การขนส่ง',
+  'อุตสาหกรรม',
+  'การผลิตไฟฟ้า',
+  'ราชการและรัฐวิสาหกิจ',
+  'อื่น ๆ'
+];
+const PRODUCT_DISPLAY={
+  'น้ำมันเบนซิน':'น้ำมันเบนซิน 95',
+  'น้ำมันดีเซลหมุนเร็ว บี20':'น้ำมันดีเซลหมุนเร็ว B20'
+};
+function displayProduct(name){return PRODUCT_DISPLAY[name]||name}
+function productOrderIndex(name){
+  const i=PRODUCT_ORDER.indexOf(name);
+  return i<0?999:i;
+}
+function businessOrderIndex(name){
+  const i=BUSINESS_ORDER.indexOf(name);
+  return i<0?999:i;
+}
+function SC(n){return Math.max(7,Math.round(n*state.fontScale))}
+
+/* ---------- Company brand colors ---------- */
+const FALLBACK_COLORS=['#2563eb','#64748b','#475569','#6b7f91','#6366f1','#0ea5e9','#7c3aed','#0891b2'];
+const CHART_COLORS=['#1479a8','#10a37f','#f59e0b','#e11d48','#7c3aed','#0d9488','#ea580c','#2563eb','#db2777','#65a30d','#0891b2','#9333ea'];
+const YEAR_COLORS=['#1479a8','#e11d48','#10a37f','#f59e0b','#7c3aed','#0d9488','#ea580c','#2563eb','#db2777','#65a30d','#0891b2','#9333ea','#c2410c','#4f46e5','#047857','#be123c','#a16207'];
+
+function companyColor(name=''){
+  const n=String(name).toLowerCase().replace(/\s+/g,' ').trim();
+  if(n.includes('ปตท')||n.includes('pttor')||n.includes('โออาร์'))return '#0284c7';
+  if(n.includes('บางจาก')||n.includes('bangchak'))return '#10b981';
+  if(n.includes('เชลล์')||n.includes('shell'))return '#f59e0b';
+  if(n.includes('พีทีจี')||n.includes('ptg')||/(^|\s)pt($|\s)/i.test(n))return '#e11d48';
+  if(n.includes('คาลเท็กซ์')||n.includes('caltex')||n.includes('เชฟรอน')||n.includes('chevron'))return '#0d9488';
+  if(n.includes('ซัสโก้')||n.includes('susco'))return '#ea580c';
+  if(n.includes('เอสโซ่')||n.includes('esso'))return '#2563eb';
+  let h=0;for(let i=0;i<n.length;i++)h=((h<<5)-h)+n.charCodeAt(i)|0;
+  return FALLBACK_COLORS[Math.abs(h)%FALLBACK_COLORS.length];
+}
+
+function expectedUnit(){return state.product===LPG_NAME?'พันกิโลกรัม':'พันลิตร';}
+function productLabel(){return state.product===ALL_OIL?'น้ำมันทุกชนิด (ไม่รวม LPG)':displayProduct(state.product);}
+function periodText(){const n=(state.index?.periods||[]).filter(p=>p.startsWith(state.year+'-')).length;return state.month===''?`ปี ${state.year} · ${n} เดือนที่มีข้อมูล`:`${TH_MONTHS[+state.month-1]} ${state.year}`;}
+function scopeLabel(){return state.secondary||(state.mode==='province'?'ทั่วประเทศ':'ทุกสาขาธุรกิจ');}
+function companyLabel(){return state.company||'ทุกบริษัท';}
+function formatNumber(v,d=1){return Number.isFinite(v)?v.toLocaleString('th-TH',{useGrouping:true,minimumFractionDigits:d,maximumFractionDigits:d}):'—';}
+function formatCompact(v){return Number.isFinite(v)?new Intl.NumberFormat('th-TH',{notation:'compact',maximumFractionDigits:2}).format(v):'—';}
+function escapeHtml(v){return String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+function option(value,label,disabled=false){const o=document.createElement('option');o.value=value;o.textContent=label;o.disabled=disabled;return o;}
+
+function updateUnitUI(){
+  const u=expectedUnit();
+  $('unitBadge').textContent=u;
+  $('tableVolumeHead').textContent=`ปริมาณ (${u})`;
+  document.querySelectorAll('.current-chart-unit').forEach(el=>el.textContent=u);
+}
+function fillSelect(el,items,allLabel){
+  const old=el.value;el.innerHTML='';
+  if(allLabel!=null)el.appendChild(option('',allLabel));
+  for(const v of items)el.appendChild(option(v,v));
+  if([...el.options].some(o=>o.value===old))el.value=old;
+}
+function refreshMonthOptions(){
+  const periods=new Set(state.index?.periods||[]);
+  const sel=$('monthFilter'),old=state.month;
+  sel.innerHTML='';sel.appendChild(option('','ทั้งปี'));
+  for(let m=1;m<=12;m++){
+    const key=`${state.year}-${String(m).padStart(2,'0')}`;
+    sel.appendChild(option(String(m),TH_MONTHS[m-1],periods.size>0&&!periods.has(key)));
+  }
+  if([...sel.options].some(o=>o.value===String(old)&&!o.disabled)){sel.value=String(old)}
+  else{state.month='';sel.value=''}
+}
+function refreshCompanyOptions(){
+  const list=[...(state.availableCompanies||[])].sort((a,b)=>String(a).localeCompare(String(b),'th'));
+  fillSelect($('companyFilter'),list,'ทุกบริษัท');
+  if(state.company&&[...$('companyFilter').options].some(o=>o.value===state.company))$('companyFilter').value=state.company;
+  else{state.company='';$('companyFilter').value=''}
+}
+function refreshSecondaryOptions(){
+  let list=[...(state.availableAreas||[])];
+  if(state.mode==='business'){
+    list.sort((a,b)=>{
+      const d=businessOrderIndex(a)-businessOrderIndex(b);
+      return d||String(a).localeCompare(String(b),'th');
+    });
+  }else{
+    list.sort((a,b)=>String(a).localeCompare(String(b),'th'));
+  }
+  fillSelect($('secondaryFilter'),list,state.mode==='province'?'ทุกจังหวัด':'ทุกสาขาธุรกิจ');
+  $('secondaryLabel').textContent=state.mode==='province'?'เจาะจงจังหวัด':'เจาะจงสาขาธุรกิจ';
+  if(state.secondary&&[...$('secondaryFilter').options].some(o=>o.value===state.secondary))$('secondaryFilter').value=state.secondary;
+  else{state.secondary='';$('secondaryFilter').value=''}
+}
+
+async function refreshAvailability(){
+  const availabilityToken=state.availabilityToken=(state.availabilityToken||0)+1;
+  ++state.renderToken;
+  $('dashboardContent').setAttribute('aria-busy','true');
+  await ensureDataset(state.mode);
+  const m=await workerCall({
+    type:'availability',
+    mode:state.mode,
+    filters:{year:state.year,product:state.product,company:state.company,secondary:state.secondary}
+  });
+  if(availabilityToken!==state.availabilityToken)return;
+  state.availableProducts=(m.result.products||[]).sort((a,b)=>{
+    const d=productOrderIndex(a)-productOrderIndex(b);
+    return d||String(a).localeCompare(String(b),'th');
+  });
+  state.availableAreas=m.result.areas||[];
+  state.availableCompanies=m.result.companies||[];
+
+  const current=state.product;
+  const sel=$('productFilter');
+  sel.innerHTML='';
+  const oilCount=state.availableProducts.filter(p=>p!==LPG_NAME).length;
+  if(oilCount>0)sel.appendChild(option(ALL_OIL,'น้ำมันทุกชนิด (ไม่รวม LPG)'));
+  state.availableProducts.forEach(p=>sel.appendChild(option(p,displayProduct(p))));
+
+  // ถ้า product เดิมไม่มีในปีใหม่ ให้ fallback เป็น "รวม" (ถ้ามี) หรือรายการแรก
+  if(current===ALL_OIL && oilCount>0){
+    state.product=ALL_OIL;
+  }else if(state.availableProducts.includes(current)){
+    state.product=current;
+  }else{
+    state.product=oilCount>0?ALL_OIL:(state.availableProducts[0]||'');
+  }
+  sel.value=state.product;
+
+  // อัปเดต area/company อีกครั้งตาม product ที่อาจ fallback
+  if(state.product!==current){
+    const m2=await workerCall({
+      type:'availability',mode:state.mode,
+      filters:{year:state.year,product:state.product,company:state.company,secondary:state.secondary}
+    });
+    if(availabilityToken!==state.availabilityToken)return;
+    state.availableAreas=m2.result.areas||[];
+    state.availableCompanies=m2.result.companies||[];
+  }
+  refreshCompanyOptions();
+  refreshSecondaryOptions();
+  updateProductScopeSummary();
+  updateUnitUI();
+}
+function updateProductScopeSummary(){
+  const el=$('productScopeSummary');
+  if(!el)return;
+  if(state.product!==ALL_OIL){
+    el.textContent='';
+    el.removeAttribute('title');
+    return;
+  }
+  const oils=(state.availableProducts||[]).filter(p=>p!==LPG_NAME);
+  el.textContent=`· รวม ${oils.length} ชนิด`;
+  el.title=oils.length
+    ? 'ผลิตภัณฑ์ที่รวมในปี '+state.year+':\\n'+oils.map(displayProduct).join('\\n')
+    : 'ไม่มีข้อมูลน้ำมันในปีที่เลือก';
+}
+
+function updateModeUI(){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.dataset.mode===state.mode));
+  $('tableAreaHead').textContent=state.mode==='province'?'จังหวัด':'สาขาธุรกิจ';
+  $('kpiAreaLabel').textContent=state.mode==='province'?'จังหวัดที่มียอดสูงสุด':'สาขาธุรกิจที่มียอดสูงสุด';
+  $('areaChartTitle').textContent=state.mode==='province'?'Top 10 จังหวัด':'อันดับสาขาธุรกิจ';
+  $('areaChartSubtitle').textContent=state.mode==='province'?'10 จังหวัดที่มีปริมาณจำหน่ายสูงสุด':'แสดงทุกสาขาธุรกิจเรียงตามปริมาณ';
+  $('areaCountBadge').textContent=state.mode==='province'?'TOP 10':`${(state.index.business_sectors||[]).length} SECTORS`;
+  $('mapCard').classList.toggle('hidden',state.mode!=='province');
+  $('geoGrid').style.gridTemplateColumns=state.mode==='province'?'':'1fr';
+  refreshSecondaryOptions();
+}
+
+/* ============================================================
+   SUPABASE DATA LAYER
+   คง interface workerCall(...) เดิมไว้ เพื่อให้ UI / กราฟเดิมใช้ต่อได้
+   แต่เปลี่ยนแหล่งข้อมูลจาก CSV.GZ เป็น PostgreSQL ผ่าน Supabase
+   ============================================================ */
+
+const DB_PAGE_SIZE = 1000;
+const MAX_FETCH_ROWS = 250000;
+
+function assertSupabaseConfig(){
+  if(
+    !SUPABASE_URL ||
+    SUPABASE_URL.includes('PASTE_YOUR_') ||
+    !SUPABASE_PUBLISHABLE_KEY ||
+    SUPABASE_PUBLISHABLE_KEY.includes('PASTE_YOUR_')
+  ){
+    throw new Error(
+      'ยังไม่ได้ใส่ SUPABASE_URL และ SUPABASE_PUBLISHABLE_KEY ในไฟล์ HTML'
+    );
+  }
+}
+
+function tableForMode(mode){
+  const table=VIEW_BY_MODE[mode];
+  if(!table)throw new Error('Unknown mode: '+mode);
+  return table;
+}
+function areaColumnForMode(mode){
+  return AREA_COLUMN_BY_MODE[mode] || 'province';
+}
+function unitForProductName(product){
+  return product===LPG_NAME?'พันกิโลกรัม':'พันลิตร';
+}
+function normalizeDbError(error){
+  if(!error)return new Error('Supabase query failed');
+  const parts=[error.message,error.details,error.hint].filter(Boolean);
+  return new Error(parts.join(' · '));
+}
+
+/* ดึงข้อมูลแบบแบ่งหน้า ป้องกัน PostgREST limit 1,000 rows */
+async function fetchAllRows(table,columns,buildQuery,progressLabel='ข้อมูล'){
+  let out=[],from=0;
+  while(true){
+    let q=db.from(table).select(columns).order('year').order('month').order(table===VIEW_BY_MODE.business?'business_sector':'province').order('company').order('product').range(from,from+DB_PAGE_SIZE-1);
+    if(buildQuery)q=buildQuery(q);
+    const {data,error}=await q;
+    if(error)throw normalizeDbError(error);
+    const batch=data||[];
+    out.push(...batch);
+
+    if(out.length>MAX_FETCH_ROWS){
+      throw new Error(
+        `คำค้นหานี้คืนข้อมูลเกิน ${MAX_FETCH_ROWS.toLocaleString()} แถว กรุณาเลือกปี/เดือน/ผลิตภัณฑ์ให้แคบลง`
+      );
+    }
+
+    if(batch.length<DB_PAGE_SIZE)break;
+    from+=DB_PAGE_SIZE;
+    $('loadingMessage').textContent=`กำลังอ่าน${progressLabel} ${out.length.toLocaleString('th-TH')} แถว...`;
+  }
+  return out;
+}
+
+function applyProductFilter(q,product){
+  if(product===ALL_OIL){
+    return q.neq('product',LPG_NAME).eq('unit','พันลิตร');
+  }
+  if(product){
+    return q.eq('product',product).eq('unit',unitForProductName(product));
+  }
+  return q;
+}
+
+function applyCommonFilters(q,mode,f,{month=true,company=true,secondary=true}={}){
+  if(f.year!=null&&f.year!=='')q=q.eq('year',Number(f.year));
+  if(month&&f.month!=='')q=q.eq('month',Number(f.month));
+  q=applyProductFilter(q,f.product);
+  if(company&&f.company)q=q.eq('company',f.company);
+  if(secondary&&f.secondary)q=q.eq(areaColumnForMode(mode),f.secondary);
+  return q;
+}
+
+async function loadMetaFromSupabase(){
+  assertSupabaseConfig();
+
+  const [
+    {data:periodRows,error:periodErr},
+    {data:provinceRows,error:provinceErr},
+    {data:businessRows,error:businessErr}
+  ]=await Promise.all([
+    db.from('dim_period').select('year,month').order('year',{ascending:true}).order('month',{ascending:true}),
+    db.from('dim_province').select('province_name').order('province_name',{ascending:true}),
+    db.from('dim_business_sector').select('business_sector_name').order('business_sector_name',{ascending:true})
+  ]);
+
+  if(periodErr)throw normalizeDbError(periodErr);
+  if(provinceErr)throw normalizeDbError(provinceErr);
+  if(businessErr)throw normalizeDbError(businessErr);
+
+  const periods=(periodRows||[])
+    .map(r=>({year:Number(r.year),month:Number(r.month)}))
+    .filter(r=>Number.isFinite(r.year)&&Number.isFinite(r.month));
+
+  if(!periods.length)throw new Error('dim_period ยังไม่มีข้อมูล กรุณารันตัวอัปเดตข้อมูลก่อน');
+
+  const years=[...new Set(periods.map(r=>r.year))].sort((a,b)=>a-b);
+  const periodKeys=periods.map(r=>`${r.year}-${String(r.month).padStart(2,'0')}`);
+  const latest=periods.reduce((best,r)=>{
+    if(!best)return r;
+    return (r.year>best.year||(r.year===best.year&&r.month>best.month))?r:best;
+  },null);
+
+  return {
+    years,
+    periods:periodKeys,
+    latest_period:`${latest.year}-${String(latest.month).padStart(2,'0')}`,
+    provinces:(provinceRows||[]).map(r=>r.province_name).filter(Boolean),
+    business_sectors:(businessRows||[]).map(r=>r.business_sector_name).filter(Boolean),
+    sources:{}
+  };
+}
+
+async function queryStoreDb(mode,f){
+  const cacheKey=stableCacheKey('query',mode,f);
+  const cached=getDashCache('query',cacheKey);
+  if(cached)return cached;
+
+  const {data,error}=await db.rpc('dashboard_volume_query',{
+    p_mode:mode,
+    p_year:Number(f.year),
+    p_month:f.month===''?null:Number(f.month),
+    p_product:f.product||ALL_OIL,
+    p_company:f.company||null,
+    p_secondary:f.secondary||null,
+    p_search:f.search||null,
+    p_page:Math.max(1,Number(f.page)||1),
+    p_page_size:Math.min(100,Math.max(1,Number(f.pageSize)||50))
+  });
+  if(error)throw normalizeDbError(error);
+
+  const result=data||{
+    total:0,rawCount:0,searchCount:0,
+    companyAgg:[],areaAgg:[],table:[],
+    page:Math.max(1,Number(f.page)||1),
+    pageSize:Number(f.pageSize)||50
+  };
+  return setDashCache('query',cacheKey,result);
+}
+
+async function availabilityDb(mode,f){
+  const cacheKey=stableCacheKey('availability',mode,f);
+  const cached=getDashCache('availability',cacheKey);
+  if(cached)return cached;
+
+  const {data,error}=await db.rpc('dashboard_volume_availability',{
+    p_mode:mode,
+    p_year:Number(f.year),
+    p_product:f.product||ALL_OIL,
+    p_company:f.company||null,
+    p_secondary:f.secondary||null
+  });
+  if(error)throw normalizeDbError(error);
+
+  return setDashCache(
+    'availability',
+    cacheKey,
+    data||{products:[],areas:[],companies:[]}
+  );
+}
+
+
+async function loadProductComparison(){
+  const f={year:state.year,month:state.month,product:state.product,company:state.company,secondary:state.secondary},mode=state.mode;
+  const cacheKey=stableCacheKey('product',mode,f),cached=getDashCache('product',cacheKey);
+  if(cached)return cached;
+  const fetchMonth=async month=>{
+    const {data,error}=await db.rpc('dashboard_product_comparison',{
+      p_mode:mode,p_year:Number(f.year),p_month:Number(month),p_product:f.product||ALL_OIL,p_company:f.company||null,p_secondary:f.secondary||null
+    });
+    if(error)throw normalizeDbError(error);
+    return data||{items:[],topProduct:null};
+  };
+  if(f.month!=='')return setDashCache('product',cacheKey,await fetchMonth(f.month));
+  const months=Array.from({length:12},(_,i)=>i+1).filter(m=>hasPeriod(f.year,m));
+  const results=[],queue=[...months];
+  await Promise.all(Array.from({length:Math.min(3,months.length)},async()=>{while(queue.length){const month=queue.shift();results.push({month,result:await fetchMonth(month)})}}));
+  const byProduct=new Map();
+  for(const {result} of results)for(const item of result.items||[]){
+    const row=byProduct.get(item.product)||{product:item.product,unit:item.unit,current:0,previous:0,changePct:null};
+    row.current+=Number(item.current)||0;row.previous+=Number(item.previous)||0;byProduct.set(item.product,row);
+  }
+  const previousComplete=months.length>0&&months.every(m=>hasPeriod(Number(f.year)-1,m));
+  const items=[...byProduct.values()].map(r=>({...r,changePct:previousComplete?percentChange(r.current,r.previous):null})).sort((a,b)=>b.current-a.current);
+  return setDashCache('product',cacheKey,{items,topProduct:items.find(r=>r.current>0)||null,comparedMonths:months,previousComplete});
+}
+
+
+async function compareYearsDb(mode,f){
+  const years=[...new Set((f.years||[]).map(Number))].sort((a,b)=>a-b);
+  const rows=years.map(year=>({year,months:Array(12).fill(null)}));
+  const queue=rows.flatMap(row=>Array.from({length:12},(_,i)=>i+1).filter(month=>hasPeriod(row.year,month)).map(month=>({row,month})));
+  await Promise.all(Array.from({length:Math.min(4,queue.length)},async()=>{
+    while(queue.length){
+      const {row,month}=queue.shift();
+      const r=await queryStoreDb(mode,{...f,year:row.year,month:String(month),search:'',page:1,pageSize:1});
+      row.months[month-1]=Number(r.rawCount)>0&&Number.isFinite(Number(r.total))?Number(r.total):null;
+    }
+  }));
+  return rows;
+}
+
+async function entityOptionsDb(mode,f){
+  const areaCol=areaColumnForMode(mode);
+  const rows=await fetchAllRows(
+    tableForMode(mode),
+    `${areaCol},company,volume`,
+    q=>applyCommonFilters(q,mode,{...f,month:''},{month:false,company:false,secondary:false}),
+    'รายการเปรียบเทียบ'
+  );
+
+  const companies=new Set(),areas=new Set();
+  for(const r of rows){
+    const v=Number(r.volume);
+    if(!Number.isFinite(v)||v===0)continue;
+    const company=String(r.company||'').trim();
+    const area=String(r[areaCol]||'').trim();
+    if(!f.secondary||area===f.secondary){
+      if(company)companies.add(company);
+    }
+    if(!f.company||company===f.company){
+      if(area)areas.add(area);
+    }
+  }
+  return {companies:[...companies],areas:[...areas]};
+}
+
+async function compareEntitiesDb(mode,f){
+  const selected=[...(f.entities||[])];
+  if(!selected.length)return [];
+
+  const areaCol=areaColumnForMode(mode);
+  const dimension=f.dimension==='area'?areaCol:'company';
+  const rows=await fetchAllRows(
+    tableForMode(mode),
+    `year,month,${areaCol},company,product,volume,unit`,
+    q=>{
+      q=q.eq('year',Number(f.year));
+      q=applyProductFilter(q,f.product);
+      q=q.in(dimension,selected);
+      if(f.dimension==='company'&&f.secondary)q=q.eq(areaCol,f.secondary);
+      if(f.dimension==='area'&&f.company)q=q.eq('company',f.company);
+      return q;
+    },
+    'ข้อมูลเปรียบเทียบรายการ'
+  );
+
+  const byEntity=new Map(selected.map(name=>[name,new Float64Array(12)]));
+  const seen=new Set();
+  for(const r of rows){
+    const name=String(r[dimension]||'');
+    const arr=byEntity.get(name);
+    const m=Number(r.month),v=Number(r.volume);
+    if(!arr||!Number.isFinite(m)||!Number.isFinite(v))continue;
+    if(m>=1&&m<=12){arr[m-1]+=v;seen.add(name+'-'+m);}
+  }
+
+  return selected.map(name=>({
+    name,
+    months:Array.from(byEntity.get(name)||new Float64Array(12),(v,i)=>seen.has(name+'-'+(i+1))?v:null)
+  }));
+}
+
+async function exportRowsDb(mode,f){
+  const areaCol=areaColumnForMode(mode);
+  const rows=await fetchAllRows(
+    tableForMode(mode),
+    `year,month,product,${areaCol},company,volume,unit`,
+    q=>applyCommonFilters(q,mode,f),
+    'ข้อมูลสำหรับ Export'
+  );
+
+  const qtext=(f.search||'').trim().toLowerCase();
+  const out=[];
+  for(const r of rows){
+    const v=Number(r.volume);
+    if(!Number.isFinite(v)||v===0)continue;
+    const company=String(r.company||'').trim();
+    const area=String(r[areaCol]||'').trim();
+    const product=String(r.product||'').trim();
+    if(qtext&&!((company+' '+area+' '+product).toLowerCase().includes(qtext)))continue;
+    out.push([Number(r.year),Number(r.month),product,area,company,v]);
+  }
+  return out;
+}
+
+/* Compatibility shim: UI เดิมยังเรียก workerCall(...) ได้ */
+async function workerCall(payload){
+  switch(payload.type){
+    case 'query':
+      return {result:await queryStoreDb(payload.mode,payload.filters)};
+    case 'availability':
+      return {result:await availabilityDb(payload.mode,payload.filters)};
+    case 'compare':
+      return {result:await compareYearsDb(payload.mode,payload.filters)};
+    case 'compareEntities':
+      return {result:await compareEntitiesDb(payload.mode,payload.filters)};
+    case 'entityOptions':
+      return {result:await entityOptionsDb(payload.mode,payload.filters)};
+    case 'export':
+      return {rows:await exportRowsDb(payload.mode,payload.filters)};
+    case 'load':
+      return {meta:{count:0}};
+    default:
+      throw new Error('Unsupported data operation: '+payload.type);
+  }
+}
+
+async function ensureDataset(mode){
+  state.loaded[mode]=true;
+  return true;
+}
+
+/* ---------- charts ---------- */
+
+function chartPalette(){
+  const css=getComputedStyle(document.documentElement);
+  const read=name=>css.getPropertyValue(name).trim();
+  return {text:read('--text'),muted:read('--muted'),line:read('--line'),panel:read('--panel'),soft:read('--panel-soft')};
+}
+// Apply presentation to every render, including async results and empty states.
+function styleChartOption(option){
+  const p=chartPalette();
+  function visit(value,key=''){
+    if(!value||typeof value!=='object')return;
+    if(Array.isArray(value)){value.forEach(v=>visit(v,key));return}
+    if(['axisLabel','nameTextStyle','textStyle','label'].includes(key)){
+      value.color=key==='axisLabel'?p.muted:p.text;
+      value.fontFamily='Inter, Kanit, sans-serif';
+      value.fontWeight=key==='label'?500:400;
+    }
+    if(key==='tooltip'){
+      value.backgroundColor=p.panel;value.borderColor=p.line;
+      value.textStyle={...value.textStyle,color:p.text,fontFamily:'Inter, Kanit',fontSize:SC(12)};
+    }
+    if(key==='splitLine')value.lineStyle={...value.lineStyle,color:p.line};
+    if(key==='axisLine')value.lineStyle={...value.lineStyle,color:p.line};
+    if(value.type==='text'&&value.style)value.style.fill=p.text;
+    for(const [k,v] of Object.entries(value))if(k!=='data')visit(v,k);
+  }
+  visit(option);
+  const series=Array.isArray(option.series)?option.series:[option.series].filter(Boolean);
+  for(const item of series){
+    if(item.type==='pie')item.itemStyle={...item.itemStyle,borderColor:p.panel};
+    if(item.type==='map'){
+      item.itemStyle={...item.itemStyle,borderColor:p.panel};
+      if(item.emphasis?.label)item.emphasis.label.color='#172435';
+    }
+  }
+  return option;
+}
+function mountChartLegend(id,chart,option){
+  const el=$(id);
+  let frame=el.parentElement;
+  if(!frame.classList.contains('chart-frame')){
+    frame=document.createElement('div');frame.className='chart-frame';
+    el.before(frame);frame.appendChild(el);
+  }
+  let legend=frame.querySelector('.chart-legend');
+  if(!legend){legend=document.createElement('div');legend.className='chart-legend';frame.prepend(legend)}
+  legend.replaceChildren();
+  legend.setAttribute('aria-label','คำอธิบายกราฟ');
+  const maps=Array.isArray(option.visualMap)?option.visualMap:[option.visualMap].filter(Boolean);
+  if(maps.length){
+    legend.classList.add('map-legend');
+    for(const piece of maps[0].pieces||[]){
+      const item=document.createElement('span');item.className='chart-legend-item';
+      const swatch=document.createElement('i');swatch.style.setProperty('--series-color',piece.color);
+      const text=document.createElement('span');text.textContent=piece.label;
+      item.append(swatch,text);legend.appendChild(item);
+    }
+    maps.forEach(m=>m.show=false);
+    return;
+  }
+  legend.classList.remove('map-legend');
+  const config=Array.isArray(option.legend)?option.legend[0]:option.legend;
+  if(!config||config.show===false)return;
+  config.show=false;
+  for(const [index,series] of (option.series||[]).entries()){
+    if(!series.name)continue;
+    const button=document.createElement('button');button.type='button';button.className='chart-legend-item';
+    const selected=config.selected?.[series.name]!==false;
+    button.setAttribute('aria-pressed',String(selected));button.title=series.name;
+    const swatch=document.createElement('i');
+    swatch.style.setProperty('--series-color',series.itemStyle?.color||series.lineStyle?.color||option.color?.[index]||YEAR_COLORS[index%YEAR_COLORS.length]);
+    const label=document.createElement('span');label.textContent=series.name;
+    button.append(swatch,label);legend.appendChild(button);
+    button.addEventListener('click',()=>{
+      const active=button.getAttribute('aria-pressed')!=='true';
+      button.setAttribute('aria-pressed',String(active));
+      chart.dispatchAction({type:active?'legendSelect':'legendUnSelect',name:series.name});
+    });
+  }
+}
+function getChart(id){
+  if(!state.charts[id]){
+    const c=echarts.init($(id),null,{renderer:'canvas'});
+    const set=c.setOption.bind(c),clear=c.clear.bind(c);
+    c.setOption=(option,...args)=>{
+      if(args[0]===true||args[0]?.notMerge)mountChartLegend(id,c,option);
+      return set(styleChartOption(option),...args);
+    };
+    c.clear=()=>{
+      $(id).parentElement.querySelector('.chart-legend')?.replaceChildren();
+      return clear();
+    };
+    state.charts[id]=c;
+  }
+  scheduleChartLayout();
+  return state.charts[id];
+}
+
+let chartLayoutFrame=0;
+function scheduleChartLayout(){
+  cancelAnimationFrame(chartLayoutFrame);
+  chartLayoutFrame=requestAnimationFrame(fitChartLayout);
+}
+
+function fitChartLayout(){
+  for(const [id,c] of Object.entries(state.charts)){
+    const el=$(id);
+    if(!el||!el.getClientRects().length||!el.clientWidth)continue;
+    const op=c.getOption(), width=el.clientWidth, expanded=!!el.closest('.chart-modal');
+    const horizontal=op.yAxis?.[0]?.type==='category';
+    if(horizontal){
+      const count=op.yAxis[0].data?.length||0;
+      const grouped=id==='productCompareChart';
+      const top=24;
+      const rowHeight=Math.ceil((grouped?44:32)*state.fontScale);
+      const desired=Math.max(grouped?320:340,count*rowHeight+top+48);
+      el.style.setProperty('--chart-height',desired+'px');
+      el.style.setProperty('height',desired+'px','important');
+      const labelWidth=Math.round(Math.min(grouped?260:210,width*(width<450?.38:.30)));
+      const right=Math.min(120,Math.max(72,width*.15));
+      const font=SC(11);
+      c.resize();
+      c.setOption({
+        grid:{left:labelWidth+14,right,top,bottom:42,containLabel:false},
+        xAxis:{name:'',splitNumber:width<450?2:4,axisLabel:{fontSize:SC(10),formatter:v=>formatCompact(v),hideOverlap:true}},
+        yAxis:{axisLabel:{width:labelWidth,fontSize:font,interval:0,overflow:'truncate',margin:12}},
+        series:(op.series||[]).map(s=>({label:{fontSize:SC(10),distance:7},labelLayout:{hideOverlap:true}}))
+      });
+    }else{
+      el.style.removeProperty('height');
+      if(id==='shareChart')el.style.height=(expanded?380:268)+'px';
+      else if(id==='nationalTrendChart')el.style.height=(expanded?440:300)+'px';
+      else if(id==='entityCompareChart'&&!op.series?.length)el.style.height='120px';
+      else if(!['mapChart','areaChart'].includes(id))el.style.height=(expanded?440:360)+'px';
+      c.resize();
+      if(op.xAxis?.[0]?.type==='category'&&op.yAxis?.[0]?.type==='value'){
+        const withLegend=(op.legend||[]).some(l=>l.show!==false);
+        const monthly=['nationalTrendChart','compareChart','entityCompareChart'].includes(id);
+        c.setOption({
+          grid:{left:16,right:width<450?18:28,top:30,bottom:monthly?25:75,containLabel:true},
+          yAxis:{name:'',splitNumber:4,axisLabel:{fontSize:SC(10),formatter:v=>formatCompact(v),hideOverlap:true}},
+          xAxis:{axisLabel:{fontSize:SC(10),hideOverlap:true,...(monthly?{interval:width<430?1:0,rotate:0}:{})}},
+          series:(op.series||[]).map(()=>({labelLayout:{hideOverlap:true}}))
+        });
+      }
+    }
+  }
+}
+
+const chartLayoutObserver=new ResizeObserver(scheduleChartLayout);
+const headerObserver=new ResizeObserver(()=>{document.documentElement.style.setProperty('--header-h',document.querySelector('.app-header').offsetHeight+'px');});
+headerObserver.observe(document.querySelector('.app-header'));
+document.querySelectorAll('.chart-grid>.panel,.geo-grid>.panel,.compare-builder-card,.chart,.company-scroll,.card-head,#compareControls,#shareLegendList,#entityCompareSelected').forEach(el=>chartLayoutObserver.observe(el));
+document.fonts.ready.then(scheduleChartLayout);
+window.addEventListener('resize',scheduleChartLayout);
+
+const AX='#314f63',GRID='#cfdce5',TIP_BG='rgba(248,251,253,.99)';
+function tooltipBase(){
+  return {confine:true,valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`,backgroundColor:TIP_BG,borderColor:'#afc7d5',borderWidth:1,textStyle:{fontFamily:'Inter, Kanit',fontSize:SC(10.5),fontWeight:500,color:'#102f44'},padding:[10,12],extraCssText:'box-shadow:0 14px 34px rgba(31,62,84,.12);border-radius:10px;'};
+}
+function productComparePeriodLabel(year){
+ if(state.month===''){const months=Array.from({length:12},(_,i)=>i+1).filter(m=>hasPeriod(state.year,m));const contiguous=months.every((m,i)=>!i||m===months[i-1]+1);return (contiguous&&months.length>1?TH_MONTHS_SHORT[months[0]-1]+'–'+TH_MONTHS_SHORT[months.at(-1)-1]:months.map(m=>TH_MONTHS_SHORT[m-1]).join(', '))+' '+year;}
+ return TH_MONTHS_SHORT[Number(state.month)-1]+' '+year;
+}
+
+function renderProductComparison(result){
+  state.lastProductResult=result||{items:[],topProduct:null};
+  const rows=[...(result?.items||[])];
+  const top=result?.topProduct||null;
+
+  $('productCompareSubtitle').textContent=
+    `${productComparePeriodLabel(state.year)} เทียบกับ ${productComparePeriodLabel(state.year-1)} · ${companyLabel()} · ${scopeLabel()}`;
+
+  if(top){
+    $('topProductName').textContent=displayProduct(top.product);
+    $('topProductValue').textContent=`${formatNumber(Number(top.current),1)} ${top.unit||expectedUnit()}`;
+
+    const yoy=$('topProductYoy');
+    const change=top.changePct==null?NaN:Number(top.changePct);
+    yoy.classList.remove('positive','negative');
+    if(Number.isFinite(change)){
+      yoy.textContent=`เทียบปีก่อน ${change>=0?'+':''}${change.toFixed(1)}%`;
+      yoy.classList.add(change>=0?'positive':'negative');
+    }else{
+      yoy.textContent='ปีก่อนยังไม่มีฐานเปรียบเทียบ';
+    }
+    $('topProductPeriod').textContent=`ช่วง ${productComparePeriodLabel(state.year)} · ผลิตภัณฑ์ที่มียอดสูงสุดตามตัวกรองปัจจุบัน`;
+  }else{
+    $('topProductName').textContent='—';
+    $('topProductValue').textContent='—';
+    $('topProductYoy').textContent='ไม่มีข้อมูล';
+    $('topProductYoy').classList.remove('positive','negative');
+    $('topProductPeriod').textContent='—';
+  }
+
+  const c=getChart('productCompareChart');
+  if(!rows.length){
+    c.clear();
+    c.setOption({
+      graphic:[{
+        type:'text',left:'center',top:'middle',
+        style:{text:'ไม่พบข้อมูลผลิตภัณฑ์ตามเงื่อนไขที่เลือก',fill:'#667d8e',font:`600 ${SC(11)}px Kanit`}
+      }]
+    });
+    return;
+  }
+
+  const arr=[...rows].sort((a,b)=>Number(a.current)-Number(b.current));
+  const labelWidth=Math.min(260,Math.max(180,$('productCompareChart').clientWidth*.27));
+
+  c.setOption({
+    color:['#167fce','#bad0e5'],
+    animationDurationUpdate:320,
+    tooltip:{
+      trigger:'axis',
+      axisPointer:{type:'shadow'},
+      confine:true,
+      backgroundColor:TIP_BG,
+      borderColor:'#afc7d5',
+      borderWidth:1,
+      textStyle:{fontFamily:'Inter, Kanit',fontSize:SC(10),fontWeight:600,color:'#102f44'},
+      formatter:params=>{
+        const i=params[0]?.dataIndex??0;
+        const x=arr[i];
+        if(!x)return '';
+        const change=x.changePct==null?NaN:Number(x.changePct);
+        return `<b>${escapeHtml(displayProduct(x.product))}</b><br>`+
+          `${productComparePeriodLabel(state.year)}: <b>${formatNumber(Number(x.current),2)}</b> ${escapeHtml(x.unit||expectedUnit())}<br>`+
+          `${productComparePeriodLabel(state.year-1)}: <b>${formatNumber(Number(x.previous),2)}</b> ${escapeHtml(x.unit||expectedUnit())}<br>`+
+          `เปลี่ยนแปลง: <b>${Number.isFinite(change)?`${change>=0?'+':''}${change.toFixed(2)}%`:'—'}</b>`;
+      }
+    },
+    legend:{
+      top:8,
+      textStyle:{color:'#29495d',fontFamily:'Kanit',fontSize:SC(9),fontWeight:700}
+    },
+    grid:{left:labelWidth+18,right:54,top:48,bottom:30},
+    xAxis:{
+      type:'value',
+      name:expectedUnit(),
+      nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:700},
+      axisLabel:{color:AX,fontSize:SC(9),fontWeight:600},
+      splitLine:{lineStyle:{color:GRID}}
+    },
+    yAxis:{
+      type:'category',
+      data:arr.map(x=>displayProduct(x.product)),
+      axisLine:{show:false},
+      axisTick:{show:false},
+      axisLabel:{
+        color:'#183b50',
+        fontFamily:'Kanit',
+        fontWeight:700,
+        fontSize:SC(9.5),
+        width:labelWidth,
+        overflow:'truncate'
+      }
+    },
+    series:[
+      {
+        name:String(state.year),
+        type:'bar',
+        barMaxWidth:17,
+        data:arr.map(x=>Number(x.current)||0),
+        itemStyle:{borderRadius:[0,5,5,0]},
+        label:{
+          show:true,
+          position:'right',
+          color:'#173c53',
+          fontWeight:700,
+          fontSize:SC(8.5),
+          formatter:p=>formatCompact(p.value)
+        }
+      },
+      {
+        name:String(state.year-1),
+        type:'bar',
+        barMaxWidth:17,
+        data:arr.map(x=>Number(x.previous)||0),
+        itemStyle:{borderRadius:[0,5,5,0]},
+        label:{show:false}
+      }
+    ]
+  },true);
+}
+
+function renderCompanyChart(data,total){
+  $('companyCountBadge').textContent=`${data.length.toLocaleString('th-TH')} บริษัท`;
+  const dynamic=Math.max(360,data.length*26*state.fontScale+60);
+  $('companyChart').style.height=dynamic+'px';
+  const arr=[...data].reverse();
+  const c=getChart('companyChart');
+  c.setOption({
+    animationDurationUpdate:320,
+    tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'},formatter:p=>{
+      const i=p[0]?.dataIndex??0,x=arr[i];return x?`<b>${escapeHtml(x.name)}</b><br>${formatNumber(x.value,2)} ${expectedUnit()}<br>Market Share ${total?(x.value/total*100).toFixed(2):'0.00'}%`:'';
+    }},
+    grid:{left:210,right:78,top:16,bottom:22},
+    xAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9)},axisLabel:{color:AX,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+    yAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#415f73',fontFamily:'Kanit',fontSize:SC(9.5),width:195,overflow:'truncate'}},
+    series:[{type:'bar',barMaxWidth:17,data:arr.map(x=>({value:x.value,itemStyle:{color:companyColor(x.name),borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',color:'#708594',fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+  },true);
+}
+
+
+function renderShareLegend(data,total){
+  const wrap=$('shareLegendList');
+  wrap.classList.toggle('hidden',state.analyticsView!=='share'||state.shareType==='bar');
+  wrap.innerHTML=data.map((x,i)=>'<button type="button" class="legend-entry" data-share-company="'+i+'" title="'+escapeHtml(x.name)+'"><i style="background:'+companyColor(x.name)+'"></i><span>'+escapeHtml(x.name)+'</span><b>'+formatNumber(total?x.value/total*100:0,1)+'%</b></button>').join('');
+}
+function renderShareChart(data,total){
+  renderShareLegend(data,total);
+  const c=getChart('shareChart');
+  if(!data.length||!total){c.clear();c.setOption({graphic:[{type:'text',left:'center',top:'middle',style:{text:'ไม่มีข้อมูลตามตัวกรอง',fill:'#7890a5',font:'13px Kanit'}}]});return}
+  if(state.shareType==='bar'){
+    const arr=[...data].reverse();
+    c.setOption({
+      tooltip:{...tooltipBase(),trigger:'axis',formatter:p=>{const x=arr[p[0]?.dataIndex];return x?'<b>'+escapeHtml(x.name)+'</b><br>'+formatNumber(x.value,2)+' '+expectedUnit()+'<br>สัดส่วน '+formatNumber(x.value/total*100,2)+'%':''}},
+      grid:{left:170,right:72,top:20,bottom:40},
+      xAxis:{type:'value',axisLabel:{formatter:v=>formatCompact(v)},splitLine:{lineStyle:{color:GRID}}},
+      yAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{width:150,overflow:'truncate',fontFamily:'Kanit'}},
+      series:[{type:'bar',barMaxWidth:19,data:arr.map(x=>({value:x.value,itemStyle:{color:companyColor(x.name),borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',formatter:p=>formatNumber(p.value/total*100,1)+'%',color:'#385776'}}]
+    },true);return;
+  }
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'item',formatter:p=>'<b>'+escapeHtml(p.name)+'</b><br>'+formatNumber(p.value,2)+' '+expectedUnit()+'<br>สัดส่วน '+formatNumber(p.percent,2)+'%'},
+    legend:{show:false},
+    series:[{type:'pie',radius:['57%','81%'],center:['50%','50%'],avoidLabelOverlap:true,
+      itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:3},
+      label:{show:false},labelLine:{show:false},
+      emphasis:{scale:true,scaleSize:4,label:{show:false}},
+      data:data.map(x=>({name:x.name,value:x.value,itemStyle:{color:companyColor(x.name)}}))
+    }],
+    graphic:[{type:'group',left:'center',top:'center',children:[
+      {type:'text',style:{text:String(data.length),x:0,y:-16,textAlign:'center',textVerticalAlign:'middle',fill:'#183d64',font:'600 '+SC(33)+'px Inter'}},
+      {type:'text',style:{text:'บริษัท / ผู้ค้า',x:0,y:20,textAlign:'center',textVerticalAlign:'middle',fill:'#7890a5',font:SC(11)+'px Kanit'}}
+    ]}]
+  },true);
+}
+
+function renderAreaChart(data){
+  const source=state.mode==='province'?data.slice(0,10):data;
+  const c=getChart('areaChart');
+
+  if(state.areaType==='line'){
+    const arr=[...source];
+    c.setOption({
+      tooltip:{...tooltipBase(),trigger:'axis',valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`},
+      grid:{left:65,right:28,top:30,bottom:88},
+      xAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{lineStyle:{color:'#9fb4c2'}},axisTick:{show:false},axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:500,fontSize:SC(9),rotate:35,interval:0}},
+      yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+      series:[{type:'line',smooth:false,connectNulls:false,symbol:'circle',symbolSize:6,data:arr.map(x=>x.value),
+        lineStyle:{width:3,color:'#3884db'},itemStyle:{color:'#3884db'},
+        label:{show:true,position:'top',color:'#173c53',fontWeight:700,fontSize:SC(8.5),formatter:p=>formatCompact(p.value)}
+      }]
+    },true);
+    return;
+  }
+
+  const arr=[...source].reverse();
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`},
+    grid:{left:145,right:62,top:20,bottom:24},
+    xAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontSize:SC(9),fontWeight:500},splitLine:{lineStyle:{color:GRID}}},
+    yAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:500,fontSize:SC(9.5),width:130,overflow:'truncate'}},
+    series:[{type:'bar',barMaxWidth:19,data:arr.map((x,i)=>({value:x.value,itemStyle:{color:CHART_COLORS[(arr.length-1-i)%CHART_COLORS.length],borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',color:'#27495e',fontWeight:700,fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+  },true);
+}
+async function ensureMap(){
+  if(state.mapReady)return true;
+  try{
+    const r=await fetch('https://raw.githubusercontent.com/knottx/opengisdata-thailand/master/provinces.geojson',{cache:'force-cache'});
+    if(!r.ok)throw new Error('GeoJSON HTTP '+r.status);
+    const geo=await r.json();
+    for(const f of geo.features||[])if(f.properties?.pro_th)f.properties.name=f.properties.pro_th;
+    echarts.registerMap('thailand-eppo-light',geo);state.mapReady=true;return true;
+  }catch(err){
+    console.warn(err);$('mapChart').classList.add('hidden');$('mapError').classList.remove('hidden');return false;
+  }
+}
+async function renderMap(areaAgg,total){
+  const token=state.renderToken;
+  if(state.mode!=='province')return;
+  if(!(await ensureMap()))return;
+  if(token!==state.renderToken||state.mode!=='province')return;
+  $('mapChart').classList.remove('hidden');$('mapError').classList.add('hidden');
+
+  const positive=[...areaAgg].filter(x=>x.value>0).sort((a,b)=>a.value-b.value);
+  const bandByName=new Map();
+  positive.forEach((x,i)=>{
+    const pct=(i+1)/positive.length;
+    const band=pct<=.20?1:pct<=.40?2:pct<=.60?3:pct<=.80?4:5;
+    bandByName.set(x.name,band);
+  });
+  const ranks=new Map(areaAgg.map((x,i)=>[x.name,i+1]));
+  const actual=new Map(areaAgg.map(x=>[x.name,x.value]));
+
+  const c=getChart('mapChart');
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'item',formatter:p=>{
+      const v=actual.get(p.name)||0;
+      return `<b>${escapeHtml(p.name)}</b><br>${formatNumber(v,2)} ${expectedUnit()}<br>สัดส่วน ${total?(v/total*100).toFixed(2):'0.00'}%<br>อันดับ #${ranks.get(p.name)||'—'}`;
+    }},
+    visualMap:{
+      type:'piecewise',left:14,bottom:14,orient:'vertical',
+      textStyle:{color:'#173d54',fontFamily:'Kanit',fontWeight:600,fontSize:SC(9)},
+      itemWidth:15,itemHeight:12,itemGap:5,
+      pieces:[
+        {value:5,label:'กลุ่มอันดับสูงสุด 20%',color:'#0b4f73'},
+        {value:4,label:'กลุ่มอันดับ 60–80%',color:'#147fa6'},
+        {value:3,label:'กลุ่มอันดับ 40–60%',color:'#24a3bf'},
+        {value:2,label:'กลุ่มอันดับ 20–40%',color:'#55bdd0'},
+        {value:1,label:'กลุ่มอันดับต่ำสุด 20%',color:'#93d2de'},
+        {value:0,label:'ไม่มีข้อมูล',color:'#cbd7df'}
+      ]
+    },
+    series:[{
+      type:'map',
+      map:'thailand-eppo-light',
+      roam:true,
+      layoutCenter:['56%','49%'],
+      layoutSize:'88%',
+      aspectScale:0.75,
+      scaleLimit:{min:0.85,max:8},
+      data:(state.index.provinces||[]).map(name=>({name,value:bandByName.get(name)||0,rawValue:actual.get(name)||0})),
+      itemStyle:{areaColor:'#cbd7df',borderColor:'#f7fafc',borderWidth:1.35,shadowBlur:2,shadowColor:'rgba(21,65,90,.12)'},
+      emphasis:{label:{show:true,color:'#071c2a',fontFamily:'Kanit',fontWeight:700,fontSize:SC(11)},itemStyle:{areaColor:'#f59e0b',borderColor:'#fff',borderWidth:1.5,shadowBlur:12,shadowColor:'rgba(245,158,11,.28)'}},
+      selectedMode:false
+    }]
+  },true);
+  c.off('click');c.on('click',p=>{if(!p.name)return;state.secondary=p.name;$('secondaryFilter').value=p.name;requestRender();});
+}
+
+
+function ensureCompareYears(){
+  const years=[...(state.index?.years||[])].sort((a,b)=>b-a);
+  if(!state.compareYears.length){
+    state.compareYears=years.slice(0,3);
+  }else{
+    state.compareYears=state.compareYears.filter(y=>years.includes(y));
+    if(!state.compareYears.length)state.compareYears=years.slice(0,3);
+  }
+}
+function renderCompareYearMenu(){
+  ensureCompareYears();
+  const years=[...(state.index?.years||[])].sort((a,b)=>b-a);
+  const menu=$('compareYearMenu');
+  menu.innerHTML=`
+    <div class="year-menu-head">
+      <button type="button" data-year-action="latest3">ล่าสุด 3 ปี</button>
+      <button type="button" data-year-action="all">ทุกปี</button>
+      <button type="button" data-year-action="clear">ล้าง</button>
+    </div>
+    ${years.map(y=>`<label class="year-check"><input type="checkbox" value="${y}" ${state.compareYears.includes(y)?'checked':''}> <span>${y}</span></label>`).join('')}
+  `;
+  updateCompareYearButton();
+}
+function updateCompareYearButton(){
+  const list=[...state.compareYears].sort((a,b)=>b-a);
+  $('compareYearBtn').textContent=list.length<=4?`ปี: ${list.join(', ')} ▾`:`เลือก ${list.length} ปี ▾`;
+}
+async function renderCompareChart(){
+  const requestId=state.compareToken=(state.compareToken||0)+1,filterToken=state.renderToken;
+  ensureCompareYears();
+  const m=await workerCall({
+    type:'compare',mode:state.mode,
+    filters:{product:state.product,secondary:state.secondary,company:state.company,years:state.compareYears}
+  });
+  if(requestId!==state.compareToken||filterToken!==state.renderToken)return;
+  const rows=m.result||[];
+  const c=getChart('compareChart');
+  const scope=state.secondary|| (state.mode==='province'?'ทั้งประเทศ':'ทุกสาขาธุรกิจ');
+  $('compareContext').textContent=`${productLabel()} · ${scope} · ${companyLabel()} · ${expectedUnit()}`;
+
+  if(state.compareMode==='annual'){
+    const commonMonths=Array.from({length:12},(_,i)=>i).filter(i=>rows.every(r=>r.months[i]!=null));
+    $('compareContext').textContent+=' · เทียบ '+commonMonths.length+' เดือนที่มีข้อมูลตรงกันทุกปี';
+    const data=rows.map(r=>({year:String(r.year),value:commonMonths.length?commonMonths.reduce((sum,i)=>sum+r.months[i],0):null}));
+    c.setOption({
+      tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:state.compareType==='bar'?'shadow':'line'},valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`},
+      grid:{left:68,right:28,top:30,bottom:48},
+      xAxis:{type:'category',data:data.map(x=>x.year),axisLabel:{color:'#203f53',fontWeight:600,fontSize:SC(9.5)},axisTick:{show:false}},
+      yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+      series:[{
+        type:state.compareType,
+        smooth:state.compareType==='line'?.25:false,
+        symbol:'circle',symbolSize:7,barMaxWidth:34,
+        data:data.map((x,i)=>state.compareType==='bar'
+          ?{value:x.value,itemStyle:{color:YEAR_COLORS[i%YEAR_COLORS.length],borderRadius:[5,5,0,0]}}
+          :x.value),
+        lineStyle:state.compareType==='line'?{width:3,color:'#1479a8'}:undefined,
+        itemStyle:state.compareType==='line'?{color:'#e11d48',borderColor:'#fff',borderWidth:2}:undefined,
+        label:{show:true,position:'top',color:'#173c53',fontWeight:700,fontSize:SC(8.5),formatter:p=>formatCompact(p.value)}
+      }]
+    },true);
+    return;
+  }
+
+  const months=TH_MONTHS_SHORT;
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'axis'},
+    legend:{top:4,type:'scroll',pageButtonItemGap:6,pageIconSize:10,textStyle:{color:'#23475c',fontWeight:600,fontSize:SC(8.8)},itemWidth:10,itemHeight:7,itemGap:12},
+    grid:{left:62,right:18,top:48,bottom:44},
+    xAxis:{type:'category',data:months,axisTick:{show:false},axisLabel:{color:'#203f53',fontWeight:600,fontSize:SC(9)}},
+    yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+    series:rows.map((r,i)=>({
+      name:String(r.year),type:state.compareType,smooth:false,
+      symbol:rows.length>5?'none':'circle',symbolSize:5,barMaxWidth:14,
+      data:r.months,connectNulls:false,
+      lineStyle:state.compareType==='line'?{width:rows.length>5?2:2.5,color:YEAR_COLORS[i%YEAR_COLORS.length]}:undefined,
+      itemStyle:{color:YEAR_COLORS[i%YEAR_COLORS.length],borderRadius:state.compareType==='bar'?[4,4,0,0]:0},
+      emphasis:{focus:'series',lineStyle:{width:3.5}}
+    }))
+  },true);
+}
+function updateAnalyticsView(){
+  const share=state.analyticsView==='share';
+  $('shareChart').classList.toggle('hidden',!share);
+  $('shareLegendList').classList.toggle('hidden',!share);
+  $('compareChart').classList.toggle('hidden',share);
+  $('compareControls').classList.toggle('hidden',share);
+  $('shareTypeTools').classList.toggle('hidden',!share);
+  $('compareTypeTools').classList.toggle('hidden',share);
+  $('analyticsTitle').textContent=share?'Market Share':'เปรียบเทียบหลายปี';
+  $('analyticsSubtitle').textContent=share
+    ?'ดูสัดส่วนบริษัทตามเงื่อนไขปัจจุบัน'
+    :'เลือกปีที่ต้องการเปรียบเทียบ แล้วสลับกราฟเส้น/แท่งได้';
+  document.querySelectorAll('[data-analytics-view]').forEach(b=>b.classList.toggle('active',b.dataset.analyticsView===state.analyticsView));
+  if(share&&state.lastResult)renderShareChart(state.lastResult.companyAgg,state.lastResult.total);
+  if(!share)renderCompareChart();
+  setTimeout(()=>scheduleChartLayout(),30);
+}
+
+
+/* ---------- Flexible entity comparison ---------- */
+function entityDimensionLabel(){
+  if(state.entityCompareDimension==='company')return 'บริษัท / ผู้ค้า';
+  return state.mode==='province'?'จังหวัด':'สาขาธุรกิจ';
+}
+function renderEntityCompareDimensionOptions(){
+  const sel=$('entityCompareDimension');
+  const current=state.entityCompareDimension;
+  sel.innerHTML='';
+  sel.appendChild(option('company','บริษัท / ผู้ค้า'));
+  sel.appendChild(option('area',state.mode==='province'?'จังหวัด':'สาขาธุรกิจ'));
+  if([...sel.options].some(o=>o.value===current))sel.value=current;
+}
+async function refreshEntityCompareOptions(){
+  state.entityCompareOptions={
+    companies:[...(state.availableCompanies||[])],
+    areas:[...(state.availableAreas||[])]
+  };
+  const raw=state.entityCompareDimension==='company'
+    ?state.entityCompareOptions.companies
+    :state.entityCompareOptions.areas;
+  const items=[...raw].sort((a,b)=>String(a).localeCompare(String(b),'th'));
+  const sel=$('entityCompareEntity');
+  sel.innerHTML='';
+  if(!items.length){
+    sel.appendChild(option('','ไม่มีรายการตามตัวกรอง',true));
+  }else{
+    sel.appendChild(option('','เลือกรายการ...'));
+    items.forEach(v=>sel.appendChild(option(v,v)));
+  }
+  $('entityCompareEntityLabel').textContent=`เลือก${entityDimensionLabel()}`;
+  $('entityCompareSubtitle').textContent=`เลือก${entityDimensionLabel()}ได้หลายรายการ เพิ่ม/ลบได้ตลอดเวลา`;
+}
+function renderEntityCompareChips(){
+  const wrap=$('entityCompareSelected');
+  const items=state.entityCompareSelections;
+  $('entityCompareCount').textContent=`${items.length.toLocaleString('th-TH')} รายการ`;
+  if(!items.length){
+    wrap.innerHTML='<span class="entity-empty">ยังไม่ได้เลือกรายการเปรียบเทียบ</span>';
+    return;
+  }
+  wrap.innerHTML=items.map((name,i)=>`
+    <span class="entity-chip" title="${escapeHtml(name)}">
+      <span>${escapeHtml(name)}</span>
+      <button type="button" data-remove-entity="${i}" aria-label="ลบ ${escapeHtml(name)}">×</button>
+    </span>`).join('');
+}
+async function renderEntityCompareChart(){
+  const requestId=state.entityToken=(state.entityToken||0)+1,filterToken=state.renderToken;
+  renderEntityCompareChips();
+  const c=getChart('entityCompareChart');
+  const items=state.entityCompareSelections;
+  const opposite=state.entityCompareDimension==='company'
+    ?(state.secondary|| (state.mode==='province'?'ทั่วประเทศ':'ทุกสาขาธุรกิจ'))
+    :(state.company||'ทุกบริษัท');
+  const comparePeriod=state.entityCompareMode==='total'?periodText():`แนวโน้มรายเดือน ${state.year}`;
+  $('entityCompareContext').textContent=`${entityDimensionLabel()} · ${comparePeriod} · ${productLabel()} · ${opposite} · ${expectedUnit()}`;
+
+  if(!items.length){
+    c.clear();
+    c.setOption({
+      graphic:[{type:'text',left:'center',top:'middle',style:{
+        text:`เพิ่มรายการด้านบน\nเพื่อเริ่มเปรียบเทียบ${entityDimensionLabel()}`,textAlign:'center',lineHeight:24,
+        fill:'#6b8191',font:`500 ${SC(11)}px Kanit`
+      }}]
+    });
+    return;
+  }
+
+  const m=await workerCall({
+    type:'compareEntities',mode:state.mode,
+    filters:{
+      year:state.year,product:state.product,company:state.company,secondary:state.secondary,
+      dimension:state.entityCompareDimension,entities:items
+    }
+  });
+  if(requestId!==state.entityToken||filterToken!==state.renderToken)return;
+  const rows=m.result||[];
+
+  if(state.entityCompareMode==='total'){
+    const monthIndex=state.month===''?-1:Number(state.month)-1;
+    const data=rows.map(r=>({
+      name:r.name,
+      value:monthIndex>=0?r.months[monthIndex]:(r.months.some(v=>v!=null)?r.months.reduce((a,b)=>a+(b??0),0):null)
+    }));
+    const arr=[...data].reverse();
+    c.setOption({
+      tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'}},
+      legend:{show:false},
+      grid:{left:Math.min(230,Math.max(150,$('entityCompareChart').clientWidth*.24)),right:75,top:24,bottom:35},
+      xAxis:{type:'value',name:expectedUnit(),axisLabel:{color:AX,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+      yAxis:{type:'category',data:arr.map(x=>x.name),axisTick:{show:false},axisLine:{show:false},
+        axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:600,fontSize:SC(9.5),width:190,overflow:'truncate'}},
+      series:[{type:'bar',barMaxWidth:22,data:arr.map((x,i)=>({
+        value:x.value,itemStyle:{color:YEAR_COLORS[(arr.length-1-i)%YEAR_COLORS.length],borderRadius:[0,5,5,0]}
+      })),label:{show:true,position:'right',color:'#27495e',fontWeight:700,fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+    },true);
+    return;
+  }
+
+  c.setOption({
+    tooltip:{...tooltipBase(),trigger:'axis'},
+    legend:{top:5,type:'scroll',left:12,right:12,textStyle:{color:'#23475c',fontWeight:600,fontSize:SC(8.8)}},
+    grid:{left:65,right:22,top:52,bottom:42},
+    xAxis:{type:'category',data:TH_MONTHS_SHORT,axisTick:{show:false},
+      axisLabel:{color:'#203f53',fontWeight:600,fontSize:SC(9)}},
+    yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9)},
+      axisLabel:{color:AX,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+    series:rows.map((r,i)=>({
+      name:r.name,type:'line',smooth:false,
+      symbol:rows.length>7?'none':'circle',symbolSize:5,
+      data:r.months,
+      lineStyle:{width:rows.length>7?2:2.6,color:YEAR_COLORS[i%YEAR_COLORS.length]},
+      itemStyle:{color:YEAR_COLORS[i%YEAR_COLORS.length]},
+      emphasis:{focus:'series',lineStyle:{width:3.5}}
+    }))
+  },true);
+}
+async function resetEntityComparisonForMode(){
+  state.entityCompareDimension='company';
+  state.entityCompareSelections=[];
+  renderEntityCompareDimensionOptions();
+  await refreshEntityCompareOptions();
+  await renderEntityCompareChart();
+}
+
+/* ---------- table ---------- */
+function renderTable(result){
+  const rows=result.table,total=result.total;
+  $('tableCountBadge').textContent=`${result.searchCount.toLocaleString('th-TH')} RECORDS`;
+  $('tableSummary').textContent=state.tableQuery?`พบ ${result.searchCount.toLocaleString('th-TH')} รายการจากคำค้นหา`:`ข้อมูลตามตัวกรอง ${result.rawCount.toLocaleString('th-TH')} รายการ`;
+  $('tableBody').innerHTML=rows.length?rows.map(r=>{
+    const share=total?r.volume/total*100:0,color=companyColor(r.company);
+    return `<tr><td>${r.year}</td><td>${TH_MONTHS[r.month-1]}</td><td>${escapeHtml(displayProduct(r.product))}</td><td>${escapeHtml(r.area)}</td><td><div class="company-cell"><span class="brand-dot" style="background:${color}"></span>${escapeHtml(r.company)}</div></td><td class="num">${formatNumber(r.volume,2)}</td><td class="num"><div class="share-bar"><span>${share.toFixed(2)}%</span><span class="share-track"><span class="share-fill" style="display:block;width:${Math.min(100,share)}%"></span></span></div></td></tr>`;
+  }).join(''):`<tr><td colspan="7" class="empty-row">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`;
+  const pages=Math.max(1,Math.ceil(result.searchCount/PAGE_SIZE)),start=(result.page-1)*PAGE_SIZE,end=Math.min(start+PAGE_SIZE,result.searchCount);
+  $('pageInfo').textContent=result.searchCount?`แสดง ${(start+1).toLocaleString('th-TH')}–${end.toLocaleString('th-TH')} จาก ${result.searchCount.toLocaleString('th-TH')} รายการ · หน้า ${result.page}/${pages}`:'ไม่มีข้อมูล';
+  $('prevPage').disabled=result.page<=1;$('nextPage').disabled=result.page>=pages;
+}
+
+/* ---------- KPI ---------- */
+
+/* Summary requests use the existing aggregate RPC; raw nationwide rows are never downloaded for this chart. */
+const trendCache=new Map();
+function hasPeriod(year,month){return (state.index?.periods||[]).includes(year+'-'+String(month).padStart(2,'0'))}
+function percentChange(current,previous){
+  return Number.isFinite(current)&&Number.isFinite(previous)&&previous>0?(current-previous)/previous*100:null;
+}
+function percentText(value){return value==null?'—':(value>0?'+':'')+formatNumber(value,1)+'%'}
+function setChange(id,value){const el=$(id);el.textContent=percentText(value);el.classList.toggle('positive',value>0);el.classList.toggle('negative',value<0)}
+function summaryUnit(){return state.product===LPG_NAME?'ล้านกิโลกรัม':'ล้านลิตร'}
+function daysInMonth(year,month){return new Date(year>2400?year-543:year,month,0).getDate()}
+async function loadOverviewTrend(mode,f){
+  const key=JSON.stringify([mode,f.year,f.product,f.company,f.secondary]);
+  const hit=trendCache.get(key);
+  if(hit&&Date.now()-hit.time<DASH_CACHE_TTL)return hit.promise;
+  const promise=(async()=>{
+    const tasks=[];
+    for(const year of [Number(f.year)-1,Number(f.year)]){
+      for(let month=1;month<=12;month++)if(hasPeriod(year,month))tasks.push({year,month});
+    }
+    const rows=new Map(), queue=[...tasks];
+    await Promise.all(Array.from({length:Math.min(4,tasks.length)},async()=>{
+      while(queue.length){
+        const p=queue.shift();
+        const r=await queryStoreDb(mode,{...f,year:p.year,month:String(p.month),search:'',page:1,pageSize:1});
+        rows.set(p.year+'-'+p.month,{total:Number(r.total),count:Number(r.rawCount)||0});
+      }
+    }));
+    return [Number(f.year)-1,Number(f.year)].map(year=>({
+      year,months:Array.from({length:12},(_,i)=>{
+        const r=rows.get(year+'-'+(i+1));
+        return r&&r.count>0&&Number.isFinite(r.total)?r.total:null;
+      })
+    }));
+  })();
+  trendCache.set(key,{time:Date.now(),promise});
+  try{return await promise}catch(error){if(trendCache.get(key)?.promise===promise)trendCache.delete(key);throw error}
+}
+function renderOverviewTrend(rows){
+  const [previous,current]=rows;
+  state.lastTrendRows=rows;
+  const unit=expectedUnit(), month=state.month===''?null:Number(state.month);
+  const reported=current.months.flatMap((v,i)=>v==null?[]:[i]);
+  const cutoff=month||((reported.at(-1)??-1)+1);
+  const ytdIndices=reported.filter(i=>i<cutoff);
+  const selectedIndices=month?[month-1]:reported;
+  const currentTotal=selectedIndices.length&&selectedIndices.every(i=>current.months[i]!=null)?selectedIndices.reduce((s,i)=>s+current.months[i],0):null;
+  const previousTotal=selectedIndices.length&&selectedIndices.every(i=>previous.months[i]!=null)?selectedIndices.reduce((s,i)=>s+previous.months[i],0):null;
+  setChange('kpiYoy',percentChange(currentTotal,previousTotal));
+  $('kpiYoySub').textContent=previousTotal==null?'ไม่มีข้อมูลปีก่อนครบช่วงที่เปรียบเทียบ':previousTotal===0?'ปีก่อนเป็นศูนย์ จึงคำนวณ % ไม่ได้':month?'เทียบ '+TH_MONTHS_SHORT[month-1]+' '+previous.year:'เทียบ '+selectedIndices.length+' เดือนเดียวกันของปี '+previous.year;
+  const ytd=ytdIndices.length?ytdIndices.reduce((s,i)=>s+current.months[i],0):null;
+  $('kpiYtd').textContent=ytd==null?'—':formatNumber(ytd/1000,1);
+  $('kpiYtd').title=ytd==null?'ไม่มีข้อมูล':formatNumber(ytd,2)+' '+unit;
+  $('kpiYtdSub').textContent=summaryUnit()+' · '+(cutoff?'ม.ค.–'+TH_MONTHS_SHORT[cutoff-1]+' '+current.year:'ยังไม่มีข้อมูล')+(ytdIndices.length!==cutoff?' · มีข้อมูล '+ytdIndices.length+' เดือน':'');
+  const days=selectedIndices.filter(i=>current.months[i]!=null).reduce((s,i)=>s+daysInMonth(current.year,i+1),0);
+  $('kpiDaily').textContent=currentTotal==null||!days?'—':formatNumber(currentTotal/days/1000,2);
+  $('kpiDailySub').textContent=summaryUnit()+'/วัน · '+days+' วันในช่วงที่มีข้อมูล';
+  const latestIndex=month?month-1:(reported.at(-1)??-1);
+  const lastValue=latestIndex>=0?current.months[latestIndex]:null;
+  const before=latestIndex===0?previous.months[11]:current.months[latestIndex-1];
+  $('insightMom').textContent=percentText(percentChange(lastValue,before));
+  $('momLabel').textContent=month?'เปลี่ยนแปลงจากเดือนก่อน':'เดือนล่าสุดเทียบเดือนก่อน';
+  $('insightMomNote').textContent=latestIndex<0?'ไม่มีข้อมูล':TH_MONTHS_SHORT[latestIndex]+' '+current.year+' เทียบ '+TH_MONTHS_SHORT[(latestIndex+11)%12]+(latestIndex===0?' '+previous.year:'')+(before==null?' · ไม่มีฐานเปรียบเทียบ':'');
+  $('trendCurrentYear').textContent=String(current.year);
+  $('trendPreviousYear').textContent=String(previous.year);
+  $('trendSubtitle').textContent=productLabel()+' · '+scopeLabel()+' · '+companyLabel();
+  $('trendNote').textContent='ปี '+current.year+' มีข้อมูล '+reported.length+' เดือน · เว้นช่วงเดือนที่ไม่มีข้อมูล · '+(month?'ตัวชี้วัดอ้างอิง '+TH_MONTHS[month-1]:'YoY เทียบเฉพาะเดือนเดียวกันที่มีข้อมูล');
+  const c=getChart('nationalTrendChart');
+  if(!reported.length&&!previous.months.some(v=>v!=null)){
+    c.clear();c.setOption({graphic:[{type:'text',left:'center',top:'middle',style:{text:'ไม่มีข้อมูลแนวโน้มในขอบเขตที่เลือก',fill:'#7b90a5',font:'12px Kanit'}}]});return;
+  }
+  c.setOption({
+    animationDuration:350,
+    tooltip:{...tooltipBase(),trigger:'axis',formatter:params=>{
+      if(!params.length)return '';
+      const i=params[0].dataIndex;
+      return '<b>'+TH_MONTHS[i]+'</b><br>'+params.map(p=>p.marker+' '+p.seriesName+': <b>'+formatNumber(p.value,2)+'</b> '+unit).join('<br>');
+    }},
+    grid:{left:16,right:26,top:22,bottom:24,containLabel:true},
+    xAxis:{type:'category',data:TH_MONTHS_SHORT,boundaryGap:false,axisLine:{lineStyle:{color:'#d8e4ef'}},axisTick:{show:false},axisLabel:{color:'#6b839d',fontSize:SC(10)}},
+    yAxis:{type:'value',axisLabel:{color:'#6b839d',fontSize:SC(10),formatter:v=>formatCompact(v)},splitLine:{lineStyle:{color:'#e8eff7',type:'dashed'}},splitNumber:4},
+    series:[
+      {name:String(previous.year),type:'line',data:previous.months,connectNulls:false,smooth:false,showSymbol:false,lineStyle:{color:'#9aadc5',width:2,type:'dashed'},itemStyle:{color:'#9aadc5'}},
+      {name:String(current.year),type:'line',data:current.months,connectNulls:false,smooth:false,symbol:'circle',symbolSize:6,showSymbol:reported.length<3,
+        lineStyle:{color:'#177edd',width:3},itemStyle:{color:'#177edd',borderColor:'#fff',borderWidth:2},
+        areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(31,137,228,.22)'},{offset:1,color:'rgba(31,137,228,.015)'}])},
+        ...(month&&current.months[month-1]!=null?{markPoint:{symbol:'circle',symbolSize:9,label:{show:false},data:[{coord:[TH_MONTHS_SHORT[month-1],current.months[month-1]]}]}}:{})
+      }
+    ]
+  },true);
+}
+async function updateOverview(token,mode,f){
+  $('kpiYoy').textContent='…';$('kpiYtd').textContent='…';$('kpiDaily').textContent='…';$('insightMom').textContent='…';
+  $('kpiYoySub').textContent='กำลังเทียบช่วงเวลา…';$('kpiYtdSub').textContent='กำลังอ่านยอดสะสม…';
+  $('trendNote').textContent='กำลังอ่านแนวโน้มรายเดือน…';
+  const c=getChart('nationalTrendChart');c.clear();
+  c.showLoading('default',{text:'กำลังอ่านแนวโน้ม…',color:'#188bdf',maskColor:'rgba(255,255,255,.8)',fontSize:12});
+  try{
+    const rows=await loadOverviewTrend(mode,f);
+    if(token!==state.renderToken)return;
+    c.hideLoading();renderOverviewTrend(rows);
+  }catch(error){
+    if(token!==state.renderToken)return;
+    c.hideLoading();c.clear();
+    ['kpiYoy','kpiYtd','kpiDaily','insightMom'].forEach(id=>$(id).textContent='—');
+    $('kpiYoySub').textContent='ยังโหลดข้อมูลเปรียบเทียบไม่ได้';$('kpiYtdSub').textContent='ยังโหลดข้อมูลสะสมไม่ได้';
+    $('trendNote').textContent='โหลดแนวโน้มไม่สำเร็จ · '+error.message;
+  }
+}
+function renderKpis(r){
+  const total=Number(r.total)||0;
+  $('kpiTotal').textContent=formatNumber(total/1000,1);
+  $('kpiTotal').title=formatNumber(total,2)+' '+expectedUnit();
+  $('kpiTotalSub').textContent=summaryUnit()+' · '+periodText();
+  const c=r.companyAgg[0],a=r.areaAgg[0];
+  $('kpiCompany').textContent=c?.name||'—';
+  $('kpiCompanySub').textContent=c?formatCompact(c.value)+' '+expectedUnit()+' · '+formatNumber(total?c.value/total*100:0,1)+'%':'ไม่มีข้อมูล';
+  $('kpiArea').textContent=a?.name||'—';
+  $('kpiAreaSub').textContent=a?formatCompact(a.value)+' '+expectedUnit()+' · '+formatNumber(total?a.value/total*100:0,1)+'%':'ไม่มีข้อมูล';
+  $('kpiCompanyCount').textContent=r.companyAgg.length.toLocaleString('th-TH')+' บริษัท';
+  $('coverageNote').textContent=r.areaAgg.length+' '+(state.mode==='province'?'จังหวัด':'สาขาธุรกิจ');
+  $('heroPeriod').textContent=periodText();
+  $('heroScope').textContent=scopeLabel()+' · '+companyLabel();
+  $('overviewHeading').textContent=state.company||state.secondary?'ภาพรวมการจำหน่ายตามตัวกรอง':'ภาพรวมการจำหน่ายทั้งประเทศ';
+  const top5=total?r.companyAgg.slice(0,5).reduce((s,x)=>s+Number(x.value),0)/total*100:0;
+  $('insightTop5').textContent=total?formatNumber(top5,1)+'%':'—';
+  $('top5Meter').style.width=Math.min(100,Math.max(0,top5))+'%';
+  $('insightTop5Note').textContent=state.company?'สัดส่วนภายในบริษัทที่เลือก':'จาก '+r.companyAgg.length+' บริษัทในขอบเขตที่เลือก';
+  const topAreas=total?r.areaAgg.slice(0,10).reduce((s,x)=>s+Number(x.value),0)/total*100:0;
+  $('insightCoverage').textContent=total?(state.mode==='province'?'จังหวัด':'สาขาธุรกิจ')+' '+Math.min(10,r.areaAgg.length)+' อันดับแรก คิดเป็น '+formatNumber(topAreas,1)+'% ของปริมาณในขอบเขตนี้':'ไม่พบข้อมูลการจำหน่ายตามเงื่อนไข';
+}
+async function requestRender(){
+  const token=++state.renderToken,mode=state.mode,f={...filterPayload()};
+  updateUnitUI();
+  $('datasetState').textContent='กำลังปรับข้อมูล · '+periodText();
+  $('renderError').classList.add('hidden');
+  $('dashboardContent').setAttribute('aria-busy','true');
+  try{
+    const [m,productResult]=await Promise.all([
+      workerCall({type:'query',mode,filters:f}),
+      loadProductComparison().catch(error=>({items:[],topProduct:null,loadError:error.message}))
+    ]);
+    if(token!==state.renderToken)return;
+    const r=m.result;
+    r.companyAgg=(r.companyAgg||[]).map(x=>({...x,value:Number(x.value)||0})).sort((a,b)=>b.value-a.value);
+    r.areaAgg=(r.areaAgg||[]).map(x=>({...x,value:Number(x.value)||0})).sort((a,b)=>b.value-a.value);
+    state.lastResult=r;
+    renderKpis(r);renderProductComparison(productResult);
+    if(productResult.loadError)$('productCompareSubtitle').textContent='โหลดข้อมูลผลิตภัณฑ์ไม่สำเร็จ · '+productResult.loadError;
+    renderCompanyChart(r.companyAgg,r.total);
+    renderShareChart(r.companyAgg,r.total);
+    renderAreaChart(r.areaAgg);
+    renderTable(r);
+    $('datasetState').textContent=periodText()+' · '+productLabel()+' · '+scopeLabel();
+    $('dashboardContent').setAttribute('aria-busy','false');
+    void updateOverview(token,mode,f);
+    if(mode==='province')void renderMap(r.areaAgg,r.total);
+    if(state.analyticsView==='compare')void renderCompareChart().catch(error=>{if(token===state.renderToken)showRenderError(error)});
+    await refreshEntityCompareOptions();
+    if(token!==state.renderToken)return;
+    await renderEntityCompareChart();
+    scheduleChartLayout();
+  }catch(error){
+    if(token!==state.renderToken)return;
+    $('dashboardContent').setAttribute('aria-busy','false');
+    showRenderError(error);
+  }
+}
+function showRenderError(error){
+  $('renderErrorText').textContent='โหลดข้อมูลไม่สำเร็จ · '+error.message;
+  $('renderError').classList.remove('hidden');
+  $('datasetState').textContent='โหลดข้อมูลไม่สำเร็จ';
+}
+
+function filterPayload(){return {year:state.year,month:state.month,product:state.product,company:state.company,secondary:state.secondary,search:state.tableQuery,page:state.tablePage,pageSize:PAGE_SIZE};}
+
+/* ---------- CSV export ---------- */
+async function exportCsv(){
+  if(!state.lastResult)return;
+  const btn=$('exportCsv'),old=btn.textContent;btn.textContent='กำลังสร้าง...';btn.disabled=true;
+  try{
+    const m=await workerCall({type:'export',mode:state.mode,filters:filterPayload()});
+    const total=state.lastResult.total;
+    const header=['ปี พ.ศ.','เดือน','ผลิตภัณฑ์',state.mode==='province'?'จังหวัด':'สาขาธุรกิจ','บริษัท',`ปริมาณ (${expectedUnit()})`,'Market Share (%)'];
+    const lines=[header,...m.rows.map(r=>[r[0],TH_MONTHS[r[1]-1],displayProduct(r[2]),r[3],r[4],Number(r[5]).toFixed(3),total?(r[5]/total*100).toFixed(4):'0'])];
+    const csv='\ufeff'+lines.map(a=>a.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\r\n');
+    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);a.download=`eppo-petroleum-volume-${state.mode}-${state.year}-${state.month||'all'}.csv`;a.click();
+    setTimeout(()=>URL.revokeObjectURL(a.href),0);
+  }finally{btn.textContent=old;btn.disabled=false}
+}
+
+/* ---------- events ---------- */
+
+function applyFontScale(value,rerender=true){
+  const pct=Math.max(80,Math.min(145,Number(value)||100));
+  state.fontScale=pct/100;
+  document.documentElement.style.setProperty('--font-scale',state.fontScale);
+  $('fontScaleRange').value=String(pct);
+  $('fontScaleValue').value=pct+'%';
+  localStorage.setItem('eppo_font_scale',String(pct));
+  if(rerender&&state.lastResult){
+    if(state.lastTrendRows)renderOverviewTrend(state.lastTrendRows);
+    renderCompanyChart(state.lastResult.companyAgg,state.lastResult.total);
+    renderShareChart(state.lastResult.companyAgg,state.lastResult.total);
+    renderAreaChart(state.lastResult.areaAgg);
+    if(state.lastProductResult)renderProductComparison(state.lastProductResult);
+    if(state.mode==='province')renderMap(state.lastResult.areaAgg,state.lastResult.total);
+    if(state.analyticsView==='compare')renderCompareChart();
+    renderEntityCompareChart();
+    scheduleChartLayout();
+  }
+}
+
+
+function applyTheme(value){
+  const allowed=['light','dark'];
+  const theme=allowed.includes(value)?value:'light';
+  state.theme=theme;
+  document.documentElement.dataset.theme=theme;
+  $('themeToggle').setAttribute('aria-checked',String(theme==='dark'));
+  $('themeToggleLabel').textContent=theme==='dark'?'มืด':'สว่าง';
+  localStorage.setItem('eppo_theme',theme);
+  document.querySelector('meta[name="theme-color"]').content=theme==='dark'?'#0d1424':'#f1f4fa';
+  document.querySelector('meta[name="color-scheme"]').content=theme;
+  for(const c of Object.values(state.charts)){
+    c.setOption(styleChartOption(c.getOption()));
+  }
+  scheduleChartLayout();
+}
+
+function bindEvents(){
+  $('retryRender').addEventListener('click',()=>requestRender());
+
+  function showShareCompany(event){
+    const item=event.target.closest('[data-share-company]');
+    if(!item)return;
+    const chart=state.charts.shareChart;
+    if(!chart)return;
+    const index=Number(item.dataset.shareCompany);
+    const count=$('shareLegendList').children.length;
+    const dataIndex=state.shareType==='bar'?count-1-index:index;
+    chart.dispatchAction({type:'downplay',seriesIndex:0});
+    chart.dispatchAction({type:'highlight',seriesIndex:0,dataIndex});
+    chart.dispatchAction({type:'showTip',seriesIndex:0,dataIndex});
+  }
+  $('shareLegendList').addEventListener('click',showShareCompany);
+  $('shareLegendList').addEventListener('focusin',showShareCompany);
+
+  document.querySelectorAll('.tab-btn').forEach(btn=>btn.addEventListener('click',async()=>{
+    if(state.mode===btn.dataset.mode)return;
+    state.mode=btn.dataset.mode;state.company='';state.secondary='';state.entityCompareSelections=[];state.entityCompareDimension='company';state.tablePage=1;state.tableQuery='';$('tableSearch').value='';
+    updateModeUI();renderEntityCompareDimensionOptions();refreshMonthOptions();await refreshAvailability();await requestRender();
+    if(state.analyticsView==='compare')await renderCompareChart();
+  }));
+  $('yearFilter').addEventListener('change',async e=>{
+    // FAST v2: คงเดือนเดิมไว้เมื่อเปลี่ยนปี ถ้าปีนั้นมีเดือนดังกล่าว
+    // refreshMonthOptions() จะ fallback เป็น "ทั้งปี" เองถ้าเดือนไม่มี
+    state.year=+e.target.value;state.company='';state.secondary='';state.tablePage=1;
+    refreshMonthOptions();
+    state.month=$('monthFilter').value;
+    await refreshAvailability();
+    requestRender();
+  });
+  $('monthFilter').addEventListener('change',e=>{state.month=e.target.value;state.tablePage=1;requestRender()});
+  $('productFilter').addEventListener('change',async e=>{
+    state.product=e.target.value;state.company='';state.secondary='';state.tablePage=1;
+    await refreshAvailability();requestRender();
+  });
+  $('companyFilter').addEventListener('change',async e=>{
+    state.company=e.target.value;state.tablePage=1;
+    await refreshAvailability();requestRender();
+  });
+  $('secondaryFilter').addEventListener('change',async e=>{
+    state.secondary=e.target.value;state.tablePage=1;
+    await refreshAvailability();requestRender();
+  });
+  $('resetFilters').addEventListener('click',async()=>{
+    const [y,m]=String(state.index.latest_period||'').split('-').map(Number);
+    state.year=y;state.month=String(m);state.product=ALL_OIL;state.company='';state.secondary='';state.tableQuery='';state.tablePage=1;
+    $('yearFilter').value=String(y);$('tableSearch').value='';
+    refreshMonthOptions();$('monthFilter').value=String(m);
+    await refreshAvailability();requestRender();
+  });
+  let searchTimer;
+  $('tableSearch').addEventListener('input',e=>{
+    clearTimeout(searchTimer);state.tableQuery=e.target.value;state.tablePage=1;
+    searchTimer=setTimeout(requestRender,180);
+  });
+  $('prevPage').addEventListener('click',()=>{if(state.tablePage>1){state.tablePage--;requestRender()}});
+  $('nextPage').addEventListener('click',()=>{state.tablePage++;requestRender()});
+  $('exportCsv').addEventListener('click',exportCsv);
+  $('fontScaleRange').addEventListener('input',e=>applyFontScale(e.target.value,true));
+  $('themeToggle').addEventListener('click',()=>applyTheme(state.theme==='dark'?'light':'dark'));
+
+  // ดับเบิลคลิกสถานะข้อมูลเพื่อบังคับอ่านฐานใหม่ทันที (ล้าง cache 5 นาที)
+  $('datasetState').addEventListener('dblclick',async()=>{
+    clearDashCache();
+    state.tablePage=1;
+    await refreshAvailability();
+    await requestRender();
+  });
+
+  $('entityCompareDimension').addEventListener('change',async e=>{
+    state.entityCompareDimension=e.target.value;
+    state.entityCompareSelections=[];
+    await refreshEntityCompareOptions();
+    await renderEntityCompareChart();
+  });
+  $('entityCompareAdd').addEventListener('click',async()=>{
+    const value=$('entityCompareEntity').value;
+    if(!value)return;
+    if(!state.entityCompareSelections.includes(value))state.entityCompareSelections.push(value);
+    $('entityCompareEntity').value='';
+    await renderEntityCompareChart();
+  });
+  $('entityCompareSelected').addEventListener('click',async e=>{
+    const btn=e.target.closest('[data-remove-entity]');
+    if(!btn)return;
+    const index=Number(btn.dataset.removeEntity);
+    if(Number.isInteger(index))state.entityCompareSelections.splice(index,1);
+    await renderEntityCompareChart();
+  });
+  $('entityCompareClear').addEventListener('click',async()=>{
+    state.entityCompareSelections=[];
+    await renderEntityCompareChart();
+  });
+  document.querySelectorAll('[data-entity-compare-mode]').forEach(btn=>btn.addEventListener('click',async()=>{
+    state.entityCompareMode=btn.dataset.entityCompareMode;
+    document.querySelectorAll('[data-entity-compare-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+    await renderEntityCompareChart();
+  }));
+
+  document.querySelectorAll('[data-analytics-view]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.analyticsView=btn.dataset.analyticsView;
+    updateAnalyticsView();
+  }));
+  document.querySelectorAll('[data-share-type]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.shareType=btn.dataset.shareType;
+    document.querySelectorAll('[data-share-type]').forEach(b=>b.classList.toggle('active',b===btn));
+    if(state.lastResult)renderShareChart(state.lastResult.companyAgg,state.lastResult.total);
+  }));
+  document.querySelectorAll('[data-area-type]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.areaType=btn.dataset.areaType;
+    document.querySelectorAll('[data-area-type]').forEach(b=>b.classList.toggle('active',b===btn));
+    if(state.lastResult)renderAreaChart(state.lastResult.areaAgg);
+  }));
+  document.querySelectorAll('[data-compare-type]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.compareType=btn.dataset.compareType;
+    document.querySelectorAll('[data-compare-type]').forEach(b=>b.classList.toggle('active',b===btn));
+    renderCompareChart();
+  }));
+  document.querySelectorAll('[data-compare-mode]').forEach(btn=>btn.addEventListener('click',()=>{
+    state.compareMode=btn.dataset.compareMode;
+    document.querySelectorAll('[data-compare-mode]').forEach(b=>b.classList.toggle('active',b===btn));
+    renderCompareChart();
+  }));
+
+  $('compareYearBtn').addEventListener('click',e=>{
+    e.stopPropagation();
+    renderCompareYearMenu();
+    $('compareYearMenu').classList.toggle('hidden');
+  });
+  $('compareYearMenu').addEventListener('click',e=>{
+    e.stopPropagation();
+    const action=e.target.closest('[data-year-action]')?.dataset.yearAction;
+    const years=[...(state.index?.years||[])].sort((a,b)=>b-a);
+    if(action==='latest3')state.compareYears=years.slice(0,3);
+    if(action==='all')state.compareYears=[...years];
+    if(action==='clear')state.compareYears=[];
+    if(action){
+      renderCompareYearMenu();renderCompareChart();return;
+    }
+    if(e.target.matches('input[type="checkbox"]')){
+      const y=+e.target.value;
+      if(e.target.checked){if(!state.compareYears.includes(y))state.compareYears.push(y)}
+      else state.compareYears=state.compareYears.filter(x=>x!==y);
+      if(!state.compareYears.length)state.compareYears=[state.year];
+      updateCompareYearButton();renderCompareChart();
+    }
+  });
+  document.addEventListener('click',()=>$('compareYearMenu').classList.add('hidden'));
+
+
+  const fontControl=$('fontScaleRange').closest('.font-control');
+  const fontControlHome=document.createComment('font control home');
+  fontControl.before(fontControlHome);
+  const chartFontToolbar=document.createElement('div');
+  chartFontToolbar.className='chart-font-toolbar';
+  const chartFontLabel=document.createElement('label');
+  chartFontLabel.htmlFor='fontScaleRange';
+  chartFontLabel.textContent='ขนาดตัวอักษร';
+  chartFontToolbar.appendChild(chartFontLabel);
+
+  let activeModalFilterbar=null;
+
+  function syncMainFilterControls(){
+    $('yearFilter').value=String(state.year);
+    refreshMonthOptions();
+    $('monthFilter').value=String(state.month);
+    if([...$('productFilter').options].some(o=>o.value===state.product))$('productFilter').value=state.product;
+    if([...$('companyFilter').options].some(o=>o.value===state.company))$('companyFilter').value=state.company;
+    if([...$('secondaryFilter').options].some(o=>o.value===state.secondary))$('secondaryFilter').value=state.secondary;
+  }
+
+  function makeModalSelect(label,sourceId,key){
+    const field=document.createElement('label');
+    field.className='field';
+    const lab=document.createElement('span');
+    lab.className='field-label';lab.textContent=label;
+    const wrap=document.createElement('span');wrap.className='select-wrap';
+    const sel=document.createElement('select');
+    const source=$(sourceId);
+    sel.innerHTML=source.innerHTML;
+    sel.value=source.value;
+    sel.dataset.modalFilter=key;
+    wrap.appendChild(sel);field.append(lab,wrap);
+    return field;
+  }
+
+  function buildModalFilterbar(){
+    const bar=document.createElement('div');
+    bar.className='chart-modal-filterbar';
+    bar.appendChild(makeModalSelect('ปี พ.ศ.','yearFilter','year'));
+    bar.appendChild(makeModalSelect('เดือน','monthFilter','month'));
+    bar.appendChild(makeModalSelect('ผลิตภัณฑ์','productFilter','product'));
+    bar.appendChild(makeModalSelect('บริษัท / ผู้ค้า','companyFilter','company'));
+    bar.appendChild(makeModalSelect(state.mode==='province'?'จังหวัด':'สาขาธุรกิจ','secondaryFilter','secondary'));
+    const reset=document.createElement('button');
+    reset.type='button';reset.className='modal-reset';reset.textContent='ล้างตัวกรอง';
+    bar.appendChild(reset);
+
+    bar.addEventListener('change',async e=>{
+      const sel=e.target.closest('select[data-modal-filter]');
+      if(!sel)return;
+      const key=sel.dataset.modalFilter;
+      if(key==='year'){
+        state.year=+sel.value;state.month='';state.company='';state.secondary='';
+        refreshMonthOptions();
+      }else if(key==='month')state.month=sel.value;
+      else if(key==='product'){
+        state.product=sel.value;state.company='';state.secondary='';
+      }else if(key==='company')state.company=sel.value;
+      else if(key==='secondary')state.secondary=sel.value;
+      state.tablePage=1;
+      await refreshAvailability();
+      syncMainFilterControls();
+      await requestRender();
+      // rebuild modal choices so dependent dropdowns stay correct
+      if(activeModalFilterbar){
+        const replacement=buildModalFilterbar();
+        activeModalFilterbar.replaceWith(replacement);
+        activeModalFilterbar=replacement;
+      }
+    });
+    reset.addEventListener('click',async()=>{
+      const [y,m]=String(state.index.latest_period||'').split('-').map(Number);
+      state.year=y;state.month=String(m);state.product=ALL_OIL;state.company='';state.secondary='';state.tablePage=1;
+      await refreshAvailability();syncMainFilterControls();await requestRender();
+      if(activeModalFilterbar){
+        const replacement=buildModalFilterbar();
+        activeModalFilterbar.replaceWith(replacement);
+        activeModalFilterbar=replacement;
+      }
+    });
+    return bar;
+  }
+
+  function closeChartModal(){
+    fontControlHome.after(fontControl);
+    chartFontToolbar.remove();
+    activeModalFilterbar?.remove();
+    activeModalFilterbar=null;
+    const card=document.querySelector('.panel.chart-modal');
+    if(card){card.classList.remove('chart-modal');card.removeAttribute('role');card.removeAttribute('aria-modal');card.querySelector('.fullscreen-btn')?.setAttribute('title','ขยายกราฟ');card.querySelector('.fullscreen-btn')?.focus();}
+    document.querySelector('.chart-modal-backdrop')?.remove();
+    document.body.classList.remove('chart-modal-active');
+    scheduleChartLayout();
+  }
+  function openChartModal(card){
+    if(!card)return;
+    const alreadyOpen=card.classList.contains('chart-modal');
+    closeChartModal();
+    if(alreadyOpen)return;
+
+    const backdrop=document.createElement('div');
+    backdrop.className='chart-modal-backdrop';
+    backdrop.addEventListener('click',closeChartModal);
+    document.body.appendChild(backdrop);
+
+    card.classList.add('chart-modal');
+    card.setAttribute('role','dialog');card.setAttribute('aria-modal','true');
+    card.querySelector('.fullscreen-btn')?.setAttribute('title','ปิดกราฟขยาย');
+    activeModalFilterbar=buildModalFilterbar();
+    const head=card.querySelector('.card-head');
+    head.insertAdjacentElement('afterend',activeModalFilterbar);
+    chartFontToolbar.appendChild(fontControl);
+    card.appendChild(chartFontToolbar);
+    document.body.classList.add('chart-modal-active');
+    card.querySelector('.fullscreen-btn')?.focus();
+    scheduleChartLayout();
+  }
+
+  document.querySelectorAll('.fullscreen-btn').forEach(btn=>btn.addEventListener('click',()=>{
+    openChartModal($(btn.dataset.fullscreen));
+  }));
+  document.addEventListener('keydown',e=>{
+    if(e.key==='Escape')closeChartModal();
+    if(e.key==='Tab'){
+      const modal=document.querySelector('.chart-modal');
+      if(!modal)return;
+      const items=[...modal.querySelectorAll('button,input,select,[tabindex]')].filter(x=>!x.disabled&&x.getClientRects().length);
+      if(!items.length)return;
+      if(e.shiftKey&&document.activeElement===items[0]){e.preventDefault();items.at(-1).focus()}
+      if(!e.shiftKey&&document.activeElement===items.at(-1)){e.preventDefault();items[0].focus()}
+    }
+  });
+}
+
+/* ---------- bootstrap ---------- */
+async function boot(){
+  try{
+    $('loadingTitle').textContent='กำลังเชื่อมต่อ Supabase';
+    $('loadingMessage').textContent='กำลังอ่านปี เดือน จังหวัด และสาขาธุรกิจจากฐานข้อมูล...';
+    $('progressBar').style.width='22%';
+
+    const idx=await loadMetaFromSupabase();
+    state.index=idx;
+    state.loaded.province=true;
+    state.loaded.business=true;
+
+    const years=[...(idx.years||[])].sort((a,b)=>b-a);
+    const [ly,lm]=String(idx.latest_period||'').split('-').map(Number);
+    state.year=ly||years[0];
+    state.month=lm?String(lm):'';
+
+    $('yearFilter').innerHTML='';
+    years.forEach(y=>$('yearFilter').appendChild(option(y,String(y))));
+    $('yearFilter').value=String(state.year);
+
+    $('productFilter').innerHTML='';
+    $('productFilter').appendChild(option(ALL_OIL,'น้ำมันทุกชนิด (ไม่รวม LPG)'));
+    $('productFilter').value=ALL_OIL;
+    fillSelect($('companyFilter'),[],'ทุกบริษัท');
+
+    $('latestPeriod').textContent=ly&&lm?`${TH_MONTHS[lm-1]} ${ly}`:'—';
+    state.compareYears=years.slice(0,3);
+    renderCompareYearMenu();
+
+    const savedScale=localStorage.getItem('eppo_font_scale')||'100';
+    const savedTheme=localStorage.getItem('eppo_theme')||'light';
+    applyFontScale(savedScale,false);
+    applyTheme(savedTheme);
+    refreshMonthOptions();
+    updateUnitUI();
+    updateModeUI();
+    renderEntityCompareDimensionOptions();
+    bindEvents();
+
+    $('loadingMessage').textContent='กำลังให้ PostgreSQL สรุปข้อมูลสำหรับ Dashboard...';
+    $('progressBar').style.width='55%';
+
+    await refreshAvailability();
+    $('progressBar').style.width='75%';
+    await requestRender();
+
+    $('progressBar').style.width='100%';
+    $('datasetState').textContent=periodText()+' · '+productLabel();
+    $('loadingOverlay').style.display='none';
+  }catch(err){
+    console.error(err);
+    $('loaderRing').style.display='none';
+    $('progressWrap').style.display='none';
+    $('loadingTitle').textContent='ไม่สามารถเชื่อมต่อ Dashboard ได้';
+    $('loadingMessage').textContent='';
+    const box=$('errorBox');
+    box.style.display='block';
+    box.innerHTML=`
+      <strong>${escapeHtml(err.message)}</strong>
+      <div style="margin-top:6px;color:var(--error-text);font-size:12px;line-height:1.7">
+        ตรวจสอบ 3 จุด: (1) ใส่ SUPABASE_URL และ Publishable key แล้ว
+        (2) รัน SQL สร้าง dashboard_province_company_volume / dashboard_business_company_volume
+        (3) เปิด SELECT ให้ anon ตามไฟล์ doeb_dashboard_views_security.sql
+      </div>`;
+  }
+}
+boot();
+})();
+</script>
+</body>
+</html>
