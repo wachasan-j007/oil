@@ -176,7 +176,7 @@ select,input[type="search"]{height:40px;font-size:calc(11px * var(--font-scale))
 .chart{width:100%;max-width:100%;min-height:0;background:transparent;border:0;border-radius:0;margin:0}
 .company-scroll{max-height:460px;overflow:auto;margin:0 6px 8px;scrollbar-width:thin}
 #companyChart{height:400px}
-#shareChart{height:268px}
+#shareChart{height:360px}
 #compareChart,#entityCompareChart{height:370px}
 #mapCard,#areaCard{height:auto!important;min-height:0!important}
 #mapChart{height:460px!important;min-height:0!important;background:radial-gradient(ellipse at center,#edf6ff,#f9fbfe 68%);border-radius:0}
@@ -300,6 +300,10 @@ select option{background:var(--panel);color:var(--text)}
 .product-scope{color:var(--blue)}
 .product-top-kpi{background:var(--panel-soft);border-color:var(--line)}
 .positive{color:var(--positive)!important}.negative{color:var(--negative)!important}
+.kpi-card.status-positive .kpi-value,.kpi-card.status-positive .kpi-icon{color:var(--positive)!important}
+.kpi-card.status-positive .kpi-icon{background:var(--icon-teal)!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--positive) 10%,transparent)}
+.kpi-card.status-negative .kpi-value,.kpi-card.status-negative .kpi-icon{color:var(--negative)!important}
+.kpi-card.status-negative .kpi-icon{background:color-mix(in srgb,var(--negative) 12%,var(--panel))!important;box-shadow:0 0 0 4px color-mix(in srgb,var(--negative) 9%,transparent)}
 .table-wrap,td,.legend-entry,.leader-item{border-color:var(--line)}
 th{background:var(--panel-soft);color:var(--text-2);font-weight:600}
 td{color:var(--text-2)}
@@ -404,19 +408,19 @@ html[data-theme] .app-header{background:var(--header-surface);backdrop-filter:bl
 .theme-toggle[aria-checked="true"] .theme-moon{color:#34508f}
 .theme-toggle[aria-checked="true"] .theme-sun{color:#b9c7e6}
 .shell{max-width:1600px;padding:26px 32px 32px}
-.executive-hero{position:relative;overflow:visible;display:flex;justify-content:space-between;align-items:center;gap:24px;padding:6px 2px 26px;margin:0;background:transparent;border:0;border-radius:0;box-shadow:none;color:var(--text)}
-.executive-hero:after{display:none}
-.hero-eyebrow{display:flex;align-items:center;gap:8px;color:var(--blue);font:600 10px Inter,sans-serif;letter-spacing:1.7px;margin-bottom:10px}
+.executive-hero{position:relative;isolation:isolate;overflow:hidden;display:flex;justify-content:space-between;align-items:center;gap:32px;min-height:152px;padding:26px 32px;margin:0 0 18px;background:linear-gradient(112deg,#0d2b50 0%,#123d69 66%,#096b87 100%);border:0;border-radius:22px;box-shadow:0 14px 32px rgba(17,49,83,.14);color:#fff}
+.executive-hero:before{content:"";position:absolute;z-index:-1;width:330px;height:330px;right:-70px;top:-170px;border-radius:50%;border:1px solid rgba(255,255,255,.07);box-shadow:0 0 0 45px rgba(255,255,255,.025),0 0 0 90px rgba(255,255,255,.018);pointer-events:none}
+.executive-hero:after{content:"";display:block;position:absolute;z-index:-1;inset:0;width:auto;height:auto;border:0;border-radius:0;box-shadow:none;background:linear-gradient(90deg,transparent 70%,rgba(19,137,163,.13));pointer-events:none}
+.hero-eyebrow{display:flex;align-items:center;gap:9px;color:#75d8f2;font:600 10px Inter,sans-serif;letter-spacing:2px;margin-bottom:8px}
 .hero-eyebrow:before{display:none}
-.hero-live-dot{width:7px;height:7px;background:#22ac99;border:2px solid #8ae0d1;box-shadow:0 0 0 3px #1cae9412;border-radius:50%}
-.executive-hero h2{font-size:clamp(26px,2.5vw,36px);font-weight:500;letter-spacing:-.4px;color:var(--text);line-height:1.4}
-.executive-hero p{color:var(--muted);font-size:12px;margin:8px 0 0;line-height:1.7}
-.hero-meta{position:relative;min-width:245px;max-width:34%;padding:16px 18px 16px 68px;background:linear-gradient(130deg,var(--card-top),var(--card-bottom));border:1px solid var(--line);border-radius:16px;box-shadow:var(--card-shadow),var(--card-inset)}
-.hero-calendar{position:absolute;left:17px;top:21px;display:grid;place-items:center;width:36px;height:39px;border-radius:10px;background:var(--icon-blue);color:var(--blue)}
-.hero-calendar svg{width:23px;height:23px}
-.hero-meta small{color:var(--muted);font-size:10px}
-.hero-meta strong{font-size:18px;font-weight:500;color:var(--text);line-height:1.4;margin:3px 0 5px}
-.hero-meta span{padding:0;background:none;border:0;border-radius:0;color:var(--muted);font-size:10px;line-height:1.6}
+.hero-live-dot{width:7px;height:7px;background:#32dfc8;border:0;box-shadow:0 0 0 4px rgba(50,223,200,.11),0 0 10px rgba(50,223,200,.4);border-radius:50%}
+.executive-hero h2{font-size:clamp(27px,2.4vw,36px);font-weight:500;letter-spacing:-.4px;color:#fff;line-height:1.4}
+.executive-hero p{color:#bed1e5;font-size:12px;margin:7px 0 0;line-height:1.7}
+.hero-meta{position:relative;z-index:1;min-width:200px;max-width:34%;padding:6px 0 6px 26px;background:transparent;border:0;border-left:1px solid rgba(255,255,255,.18);border-radius:0;box-shadow:none}
+.hero-calendar{display:none}
+.hero-meta small{display:block;color:#a9c7df;font-size:10px}
+.hero-meta strong{display:block;font-size:19px;font-weight:500;color:#fff;line-height:1.4;margin:5px 0 6px}
+.hero-meta span{display:inline-flex;padding:5px 10px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.13);border-radius:7px;color:#abe7ee;font-size:10px;line-height:1.5;max-width:320px;overflow-wrap:anywhere}
 html[data-theme] .control-center{background:var(--header-surface);backdrop-filter:blur(20px);border:1px solid var(--line);box-shadow:var(--card-shadow),var(--card-inset)}
 .control-center{padding:15px 18px 17px;border-radius:18px;margin-bottom:24px;top:calc(var(--header-h) + 10px)}
 .control-top{margin-bottom:14px;gap:14px}
@@ -429,7 +433,7 @@ html[data-theme] .control-center{background:var(--header-surface);backdrop-filte
 select,input[type="search"]{background:var(--panel-soft);border:1px solid var(--line);box-shadow:inset 0 1px 2px #14213a04;border-radius:10px;height:42px;font-size:calc(12px * var(--font-scale));color:var(--text-2)}
 select:hover,input[type="search"]:hover{border-color:var(--blue)}
 .unit-badge,.reset-btn{height:42px;border-radius:10px;font-size:11px}
-.unit-badge{background:var(--accent-soft);border-color:transparent;color:var(--text-2)}
+.unit-badge{background:var(--accent-soft);border-color:transparent;color:var(--text-2);cursor:default;user-select:none}
 .reset-btn{background:var(--panel);border-color:var(--line);color:var(--muted)}
 .reset-btn:hover{background:var(--accent-soft);color:var(--text)}
 #dashboardContent{display:grid;grid-template-columns:minmax(0,1fr);gap:22px}
@@ -456,22 +460,29 @@ html[data-theme="dark"] .kpi-card:nth-child(4) .kpi-icon{color:#f1c071}
 .kpi-value{font-size:clamp(26px,2.6vw,39px);font-weight:600;letter-spacing:-1.2px;position:relative}
 .kpi-sub{font-size:calc(11px * var(--font-scale));line-height:1.8;margin-top:7px;position:relative}
 .leader-strip{background:var(--header-surface);border:1px solid var(--line);border-radius:14px;box-shadow:0 3px 12px #17306103;grid-template-columns:1.2fr 1fr .75fr}
-.leader-item{padding:13px 22px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 10px;align-items:center}
-.leader-item small{font-size:10px;margin:0;grid-column:1/-1}
-.leader-item strong{font-size:12px;font-weight:500}
-.leader-item .kpi-sub{font-size:10px;margin:0;white-space:nowrap;color:var(--muted)}
+.leader-item{min-height:82px;padding:15px 22px;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 14px;align-items:center}
+.leader-item small{font-size:calc(12px * var(--font-scale));font-weight:500;line-height:1.45;margin:0;grid-column:1/-1;color:var(--muted)}
+.leader-item strong{font-size:calc(16px * var(--font-scale));font-weight:700;line-height:1.45;color:var(--text)}
+.leader-item .kpi-sub{font-size:calc(12.5px * var(--font-scale));font-weight:500;line-height:1.5;margin:0;white-space:nowrap;color:var(--text-2)}
 .overview-grid{grid-template-columns:minmax(0,2.2fr) minmax(280px,1fr);gap:22px}
 .trend-card{border-top:1px solid var(--line)}
 .card-head{padding:23px 24px 15px;gap:12px;align-items:center}
 .card-title{flex:1 1 180px}
-.card-title h2{font-size:calc(17px * var(--font-scale));font-weight:500;letter-spacing:-.1px;line-height:1.6}
-.card-title p{font-size:calc(11px * var(--font-scale));margin-top:3px;color:var(--muted)}
+.card-title h2{font-size:calc(20px * var(--font-scale));font-weight:700;letter-spacing:-.15px;line-height:1.45;color:var(--text);text-shadow:0 1px 2px rgba(12,34,57,.15)}
+.card-title>p:not(.chart-unit-line){font-size:calc(12.5px * var(--font-scale));font-weight:400;line-height:1.65;margin-top:4px;color:var(--muted)}
 .chart-unit-badge,.data-count{background:var(--panel-soft);border:0;color:var(--muted);border-radius:6px;font-size:10px;min-height:25px}
+.card-title .chart-unit-line{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin:8px 0 0;color:var(--muted);font-size:calc(14px * var(--font-scale));font-weight:500;line-height:1.55;letter-spacing:.02px;text-shadow:0 1px 1px rgba(12,34,57,.10)}
+.chart-unit-line strong{color:var(--text-2);font-weight:600;text-shadow:0 1px 2px rgba(12,34,57,.13)}
+.chart-unit-line .unit-note{color:var(--muted);font-weight:400}
+html[data-theme="dark"] .card-title h2{color:#fff;text-shadow:0 1px 3px rgba(0,0,0,.65)}
+html[data-theme="dark"] .card-title .chart-unit-line{color:#b9c7d9;text-shadow:0 1px 2px rgba(0,0,0,.4)}
+html[data-theme="dark"] .chart-unit-line strong{color:#d9e3ef;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+html[data-theme="dark"] .chart-unit-line .unit-note{color:#9fb0c5}
 .icon-tool{background:var(--panel-soft);border:1px solid var(--line);color:var(--muted);border-radius:8px;width:30px;height:30px}
 .icon-tool:hover{background:var(--accent-soft);color:var(--blue);border-color:var(--blue)}
-.trend-legend{padding:0 24px 8px;gap:20px;font-size:11px}
-.trend-legend b{font-weight:500}
-.chart-footnote{font-size:11px;padding:8px 24px 20px}
+.trend-legend{padding:0 24px 8px;gap:20px;font-size:calc(12px * var(--font-scale))}
+.trend-legend b{font-weight:600}
+.chart-footnote{font-size:calc(12px * var(--font-scale));padding:8px 24px 20px}
 .insight-card{position:relative;isolation:isolate;border:1px solid #385385;background:radial-gradient(ellipse at 100% 0,#406eb577,transparent 62%),linear-gradient(155deg,#253f6d,#192c4d);padding:25px 26px;box-shadow:0 12px 26px -15px #17366688,inset 0 1px 0 #ffffff16}
 .insight-card:after{content:"";position:absolute;width:220px;height:220px;border:1px solid #ffffff0a;border-radius:50%;right:-130px;bottom:-20px;box-shadow:0 0 0 35px #ffffff03,0 0 0 70px #ffffff02;z-index:-1;pointer-events:none}
 .insight-eyebrow{display:flex;align-items:center;gap:7px;font-size:9px;letter-spacing:1.6px;color:#a8cfff!important}
@@ -499,7 +510,10 @@ html[data-theme="dark"] .kpi-card:nth-child(4) .kpi-icon{color:#f1c071}
 .chart-legend-item[aria-pressed="false"]{opacity:1;color:var(--muted)}
 .chart-legend-item[aria-pressed="false"] i{opacity:.4}
 .chart-grid,.geo-grid{gap:22px;align-items:stretch}
+.geo-grid{grid-template-columns:minmax(0,1.3fr) minmax(360px,.7fr)}
 .legend-list{gap:7px;padding:14px 22px 20px;border-top:1px solid var(--line);max-height:228px;background:transparent}
+#shareLegendList{display:none}
+.panel.chart-modal #shareLegendList:not(.hidden){display:grid}
 .legend-entry{border:1px solid transparent;background:var(--panel-soft);border-radius:8px;padding:8px 10px}
 .legend-entry:hover{border-color:var(--line);background:var(--accent-soft)}
 .legend-entry span,.legend-entry b{font-size:calc(11px * var(--font-scale))}
@@ -507,7 +521,17 @@ html[data-theme="dark"] .kpi-card:nth-child(4) .kpi-icon{color:#f1c071}
 .chart-tool{font-size:11px;border-radius:7px;padding:6px 10px;min-height:28px}
 .chart-tool.active{background:var(--navy);color:#fff;box-shadow:0 2px 5px #14244020}
 .chart-tools{row-gap:8px}
-#mapChart{background:radial-gradient(ellipse at 50% 40%,var(--panel-soft),transparent 75%)}
+#mapCard .card-head{position:relative}
+#mapCard .chart-head-actions{margin-left:auto;flex-wrap:nowrap}
+.fullscreen-btn{width:36px!important;min-width:36px!important;height:36px!important;min-height:36px!important;padding:0!important;border-radius:10px!important;display:grid!important;place-items:center;flex:0 0 36px}
+.fullscreen-btn svg{width:17px!important;height:17px!important}
+.panel.chart-modal .fullscreen-btn{width:auto!important;min-width:68px!important;padding:0 12px!important;display:flex!important;align-items:center!important;justify-content:center!important;gap:7px}
+#mapCard .chart-frame{position:relative}
+#mapCard .map-legend{position:absolute;z-index:3;left:18px;bottom:18px;display:grid;grid-template-columns:minmax(0,1fr);gap:3px;width:max-content;max-width:230px;max-height:none;overflow:visible;margin:0;padding:10px 12px;border:1px solid var(--line);border-radius:12px;background:color-mix(in srgb,var(--panel) 92%,transparent);box-shadow:0 8px 24px #102a4617;backdrop-filter:blur(8px)}
+#mapCard .map-legend .chart-legend-item{gap:8px;padding:2px 0;font-size:calc(10px * var(--font-scale));font-weight:500;line-height:1.45;color:var(--text-2);white-space:nowrap}
+#mapCard .map-legend .chart-legend-item i{width:11px;height:11px;border-radius:3px}
+#mapChart{height:560px!important;background:radial-gradient(ellipse at 50% 40%,var(--panel-soft),transparent 75%)}
+.panel.chart-modal #mapChart{height:680px!important;min-height:560px!important}
 .compare-controls,.entity-compare-controls{padding:8px 24px 14px;gap:10px}
 .entity-selected{padding:2px 24px 12px}
 .entity-chip{padding:6px 10px;border-color:var(--line);border-radius:20px;background:var(--accent-soft);color:var(--text-2)}
@@ -543,12 +567,11 @@ td{font-size:12px;padding:13px 12px}
  .app-header{position:relative}.header-inner{padding:14px 16px;gap:12px}.brand{flex-basis:100%}
  .brand-logo{width:38px;height:40px;border-radius:12px}.brand-copy h1{font-size:14px}.brand-copy p{font-size:9px}
  .header-status{width:100%;gap:16px;justify-content:flex-start}.latest-pill{margin-left:auto;font-size:10px;padding-left:12px}
- .shell{padding:20px 14px 24px}.executive-hero{padding:0 2px 22px;gap:18px;align-items:flex-start;flex-direction:column}
+ .shell{padding:20px 14px 24px}.executive-hero{min-height:0;padding:22px;gap:16px;align-items:flex-start;flex-direction:column;margin-bottom:14px;border-radius:18px}
  .hero-eyebrow{font-size:9px;letter-spacing:1.2px;margin-bottom:8px}.executive-hero h2{font-size:28px;max-width:100%;line-height:1.4}
  .executive-hero p{font-size:12px;max-width:320px}
- .hero-meta{display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:10px;row-gap:3px;max-width:100%;width:100%;min-width:0;padding:12px 14px 12px 59px;border:1px solid var(--line)}
- .hero-calendar{left:14px;top:15px;width:32px;height:34px}.hero-calendar svg{width:21px;height:21px}
- .hero-meta small{font-size:10px}.hero-meta strong{font-size:16px;margin:0;text-align:right}.hero-meta span{grid-column:1/-1;font-size:10px}
+ .hero-meta{display:flex;align-items:center;gap:9px;flex-wrap:wrap;max-width:100%;width:100%;min-width:0;padding:11px 0 0;border:0;border-top:1px solid rgba(255,255,255,.18)}
+ .hero-calendar{display:none}.hero-meta small{font-size:10px}.hero-meta strong{font-size:16px;margin:0}.hero-meta span{font-size:9px}
  .control-center{position:relative;top:0;padding:12px;margin-bottom:18px;border-radius:16px}
  .control-top{display:block;margin-bottom:12px}.tab-switch{width:100%;margin-bottom:10px}.tab-btn{font-size:10px;padding:0 8px;justify-content:center;flex:1}
  .dataset-line{font-size:10px;max-width:100%}.filter-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}.field-label{font-size:11px}
@@ -558,14 +581,14 @@ td{font-size:12px;padding:13px 12px}
  .kpi-card{padding:15px;min-height:151px;border-radius:16px}.kpi-head{gap:5px;align-items:flex-start;margin-bottom:15px}
  .kpi-label{font-size:11px;line-height:1.6}.kpi-icon{width:25px;height:25px;border-radius:8px;font-size:14px}
  .kpi-value{font-size:27px;letter-spacing:-.8px}.kpi-sub{font-size:10px;margin-top:8px}
- .leader-strip{grid-template-columns:1fr 1fr;border-radius:14px}.leader-item{padding:12px 14px}
- .leader-item strong{font-size:12px}.leader-item small{font-size:10px}.leader-item .kpi-sub{font-size:10px}
+ .leader-strip{grid-template-columns:1fr 1fr;border-radius:14px}.leader-item{min-height:76px;padding:13px 14px}
+ .leader-item strong{font-size:calc(14px * var(--font-scale))}.leader-item small{font-size:calc(11px * var(--font-scale))}.leader-item .kpi-sub{font-size:calc(11px * var(--font-scale))}
  .leader-item:last-child{display:flex;gap:10px}.leader-item:last-child .kpi-sub{margin-left:auto}
  .overview-grid{grid-template-columns:1fr;gap:18px}.insight-card{display:grid;grid-template-columns:1fr 1fr;gap:0 20px;padding:22px}
  .insight-card h2,.insight-eyebrow,.insight-note{grid-column:1/-1}.insight-card h2{font-size:19px;margin-bottom:14px}
  .insight-metric strong{font-size:27px}.insight-metric span{font-size:11px}
  .glass{border-radius:18px}.card-head{padding:20px 18px 14px}.card-title{flex:1 1 160px}
- .card-title h2{font-size:calc(16px * var(--font-scale))}.card-title p{font-size:calc(11px * var(--font-scale))}
+ .card-title h2{font-size:calc(18px * var(--font-scale))}.card-title>p:not(.chart-unit-line){font-size:calc(11.5px * var(--font-scale))}.card-title .chart-unit-line{font-size:calc(13px * var(--font-scale))}
  .chart-tools,.chart-head-actions{justify-content:flex-start}
  .product-analysis-layout,.panel.chart-modal .product-analysis-layout{grid-template-columns:minmax(0,1fr)!important;padding:0 14px 16px;gap:16px}
  .product-top-kpi{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:4px 14px;padding:18px;align-items:center}
@@ -574,6 +597,11 @@ td{font-size:12px;padding:13px 12px}
  .product-top-yoy{grid-column:1/-1;margin-top:3px;font-size:11px}.product-top-period{grid-column:1/-1;font-size:10px;line-height:1.7;margin-top:7px;padding-top:10px}
  .chart-legend{padding:7px 0 12px;margin:0 14px 10px;gap:7px 16px}
  .legend-list{grid-template-columns:1fr;padding:12px 18px 18px}
+ #mapCard .card-head{padding-right:16px}
+ #mapCard .chart-head-actions{width:100%;justify-content:flex-end}
+ #mapCard .map-legend{left:12px;right:12px;bottom:12px;width:auto;max-width:none;grid-template-columns:repeat(2,minmax(0,1fr));gap:4px 12px;padding:9px 10px}
+ #mapCard .map-legend .chart-legend-item{white-space:normal;font-size:calc(9px * var(--font-scale))}
+ #mapChart{height:500px!important}.panel.chart-modal #mapChart{height:580px!important;min-height:500px!important}
  .chart-footnote{padding:8px 18px 18px}.trend-legend{padding:0 18px 8px}
  .compare-controls,.entity-compare-controls{padding:6px 18px 12px}
  .entity-selected,.entity-compare-context{padding-left:18px;padding-right:18px}
@@ -685,9 +713,9 @@ td{font-size:12px;padding:13px 12px}
         <span class="select-wrap"><select id="secondaryFilter"></select></span>
       </label>
 
-      <div class="unit-badge" title="หน่วยสลับอัตโนมัติตามผลิตภัณฑ์">
+      <div class="unit-badge" title="ป้ายแสดงหน่วย ระบบปรับอัตโนมัติตามผลิตภัณฑ์ที่เลือก" aria-label="หน่วยแสดงผล ปรับอัตโนมัติตามผลิตภัณฑ์">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M12 3v18M7 7h10M7 17h10"/></svg>
-        หน่วยปัจจุบัน <strong id="unitBadge">พันลิตร</strong>
+        หน่วยแสดงผล <strong id="unitBadge">ล้านลิตร</strong>
       </div>
 
       <button class="reset-btn" id="resetFilters" type="button">ล้างตัวกรอง</button>
@@ -703,7 +731,7 @@ td{font-size:12px;padding:13px 12px}
       <div class="kpi-value" id="kpiTotal">—</div><div class="kpi-sub" id="kpiTotalSub">—</div>
     </article>
     <article class="glass panel kpi-card">
-      <div class="kpi-head"><span class="kpi-label">เปลี่ยนแปลงจากปีก่อน</span><span class="kpi-icon">↗</span></div>
+      <div class="kpi-head"><span class="kpi-label">เปลี่ยนแปลงจากปีก่อน</span><span class="kpi-icon" id="kpiYoyIcon">↗</span></div>
       <div class="kpi-value" id="kpiYoy">—</div><div class="kpi-sub" id="kpiYoySub">เปรียบเทียบเดือนเดียวกัน</div>
     </article>
     <article class="glass panel kpi-card">
@@ -711,20 +739,20 @@ td{font-size:12px;padding:13px 12px}
       <div class="kpi-value" id="kpiYtd">—</div><div class="kpi-sub" id="kpiYtdSub">กำลังอ่านข้อมูลรายเดือน…</div>
     </article>
     <article class="glass panel kpi-card">
-      <div class="kpi-head"><span class="kpi-label">ปริมาณเฉลี่ยต่อวัน</span><span class="kpi-icon">◷</span></div>
-      <div class="kpi-value" id="kpiDaily">—</div><div class="kpi-sub" id="kpiDailySub">คำนวณจากวันในช่วงข้อมูลที่มี</div>
+      <div class="kpi-head"><span class="kpi-label">ปริมาณเดือนก่อนหน้า</span><span class="kpi-icon">←</span></div>
+      <div class="kpi-value" id="kpiPreviousMonth">—</div><div class="kpi-sub" id="kpiPreviousMonthSub">อ้างอิงข้อมูลรายเดือนโดยตรง</div>
     </article>
   </section>
   <div class="leader-strip">
-    <div class="leader-item"><small>ผู้ค้าที่มียอดสูงสุด</small><strong id="kpiCompany">—</strong><div class="kpi-sub" id="kpiCompanySub">—</div></div>
+    <div class="leader-item"><small id="kpiCompanyLabel">ผู้ค้าที่มียอดสูงสุด</small><strong id="kpiCompany">—</strong><div class="kpi-sub" id="kpiCompanySub">—</div></div>
     <div class="leader-item"><small id="kpiAreaLabel">จังหวัดที่มียอดสูงสุด</small><strong id="kpiArea">—</strong><div class="kpi-sub" id="kpiAreaSub">—</div></div>
-    <div class="leader-item"><small>บริษัทที่มีการจำหน่าย</small><strong id="kpiCompanyCount">—</strong><div class="kpi-sub" id="coverageNote">ตามขอบเขตที่เลือก</div></div>
+    <div class="leader-item"><small id="kpiCoverageLabel">ขอบเขตข้อมูลที่ครอบคลุม</small><strong id="kpiCompanyCount">—</strong><div class="kpi-sub" id="coverageNote">ตามขอบเขตที่เลือก</div></div>
   </div>
   <section class="overview-grid">
     <article class="glass panel trend-card" id="nationalTrendCard">
       <div class="card-head">
-        <div class="card-title"><h2>แนวโน้มการจำหน่าย</h2><p id="trendSubtitle">แนวโน้มรายเดือน เทียบกับปีก่อน</p></div>
-        <div class="chart-head-actions"><span class="chart-unit-badge current-chart-unit">พันลิตร</span><button type="button" class="chart-tool icon-tool fullscreen-btn" data-fullscreen="nationalTrendCard" title="ขยายกราฟ" aria-label="ขยายกราฟแนวโน้ม">⛶</button></div>
+        <div class="card-title"><h2>แนวโน้มการจำหน่าย</h2><p id="trendSubtitle">แนวโน้มรายเดือน เทียบกับปีก่อน</p><p class="chart-unit-line">หน่วย: <strong class="current-chart-unit">ล้านลิตร</strong><span class="unit-note">· ปรับตามผลิตภัณฑ์ที่เลือก</span></p></div>
+        <div class="chart-head-actions"><button type="button" class="chart-tool icon-tool fullscreen-btn" data-fullscreen="nationalTrendCard" title="ขยายกราฟ" aria-label="ขยายกราฟแนวโน้ม">⛶</button></div>
       </div>
       <div class="trend-legend"><span><i></i><b id="trendCurrentYear">ปีที่เลือก</b></span><span><i></i><b id="trendPreviousYear">ปีก่อน</b></span></div>
       <div id="nationalTrendChart" class="chart" role="img" aria-label="กราฟแนวโน้มปริมาณจำหน่ายรายเดือน"></div>
@@ -745,9 +773,9 @@ td{font-size:12px;padding:13px 12px}
       <div class="card-title">
         <h2>ปริมาณจำหน่ายตามผลิตภัณฑ์</h2>
         <p id="productCompareSubtitle">ช่วงที่เลือกเทียบกับช่วงเดียวกันปีก่อน</p>
+        <p class="chart-unit-line">หน่วย: <strong class="current-chart-unit">ล้านลิตร</strong><span class="unit-note">· ปรับตามผลิตภัณฑ์ที่เลือก</span></p>
       </div>
       <div class="chart-head-actions">
-        <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
         <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="productAnalysisCard" title="ขยายกราฟ" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
         </button>
@@ -772,9 +800,9 @@ td{font-size:12px;padding:13px 12px}
         <div class="card-title">
           <h2>ยอดจำหน่ายแยกตามบริษัท</h2>
           <p>เรียงตามปริมาณจำหน่าย · เลื่อนดูได้ครบทุกบริษัท</p>
+          <p class="chart-unit-line">หน่วย: <strong class="current-chart-unit">ล้านลิตร</strong><span class="unit-note">· ปรับตามผลิตภัณฑ์ที่เลือก</span></p>
         </div>
         <div class="chart-head-actions">
-          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
           <div class="data-count" id="companyCountBadge">0 บริษัท</div>
           <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="companyCard" title="ขยายกราฟ" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
@@ -791,6 +819,7 @@ td{font-size:12px;padding:13px 12px}
         <div class="card-title">
           <h2 id="analyticsTitle">Market Share</h2>
           <p id="analyticsSubtitle">สัดส่วนบริษัทตามเงื่อนไขปัจจุบัน</p>
+          <p class="chart-unit-line">หน่วย: <strong class="current-chart-unit">ล้านลิตร</strong><span class="unit-note">· ปรับตามผลิตภัณฑ์ที่เลือก</span></p>
         </div>
         <div class="chart-tools">
           <div class="tool-group analytics-view-switch">
@@ -805,7 +834,6 @@ td{font-size:12px;padding:13px 12px}
             <button class="chart-tool active" data-compare-type="line" type="button">เส้น</button>
             <button class="chart-tool" data-compare-type="bar" type="button">แท่ง</button>
           </div>
-          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
           <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="analyticsCard" title="ขยายกราฟ (Esc เพื่อปิด)" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
           </button>
@@ -837,9 +865,9 @@ td{font-size:12px;padding:13px 12px}
         <div class="card-title">
           <h2>แผนที่ปริมาณจำหน่ายรายจังหวัด</h2>
           <p>คลิกจังหวัดบนแผนที่เพื่อกรอง Dashboard ทั้งหน้า</p>
+          <p class="chart-unit-line">หน่วย: <strong class="current-chart-unit">ล้านลิตร</strong><span class="unit-note">· ปรับตามผลิตภัณฑ์ที่เลือก</span></p>
         </div>
         <div class="chart-head-actions">
-          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
           <div class="data-count">THAILAND</div>
           <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="mapCard" title="ขยายกราฟ" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
@@ -855,13 +883,13 @@ td{font-size:12px;padding:13px 12px}
         <div class="card-title">
           <h2 id="areaChartTitle">Top 10 จังหวัด</h2>
           <p id="areaChartSubtitle">10 จังหวัดที่มีปริมาณจำหน่ายสูงสุด</p>
+          <p class="chart-unit-line">หน่วย: <strong class="current-chart-unit">ล้านลิตร</strong><span class="unit-note">· ปรับตามผลิตภัณฑ์ที่เลือก</span></p>
         </div>
         <div class="chart-tools">
           <div class="tool-group">
             <button class="chart-tool active" data-area-type="bar" type="button">แท่ง</button>
             <button class="chart-tool" data-area-type="line" type="button">เส้น</button>
           </div>
-          <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
           <div class="data-count" id="areaCountBadge">TOP 10</div>
           <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="areaCard" title="ขยายกราฟ" type="button">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
@@ -878,9 +906,9 @@ td{font-size:12px;padding:13px 12px}
       <div class="card-title">
         <h2>เปรียบเทียบผู้ค้าและพื้นที่</h2>
         <p id="entityCompareSubtitle">เลือกรายการที่ต้องการเปรียบเทียบได้หลายรายการ และลบออกได้ตลอดเวลา</p>
+        <p class="chart-unit-line">หน่วย: <strong class="current-chart-unit">ล้านลิตร</strong><span class="unit-note">· ปรับตามผลิตภัณฑ์ที่เลือก</span></p>
       </div>
       <div class="chart-head-actions">
-        <div class="chart-unit-badge current-chart-unit">พันลิตร</div>
         <div class="data-count" id="entityCompareCount">0 รายการ</div>
         <button class="chart-tool icon-tool fullscreen-btn" data-fullscreen="entityCompareCard" title="ขยายกราฟ" type="button">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 3H3v5M16 3h5v5M8 21H3v-5M16 21h5v-5"/></svg>
@@ -943,7 +971,7 @@ td{font-size:12px;padding:13px 12px}
             <th>ผลิตภัณฑ์</th>
             <th id="tableAreaHead">จังหวัด</th>
             <th>บริษัท</th>
-            <th class="num" id="tableVolumeHead">ปริมาณ (พันลิตร)</th>
+            <th class="num" id="tableVolumeHead">ปริมาณ (ล้านลิตร)</th>
             <th class="num">Market Share</th>
           </tr>
         </thead>
@@ -1142,18 +1170,35 @@ function companyColor(name=''){
   return FALLBACK_COLORS[Math.abs(h)%FALLBACK_COLORS.length];
 }
 
-function expectedUnit(){return state.product===LPG_NAME?'พันกิโลกรัม':'พันลิตร';}
+function displayUnit(){return state.product===LPG_NAME?'ล้านกิโลกรัม':'ล้านลิตร';}
+function toDisplayVolume(value){
+  if(value==null||value==='')return NaN;
+  const parsed=Number(value);
+  return Number.isFinite(parsed)?parsed/1000:NaN;
+}
 function productLabel(){return state.product===ALL_OIL?'น้ำมันทุกชนิด (ไม่รวม LPG)':displayProduct(state.product);}
 function periodText(){const n=(state.index?.periods||[]).filter(p=>p.startsWith(state.year+'-')).length;return state.month===''?`ปี ${state.year} · ${n} เดือนที่มีข้อมูล`:`${TH_MONTHS[+state.month-1]} ${state.year}`;}
 function scopeLabel(){return state.secondary||(state.mode==='province'?'ทั่วประเทศ':'ทุกสาขาธุรกิจ');}
 function companyLabel(){return state.company||'ทุกบริษัท';}
-function formatNumber(v,d=1){return Number.isFinite(v)?v.toLocaleString('th-TH',{useGrouping:true,minimumFractionDigits:d,maximumFractionDigits:d}):'—';}
-function formatCompact(v){return Number.isFinite(v)?new Intl.NumberFormat('th-TH',{notation:'compact',maximumFractionDigits:2}).format(v):'—';}
+function roundHalfUp(v,d=0){
+  if(!Number.isFinite(v))return NaN;
+  const factor=10**d,absolute=Math.abs(v);
+  return (Math.sign(v)||1)*Math.round((absolute+Number.EPSILON*Math.max(1,absolute))*factor)/factor;
+}
+function formatNumber(v,d=1){
+  if(!Number.isFinite(v))return '—';
+  return roundHalfUp(v,d).toLocaleString('th-TH',{useGrouping:true,minimumFractionDigits:d,maximumFractionDigits:d});
+}
+function formatVolume(v,d=2){return formatNumber(toDisplayVolume(v),d);}
+function formatVolumeCompact(v){
+  const value=toDisplayVolume(v);
+  return Number.isFinite(value)?new Intl.NumberFormat('th-TH',{notation:'compact',maximumFractionDigits:2}).format(value):'—';
+}
 function escapeHtml(v){return String(v??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
 function option(value,label,disabled=false){const o=document.createElement('option');o.value=value;o.textContent=label;o.disabled=disabled;return o;}
 
 function updateUnitUI(){
-  const u=expectedUnit();
+  const u=displayUnit();
   $('unitBadge').textContent=u;
   $('tableVolumeHead').textContent=`ปริมาณ (${u})`;
   document.querySelectorAll('.current-chart-unit').forEach(el=>el.textContent=u);
@@ -1612,7 +1657,23 @@ function styleChartOption(option){
     if(['axisLabel','nameTextStyle','textStyle','label'].includes(key)){
       value.color=key==='axisLabel'?p.muted:p.text;
       value.fontFamily='Inter, Kanit, sans-serif';
-      value.fontWeight=key==='label'?500:400;
+      if(key==='axisLabel'){
+        value.fontSize=Math.max(Number(value.fontSize)||0,SC(11));
+        value.fontWeight=500;
+      }else if(key==='textStyle'){
+        value.fontSize=Math.max(Number(value.fontSize)||0,SC(11));
+        value.fontWeight=500;
+      }else if(key==='label'){
+        value.fontSize=Math.max(Number(value.fontSize)||0,SC(10));
+        value.fontWeight=600;
+      }
+      if(key==='nameTextStyle'){
+        value.fontSize=Math.max(Number(value.fontSize)||0,SC(12));
+        value.fontWeight=600;
+        value.textShadowColor='rgba(12,34,57,.14)';
+        value.textShadowBlur=1;
+        value.textShadowOffsetY=1;
+      }
     }
     if(key==='tooltip'){
       value.backgroundColor=p.panel;value.borderColor=p.line;
@@ -1706,6 +1767,16 @@ function fitChartLayout(){
     const el=$(id);
     if(!el||!el.getClientRects().length||!el.clientWidth)continue;
     const op=c.getOption(), width=el.clientWidth, expanded=!!el.closest('.chart-modal');
+    if(id==='mapChart'){
+      const compact=width<600;
+      c.resize();
+      c.setOption({series:[{
+        layoutCenter:compact?['53%','49%']:expanded?['56%','49%']:['56%','49%'],
+        layoutSize:compact?'100%':expanded?'110%':'104%',
+        aspectScale:compact?.98:expanded?1.40:1.32
+      }]});
+      continue;
+    }
     const horizontal=op.yAxis?.[0]?.type==='category';
     if(horizontal){
       const count=op.yAxis[0].data?.length||0;
@@ -1717,17 +1788,16 @@ function fitChartLayout(){
       el.style.setProperty('height',desired+'px','important');
       const labelWidth=Math.round(Math.min(grouped?260:210,width*(width<450?.38:.30)));
       const right=Math.min(120,Math.max(72,width*.15));
-      const font=SC(11);
       c.resize();
       c.setOption({
-        grid:{left:labelWidth+14,right,top,bottom:42,containLabel:false},
-        xAxis:{name:'',splitNumber:width<450?2:4,axisLabel:{fontSize:SC(10),formatter:v=>formatCompact(v),hideOverlap:true}},
-        yAxis:{axisLabel:{width:labelWidth,fontSize:font,interval:0,overflow:'truncate',margin:12}},
-        series:(op.series||[]).map(s=>({label:{fontSize:SC(10),distance:7},labelLayout:{hideOverlap:true}}))
+        grid:{left:labelWidth+14,right,top,bottom:58,containLabel:false},
+        xAxis:{name:displayUnit(),nameLocation:'middle',nameGap:36,nameTextStyle:{fontSize:SC(12),fontWeight:600,textShadowColor:'rgba(12,34,57,.14)',textShadowBlur:1,textShadowOffsetY:1},splitNumber:width<450?2:4,axisLabel:{fontSize:SC(11),fontWeight:500,formatter:v=>formatVolumeCompact(v),hideOverlap:true}},
+        yAxis:{axisLabel:{width:labelWidth,fontSize:SC(11),fontWeight:500,interval:0,overflow:'truncate',margin:12}},
+        series:(op.series||[]).map(s=>({label:{fontSize:SC(10),fontWeight:600,distance:7},labelLayout:{hideOverlap:true}}))
       });
     }else{
       el.style.removeProperty('height');
-      if(id==='shareChart')el.style.height=(expanded?380:268)+'px';
+      if(id==='shareChart')el.style.height=(expanded?440:360)+'px';
       else if(id==='nationalTrendChart')el.style.height=(expanded?440:300)+'px';
       else if(id==='entityCompareChart'&&!op.series?.length)el.style.height='120px';
       else if(!['mapChart','areaChart'].includes(id))el.style.height=(expanded?440:360)+'px';
@@ -1736,9 +1806,9 @@ function fitChartLayout(){
         const withLegend=(op.legend||[]).some(l=>l.show!==false);
         const monthly=['nationalTrendChart','compareChart','entityCompareChart'].includes(id);
         c.setOption({
-          grid:{left:16,right:width<450?18:28,top:30,bottom:monthly?25:75,containLabel:true},
-          yAxis:{name:'',splitNumber:4,axisLabel:{fontSize:SC(10),formatter:v=>formatCompact(v),hideOverlap:true}},
-          xAxis:{axisLabel:{fontSize:SC(10),hideOverlap:true,...(monthly?{interval:width<430?1:0,rotate:0}:{})}},
+          grid:{left:width<450?22:30,right:width<450?18:28,top:30,bottom:monthly?25:75,containLabel:true},
+          yAxis:{name:displayUnit(),nameLocation:'middle',nameRotate:90,nameGap:width<450?44:52,nameTextStyle:{fontSize:SC(12),fontWeight:600,textShadowColor:'rgba(12,34,57,.14)',textShadowBlur:1,textShadowOffsetY:1},splitNumber:4,axisLabel:{fontSize:SC(11),fontWeight:500,formatter:v=>formatVolumeCompact(v),hideOverlap:true}},
+          xAxis:{axisLabel:{fontSize:SC(11),fontWeight:500,hideOverlap:true,...(monthly?{interval:width<430?1:0,rotate:0}:{})}},
           series:(op.series||[]).map(()=>({labelLayout:{hideOverlap:true}}))
         });
       }
@@ -1755,7 +1825,7 @@ window.addEventListener('resize',scheduleChartLayout);
 
 const AX='#314f63',GRID='#cfdce5',TIP_BG='rgba(248,251,253,.99)';
 function tooltipBase(){
-  return {confine:true,valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`,backgroundColor:TIP_BG,borderColor:'#afc7d5',borderWidth:1,textStyle:{fontFamily:'Inter, Kanit',fontSize:SC(10.5),fontWeight:500,color:'#102f44'},padding:[10,12],extraCssText:'box-shadow:0 14px 34px rgba(31,62,84,.12);border-radius:10px;'};
+  return {confine:true,valueFormatter:v=>`${formatVolume(v,2)} ${displayUnit()}`,backgroundColor:TIP_BG,borderColor:'#afc7d5',borderWidth:1,textStyle:{fontFamily:'Inter, Kanit',fontSize:SC(10.5),fontWeight:500,color:'#102f44'},padding:[10,12],extraCssText:'box-shadow:0 14px 34px rgba(31,62,84,.12);border-radius:10px;'};
 }
 function productComparePeriodLabel(year){
  if(state.month===''){const months=Array.from({length:12},(_,i)=>i+1).filter(m=>hasPeriod(state.year,m));const contiguous=months.every((m,i)=>!i||m===months[i-1]+1);return (contiguous&&months.length>1?TH_MONTHS_SHORT[months[0]-1]+'–'+TH_MONTHS_SHORT[months.at(-1)-1]:months.map(m=>TH_MONTHS_SHORT[m-1]).join(', '))+' '+year;}
@@ -1772,7 +1842,7 @@ function renderProductComparison(result){
 
   if(top){
     $('topProductName').textContent=displayProduct(top.product);
-    $('topProductValue').textContent=`${formatNumber(Number(top.current),1)} ${top.unit||expectedUnit()}`;
+    $('topProductValue').textContent=`${formatVolume(Number(top.current),2)} ${displayUnit()}`;
 
     const yoy=$('topProductYoy');
     const change=top.changePct==null?NaN:Number(top.changePct);
@@ -1824,8 +1894,8 @@ function renderProductComparison(result){
         if(!x)return '';
         const change=x.changePct==null?NaN:Number(x.changePct);
         return `<b>${escapeHtml(displayProduct(x.product))}</b><br>`+
-          `${productComparePeriodLabel(state.year)}: <b>${formatNumber(Number(x.current),2)}</b> ${escapeHtml(x.unit||expectedUnit())}<br>`+
-          `${productComparePeriodLabel(state.year-1)}: <b>${formatNumber(Number(x.previous),2)}</b> ${escapeHtml(x.unit||expectedUnit())}<br>`+
+          `${productComparePeriodLabel(state.year)}: <b>${formatVolume(Number(x.current),2)}</b> ${displayUnit()}<br>`+
+          `${productComparePeriodLabel(state.year-1)}: <b>${formatVolume(Number(x.previous),2)}</b> ${displayUnit()}<br>`+
           `เปลี่ยนแปลง: <b>${Number.isFinite(change)?`${change>=0?'+':''}${change.toFixed(2)}%`:'—'}</b>`;
       }
     },
@@ -1836,7 +1906,7 @@ function renderProductComparison(result){
     grid:{left:labelWidth+18,right:54,top:48,bottom:30},
     xAxis:{
       type:'value',
-      name:expectedUnit(),
+      name:displayUnit(),
       nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:700},
       axisLabel:{color:AX,fontSize:SC(9),fontWeight:600},
       splitLine:{lineStyle:{color:GRID}}
@@ -1868,7 +1938,7 @@ function renderProductComparison(result){
           color:'#173c53',
           fontWeight:700,
           fontSize:SC(8.5),
-          formatter:p=>formatCompact(p.value)
+          formatter:p=>formatVolumeCompact(p.value)
         }
       },
       {
@@ -1892,12 +1962,12 @@ function renderCompanyChart(data,total){
   c.setOption({
     animationDurationUpdate:320,
     tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'},formatter:p=>{
-      const i=p[0]?.dataIndex??0,x=arr[i];return x?`<b>${escapeHtml(x.name)}</b><br>${formatNumber(x.value,2)} ${expectedUnit()}<br>Market Share ${total?(x.value/total*100).toFixed(2):'0.00'}%`:'';
+      const i=p[0]?.dataIndex??0,x=arr[i];return x?`<b>${escapeHtml(x.name)}</b><br>${formatVolume(x.value,2)} ${displayUnit()}<br>Market Share ${total?(x.value/total*100).toFixed(2):'0.00'}%`:'';
     }},
     grid:{left:210,right:78,top:16,bottom:22},
-    xAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9)},axisLabel:{color:AX,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+    xAxis:{type:'value',name:displayUnit(),nameTextStyle:{color:AX,fontSize:SC(9)},axisLabel:{color:AX,fontSize:SC(9),formatter:v=>formatVolumeCompact(v)},splitLine:{lineStyle:{color:GRID}}},
     yAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#415f73',fontFamily:'Kanit',fontSize:SC(9.5),width:195,overflow:'truncate'}},
-    series:[{type:'bar',barMaxWidth:17,data:arr.map(x=>({value:x.value,itemStyle:{color:companyColor(x.name),borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',color:'#708594',fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+    series:[{type:'bar',barMaxWidth:17,data:arr.map(x=>({value:x.value,itemStyle:{color:companyColor(x.name),borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',color:'#708594',fontSize:SC(8.8),formatter:p=>formatVolumeCompact(p.value)}}]
   },true);
 }
 
@@ -1914,20 +1984,31 @@ function renderShareChart(data,total){
   if(state.shareType==='bar'){
     const arr=[...data].reverse();
     c.setOption({
-      tooltip:{...tooltipBase(),trigger:'axis',formatter:p=>{const x=arr[p[0]?.dataIndex];return x?'<b>'+escapeHtml(x.name)+'</b><br>'+formatNumber(x.value,2)+' '+expectedUnit()+'<br>สัดส่วน '+formatNumber(x.value/total*100,2)+'%':''}},
+      tooltip:{...tooltipBase(),trigger:'axis',formatter:p=>{const x=arr[p[0]?.dataIndex];return x?'<b>'+escapeHtml(x.name)+'</b><br>'+formatVolume(x.value,2)+' '+displayUnit()+'<br>สัดส่วน '+formatNumber(x.value/total*100,2)+'%':''}},
       grid:{left:170,right:72,top:20,bottom:40},
-      xAxis:{type:'value',axisLabel:{formatter:v=>formatCompact(v)},splitLine:{lineStyle:{color:GRID}}},
+      xAxis:{type:'value',axisLabel:{formatter:v=>formatVolumeCompact(v)},splitLine:{lineStyle:{color:GRID}}},
       yAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{width:150,overflow:'truncate',fontFamily:'Kanit'}},
       series:[{type:'bar',barMaxWidth:19,data:arr.map(x=>({value:x.value,itemStyle:{color:companyColor(x.name),borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',formatter:p=>formatNumber(p.value/total*100,1)+'%',color:'#385776'}}]
     },true);return;
   }
+  const palette=chartPalette();
   c.setOption({
-    tooltip:{...tooltipBase(),trigger:'item',formatter:p=>'<b>'+escapeHtml(p.name)+'</b><br>'+formatNumber(p.value,2)+' '+expectedUnit()+'<br>สัดส่วน '+formatNumber(p.percent,2)+'%'},
+    tooltip:{...tooltipBase(),trigger:'item',formatter:p=>'<b>'+escapeHtml(p.name)+'</b><br>'+formatVolume(p.value,2)+' '+displayUnit()+'<br>สัดส่วน '+formatNumber(p.percent,2)+'%'},
     legend:{show:false},
-    series:[{type:'pie',radius:['57%','81%'],center:['50%','50%'],avoidLabelOverlap:true,
+    series:[{type:'pie',radius:['43%','66%'],center:['50%','50%'],avoidLabelOverlap:true,minShowLabelAngle:.35,
       itemStyle:{borderColor:'#fff',borderWidth:3,borderRadius:3},
-      label:{show:false},labelLine:{show:false},
-      emphasis:{scale:true,scaleSize:4,label:{show:false}},
+      label:{
+        show:true,position:'outside',alignTo:'edge',edgeDistance:12,bleedMargin:6,distanceToLabelLine:5,
+        width:145,overflow:'truncate',fontFamily:'Inter, Kanit',fontSize:SC(11),fontWeight:600,lineHeight:SC(16),
+        formatter:p=>`{name|${p.name}}\n{percent|${formatNumber(p.percent,1)}%}`,
+        rich:{
+          name:{width:145,overflow:'truncate',color:palette.text,fontFamily:'Inter, Kanit',fontSize:SC(11),fontWeight:600,lineHeight:SC(16)},
+          percent:{color:palette.muted,fontFamily:'Inter, Kanit',fontSize:SC(10),fontWeight:600,lineHeight:SC(15)}
+        }
+      },
+      labelLine:{show:true,length:14,length2:12,smooth:.15,minTurnAngle:90,lineStyle:{width:1.5,opacity:.9}},
+      labelLayout:{hideOverlap:true,moveOverlap:'shiftY'},
+      emphasis:{scale:true,scaleSize:4,label:{show:true,fontWeight:700}},
       data:data.map(x=>({name:x.name,value:x.value,itemStyle:{color:companyColor(x.name)}}))
     }],
     graphic:[{type:'group',left:'center',top:'center',children:[
@@ -1944,13 +2025,13 @@ function renderAreaChart(data){
   if(state.areaType==='line'){
     const arr=[...source];
     c.setOption({
-      tooltip:{...tooltipBase(),trigger:'axis',valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`},
+      tooltip:{...tooltipBase(),trigger:'axis',valueFormatter:v=>`${formatVolume(v,2)} ${displayUnit()}`},
       grid:{left:65,right:28,top:30,bottom:88},
       xAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{lineStyle:{color:'#9fb4c2'}},axisTick:{show:false},axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:500,fontSize:SC(9),rotate:35,interval:0}},
-      yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+      yAxis:{type:'value',name:displayUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9),formatter:v=>formatVolumeCompact(v)},splitLine:{lineStyle:{color:GRID}}},
       series:[{type:'line',smooth:false,connectNulls:false,symbol:'circle',symbolSize:6,data:arr.map(x=>x.value),
         lineStyle:{width:3,color:'#3884db'},itemStyle:{color:'#3884db'},
-        label:{show:true,position:'top',color:'#173c53',fontWeight:700,fontSize:SC(8.5),formatter:p=>formatCompact(p.value)}
+        label:{show:true,position:'top',color:'#173c53',fontWeight:700,fontSize:SC(8.5),formatter:p=>formatVolumeCompact(p.value)}
       }]
     },true);
     return;
@@ -1958,11 +2039,11 @@ function renderAreaChart(data){
 
   const arr=[...source].reverse();
   c.setOption({
-    tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`},
+    tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'},valueFormatter:v=>`${formatVolume(v,2)} ${displayUnit()}`},
     grid:{left:145,right:62,top:20,bottom:24},
-    xAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontSize:SC(9),fontWeight:500},splitLine:{lineStyle:{color:GRID}}},
+    xAxis:{type:'value',name:displayUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontSize:SC(9),fontWeight:500,formatter:v=>formatVolumeCompact(v)},splitLine:{lineStyle:{color:GRID}}},
     yAxis:{type:'category',data:arr.map(x=>x.name),axisLine:{show:false},axisTick:{show:false},axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:500,fontSize:SC(9.5),width:130,overflow:'truncate'}},
-    series:[{type:'bar',barMaxWidth:19,data:arr.map((x,i)=>({value:x.value,itemStyle:{color:CHART_COLORS[(arr.length-1-i)%CHART_COLORS.length],borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',color:'#27495e',fontWeight:700,fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+    series:[{type:'bar',barMaxWidth:19,data:arr.map((x,i)=>({value:x.value,itemStyle:{color:CHART_COLORS[(arr.length-1-i)%CHART_COLORS.length],borderRadius:[0,5,5,0]}})),label:{show:true,position:'right',color:'#27495e',fontWeight:700,fontSize:SC(8.8),formatter:p=>formatVolumeCompact(p.value)}}]
   },true);
 }
 async function ensureMap(){
@@ -1998,7 +2079,7 @@ async function renderMap(areaAgg,total){
   c.setOption({
     tooltip:{...tooltipBase(),trigger:'item',formatter:p=>{
       const v=actual.get(p.name)||0;
-      return `<b>${escapeHtml(p.name)}</b><br>${formatNumber(v,2)} ${expectedUnit()}<br>สัดส่วน ${total?(v/total*100).toFixed(2):'0.00'}%<br>อันดับ #${ranks.get(p.name)||'—'}`;
+      return `<b>${escapeHtml(p.name)}</b><br>${formatVolume(v,2)} ${displayUnit()}<br>สัดส่วน ${total?(v/total*100).toFixed(2):'0.00'}%<br>อันดับ #${ranks.get(p.name)||'—'}`;
     }},
     visualMap:{
       type:'piecewise',left:14,bottom:14,orient:'vertical',
@@ -2018,8 +2099,8 @@ async function renderMap(areaAgg,total){
       map:'thailand-eppo-light',
       roam:true,
       layoutCenter:['56%','49%'],
-      layoutSize:'88%',
-      aspectScale:0.75,
+      layoutSize:'104%',
+      aspectScale:1.32,
       scaleLimit:{min:0.85,max:8},
       data:(state.index.provinces||[]).map(name=>({name,value:bandByName.get(name)||0,rawValue:actual.get(name)||0})),
       itemStyle:{areaColor:'#cbd7df',borderColor:'#f7fafc',borderWidth:1.35,shadowBlur:2,shadowColor:'rgba(21,65,90,.12)'},
@@ -2069,17 +2150,17 @@ async function renderCompareChart(){
   const rows=m.result||[];
   const c=getChart('compareChart');
   const scope=state.secondary|| (state.mode==='province'?'ทั้งประเทศ':'ทุกสาขาธุรกิจ');
-  $('compareContext').textContent=`${productLabel()} · ${scope} · ${companyLabel()} · ${expectedUnit()}`;
+  $('compareContext').textContent=`${productLabel()} · ${scope} · ${companyLabel()} · ${displayUnit()}`;
 
   if(state.compareMode==='annual'){
     const commonMonths=Array.from({length:12},(_,i)=>i).filter(i=>rows.every(r=>r.months[i]!=null));
     $('compareContext').textContent+=' · เทียบ '+commonMonths.length+' เดือนที่มีข้อมูลตรงกันทุกปี';
     const data=rows.map(r=>({year:String(r.year),value:commonMonths.length?commonMonths.reduce((sum,i)=>sum+r.months[i],0):null}));
     c.setOption({
-      tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:state.compareType==='bar'?'shadow':'line'},valueFormatter:v=>`${formatNumber(v,2)} ${expectedUnit()}`},
+      tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:state.compareType==='bar'?'shadow':'line'},valueFormatter:v=>`${formatVolume(v,2)} ${displayUnit()}`},
       grid:{left:68,right:28,top:30,bottom:48},
       xAxis:{type:'category',data:data.map(x=>x.year),axisLabel:{color:'#203f53',fontWeight:600,fontSize:SC(9.5)},axisTick:{show:false}},
-      yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+      yAxis:{type:'value',name:displayUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9),formatter:v=>formatVolumeCompact(v)},splitLine:{lineStyle:{color:GRID}}},
       series:[{
         type:state.compareType,
         smooth:state.compareType==='line'?.25:false,
@@ -2089,7 +2170,7 @@ async function renderCompareChart(){
           :x.value),
         lineStyle:state.compareType==='line'?{width:3,color:'#1479a8'}:undefined,
         itemStyle:state.compareType==='line'?{color:'#e11d48',borderColor:'#fff',borderWidth:2}:undefined,
-        label:{show:true,position:'top',color:'#173c53',fontWeight:700,fontSize:SC(8.5),formatter:p=>formatCompact(p.value)}
+        label:{show:true,position:'top',color:'#173c53',fontWeight:700,fontSize:SC(8.5),formatter:p=>formatVolumeCompact(p.value)}
       }]
     },true);
     return;
@@ -2101,7 +2182,7 @@ async function renderCompareChart(){
     legend:{top:4,type:'scroll',pageButtonItemGap:6,pageIconSize:10,textStyle:{color:'#23475c',fontWeight:600,fontSize:SC(8.8)},itemWidth:10,itemHeight:7,itemGap:12},
     grid:{left:62,right:18,top:48,bottom:44},
     xAxis:{type:'category',data:months,axisTick:{show:false},axisLabel:{color:'#203f53',fontWeight:600,fontSize:SC(9)}},
-    yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+    yAxis:{type:'value',name:displayUnit(),nameTextStyle:{color:AX,fontSize:SC(9),fontWeight:600},axisLabel:{color:AX,fontWeight:500,fontSize:SC(9),formatter:v=>formatVolumeCompact(v)},splitLine:{lineStyle:{color:GRID}}},
     series:rows.map((r,i)=>({
       name:String(r.year),type:state.compareType,smooth:false,
       symbol:rows.length>5?'none':'circle',symbolSize:5,barMaxWidth:14,
@@ -2187,7 +2268,7 @@ async function renderEntityCompareChart(){
     ?(state.secondary|| (state.mode==='province'?'ทั่วประเทศ':'ทุกสาขาธุรกิจ'))
     :(state.company||'ทุกบริษัท');
   const comparePeriod=state.entityCompareMode==='total'?periodText():`แนวโน้มรายเดือน ${state.year}`;
-  $('entityCompareContext').textContent=`${entityDimensionLabel()} · ${comparePeriod} · ${productLabel()} · ${opposite} · ${expectedUnit()}`;
+  $('entityCompareContext').textContent=`${entityDimensionLabel()} · ${comparePeriod} · ${productLabel()} · ${opposite} · ${displayUnit()}`;
 
   if(!items.length){
     c.clear();
@@ -2221,12 +2302,12 @@ async function renderEntityCompareChart(){
       tooltip:{...tooltipBase(),trigger:'axis',axisPointer:{type:'shadow'}},
       legend:{show:false},
       grid:{left:Math.min(230,Math.max(150,$('entityCompareChart').clientWidth*.24)),right:75,top:24,bottom:35},
-      xAxis:{type:'value',name:expectedUnit(),axisLabel:{color:AX,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+      xAxis:{type:'value',name:displayUnit(),axisLabel:{color:AX,fontSize:SC(9),formatter:v=>formatVolumeCompact(v)},splitLine:{lineStyle:{color:GRID}}},
       yAxis:{type:'category',data:arr.map(x=>x.name),axisTick:{show:false},axisLine:{show:false},
         axisLabel:{color:'#203f53',fontFamily:'Kanit',fontWeight:600,fontSize:SC(9.5),width:190,overflow:'truncate'}},
       series:[{type:'bar',barMaxWidth:22,data:arr.map((x,i)=>({
         value:x.value,itemStyle:{color:YEAR_COLORS[(arr.length-1-i)%YEAR_COLORS.length],borderRadius:[0,5,5,0]}
-      })),label:{show:true,position:'right',color:'#27495e',fontWeight:700,fontSize:SC(8.8),formatter:p=>formatCompact(p.value)}}]
+      })),label:{show:true,position:'right',color:'#27495e',fontWeight:700,fontSize:SC(8.8),formatter:p=>formatVolumeCompact(p.value)}}]
     },true);
     return;
   }
@@ -2237,8 +2318,8 @@ async function renderEntityCompareChart(){
     grid:{left:65,right:22,top:52,bottom:42},
     xAxis:{type:'category',data:TH_MONTHS_SHORT,axisTick:{show:false},
       axisLabel:{color:'#203f53',fontWeight:600,fontSize:SC(9)}},
-    yAxis:{type:'value',name:expectedUnit(),nameTextStyle:{color:AX,fontSize:SC(9)},
-      axisLabel:{color:AX,fontSize:SC(9)},splitLine:{lineStyle:{color:GRID}}},
+    yAxis:{type:'value',name:displayUnit(),nameTextStyle:{color:AX,fontSize:SC(9)},
+      axisLabel:{color:AX,fontSize:SC(9),formatter:v=>formatVolumeCompact(v)},splitLine:{lineStyle:{color:GRID}}},
     series:rows.map((r,i)=>({
       name:r.name,type:'line',smooth:false,
       symbol:rows.length>7?'none':'circle',symbolSize:5,
@@ -2264,7 +2345,7 @@ function renderTable(result){
   $('tableSummary').textContent=state.tableQuery?`พบ ${result.searchCount.toLocaleString('th-TH')} รายการจากคำค้นหา`:`ข้อมูลตามตัวกรอง ${result.rawCount.toLocaleString('th-TH')} รายการ`;
   $('tableBody').innerHTML=rows.length?rows.map(r=>{
     const share=total?r.volume/total*100:0,color=companyColor(r.company);
-    return `<tr><td>${r.year}</td><td>${TH_MONTHS[r.month-1]}</td><td>${escapeHtml(displayProduct(r.product))}</td><td>${escapeHtml(r.area)}</td><td><div class="company-cell"><span class="brand-dot" style="background:${color}"></span>${escapeHtml(r.company)}</div></td><td class="num">${formatNumber(r.volume,2)}</td><td class="num"><div class="share-bar"><span>${share.toFixed(2)}%</span><span class="share-track"><span class="share-fill" style="display:block;width:${Math.min(100,share)}%"></span></span></div></td></tr>`;
+    return `<tr><td>${r.year}</td><td>${TH_MONTHS[r.month-1]}</td><td>${escapeHtml(displayProduct(r.product))}</td><td>${escapeHtml(r.area)}</td><td><div class="company-cell"><span class="brand-dot" style="background:${color}"></span>${escapeHtml(r.company)}</div></td><td class="num">${formatVolume(r.volume,2)}</td><td class="num"><div class="share-bar"><span>${share.toFixed(2)}%</span><span class="share-track"><span class="share-fill" style="display:block;width:${Math.min(100,share)}%"></span></span></div></td></tr>`;
   }).join(''):`<tr><td colspan="7" class="empty-row">ไม่พบข้อมูลตามเงื่อนไขที่เลือก</td></tr>`;
   const pages=Math.max(1,Math.ceil(result.searchCount/PAGE_SIZE)),start=(result.page-1)*PAGE_SIZE,end=Math.min(start+PAGE_SIZE,result.searchCount);
   $('pageInfo').textContent=result.searchCount?`แสดง ${(start+1).toLocaleString('th-TH')}–${end.toLocaleString('th-TH')} จาก ${result.searchCount.toLocaleString('th-TH')} รายการ · หน้า ${result.page}/${pages}`:'ไม่มีข้อมูล';
@@ -2280,9 +2361,14 @@ function percentChange(current,previous){
   return Number.isFinite(current)&&Number.isFinite(previous)&&previous>0?(current-previous)/previous*100:null;
 }
 function percentText(value){return value==null?'—':(value>0?'+':'')+formatNumber(value,1)+'%'}
-function setChange(id,value){const el=$(id);el.textContent=percentText(value);el.classList.toggle('positive',value>0);el.classList.toggle('negative',value<0)}
-function summaryUnit(){return state.product===LPG_NAME?'ล้านกิโลกรัม':'ล้านลิตร'}
-function daysInMonth(year,month){return new Date(year>2400?year-543:year,month,0).getDate()}
+function setChange(id,value){
+  const el=$(id),positive=value>0,negative=value<0;
+  el.textContent=percentText(value);el.classList.toggle('positive',positive);el.classList.toggle('negative',negative);
+  if(id==='kpiYoy')$('kpiYoyIcon').textContent=positive?'↗':negative?'↘':'→';
+  const card=el.closest('.kpi-card');
+  if(card){card.classList.toggle('status-positive',positive);card.classList.toggle('status-negative',negative)}
+}
+function summaryUnit(){return displayUnit()}
 async function loadOverviewTrend(mode,f){
   const key=JSON.stringify([mode,f.year,f.product,f.company,f.secondary]);
   const hit=trendCache.get(key);
@@ -2313,7 +2399,7 @@ async function loadOverviewTrend(mode,f){
 function renderOverviewTrend(rows){
   const [previous,current]=rows;
   state.lastTrendRows=rows;
-  const unit=expectedUnit(), month=state.month===''?null:Number(state.month);
+  const unit=displayUnit(), month=state.month===''?null:Number(state.month);
   const reported=current.months.flatMap((v,i)=>v==null?[]:[i]);
   const cutoff=month||((reported.at(-1)??-1)+1);
   const ytdIndices=reported.filter(i=>i<cutoff);
@@ -2323,15 +2409,18 @@ function renderOverviewTrend(rows){
   setChange('kpiYoy',percentChange(currentTotal,previousTotal));
   $('kpiYoySub').textContent=previousTotal==null?'ไม่มีข้อมูลปีก่อนครบช่วงที่เปรียบเทียบ':previousTotal===0?'ปีก่อนเป็นศูนย์ จึงคำนวณ % ไม่ได้':month?'เทียบ '+TH_MONTHS_SHORT[month-1]+' '+previous.year:'เทียบ '+selectedIndices.length+' เดือนเดียวกันของปี '+previous.year;
   const ytd=ytdIndices.length?ytdIndices.reduce((s,i)=>s+current.months[i],0):null;
-  $('kpiYtd').textContent=ytd==null?'—':formatNumber(ytd/1000,1);
-  $('kpiYtd').title=ytd==null?'ไม่มีข้อมูล':formatNumber(ytd,2)+' '+unit;
+  $('kpiYtd').textContent=ytd==null?'—':formatVolume(ytd,2);
+  const ytdBreakdown=ytdIndices.map(i=>TH_MONTHS_SHORT[i]+' '+formatVolume(current.months[i],2)).join(' + ');
+  $('kpiYtd').title=ytd==null?'ไม่มีข้อมูล':ytdBreakdown+' = '+formatVolume(ytd,2)+' '+unit;
   $('kpiYtdSub').textContent=summaryUnit()+' · '+(cutoff?'ม.ค.–'+TH_MONTHS_SHORT[cutoff-1]+' '+current.year:'ยังไม่มีข้อมูล')+(ytdIndices.length!==cutoff?' · มีข้อมูล '+ytdIndices.length+' เดือน':'');
-  const days=selectedIndices.filter(i=>current.months[i]!=null).reduce((s,i)=>s+daysInMonth(current.year,i+1),0);
-  $('kpiDaily').textContent=currentTotal==null||!days?'—':formatNumber(currentTotal/days/1000,2);
-  $('kpiDailySub').textContent=summaryUnit()+'/วัน · '+days+' วันในช่วงที่มีข้อมูล';
   const latestIndex=month?month-1:(reported.at(-1)??-1);
   const lastValue=latestIndex>=0?current.months[latestIndex]:null;
   const before=latestIndex===0?previous.months[11]:current.months[latestIndex-1];
+  const beforeMonthIndex=latestIndex<0?-1:(latestIndex+11)%12;
+  const beforeYear=latestIndex===0?previous.year:current.year;
+  $('kpiPreviousMonth').textContent=before==null?'—':formatVolume(before,2);
+  $('kpiPreviousMonth').title=before==null?'ไม่มีข้อมูลเดือนก่อนหน้า':TH_MONTHS[beforeMonthIndex]+' '+beforeYear+' · '+formatVolume(before,3)+' '+unit;
+  $('kpiPreviousMonthSub').textContent=beforeMonthIndex<0?'ยังไม่มีเดือนอ้างอิง':unit+' · '+TH_MONTHS_SHORT[beforeMonthIndex]+' '+beforeYear+(before==null?' · ไม่มีข้อมูล':'');
   $('insightMom').textContent=percentText(percentChange(lastValue,before));
   $('momLabel').textContent=month?'เปลี่ยนแปลงจากเดือนก่อน':'เดือนล่าสุดเทียบเดือนก่อน';
   $('insightMomNote').textContent=latestIndex<0?'ไม่มีข้อมูล':TH_MONTHS_SHORT[latestIndex]+' '+current.year+' เทียบ '+TH_MONTHS_SHORT[(latestIndex+11)%12]+(latestIndex===0?' '+previous.year:'')+(before==null?' · ไม่มีฐานเปรียบเทียบ':'');
@@ -2348,11 +2437,11 @@ function renderOverviewTrend(rows){
     tooltip:{...tooltipBase(),trigger:'axis',formatter:params=>{
       if(!params.length)return '';
       const i=params[0].dataIndex;
-      return '<b>'+TH_MONTHS[i]+'</b><br>'+params.map(p=>p.marker+' '+p.seriesName+': <b>'+formatNumber(p.value,2)+'</b> '+unit).join('<br>');
+      return '<b>'+TH_MONTHS[i]+'</b><br>'+params.map(p=>p.marker+' '+p.seriesName+': <b>'+formatVolume(p.value,2)+'</b> '+unit).join('<br>');
     }},
     grid:{left:16,right:26,top:22,bottom:24,containLabel:true},
     xAxis:{type:'category',data:TH_MONTHS_SHORT,boundaryGap:false,axisLine:{lineStyle:{color:'#d8e4ef'}},axisTick:{show:false},axisLabel:{color:'#6b839d',fontSize:SC(10)}},
-    yAxis:{type:'value',axisLabel:{color:'#6b839d',fontSize:SC(10),formatter:v=>formatCompact(v)},splitLine:{lineStyle:{color:'#e8eff7',type:'dashed'}},splitNumber:4},
+    yAxis:{type:'value',axisLabel:{color:'#6b839d',fontSize:SC(10),formatter:v=>formatVolumeCompact(v)},splitLine:{lineStyle:{color:'#e8eff7',type:'dashed'}},splitNumber:4},
     series:[
       {name:String(previous.year),type:'line',data:previous.months,connectNulls:false,smooth:false,showSymbol:false,lineStyle:{color:'#9aadc5',width:2,type:'dashed'},itemStyle:{color:'#9aadc5'}},
       {name:String(current.year),type:'line',data:current.months,connectNulls:false,smooth:false,symbol:'circle',symbolSize:6,showSymbol:reported.length<3,
@@ -2364,8 +2453,9 @@ function renderOverviewTrend(rows){
   },true);
 }
 async function updateOverview(token,mode,f){
-  $('kpiYoy').textContent='…';$('kpiYtd').textContent='…';$('kpiDaily').textContent='…';$('insightMom').textContent='…';
-  $('kpiYoySub').textContent='กำลังเทียบช่วงเวลา…';$('kpiYtdSub').textContent='กำลังอ่านยอดสะสม…';
+  $('kpiYoy').textContent='…';$('kpiYtd').textContent='…';$('kpiPreviousMonth').textContent='…';$('insightMom').textContent='…';
+  $('kpiYoy').classList.remove('positive','negative');$('kpiYoy').closest('.kpi-card')?.classList.remove('status-positive','status-negative');$('kpiYoyIcon').textContent='→';
+  $('kpiYoySub').textContent='กำลังเทียบช่วงเวลา…';$('kpiYtdSub').textContent='กำลังอ่านยอดสะสม…';$('kpiPreviousMonthSub').textContent='กำลังอ่านข้อมูลเดือนก่อน…';
   $('trendNote').textContent='กำลังอ่านแนวโน้มรายเดือน…';
   const c=getChart('nationalTrendChart');c.clear();
   c.showLoading('default',{text:'กำลังอ่านแนวโน้ม…',color:'#188bdf',maskColor:'rgba(255,255,255,.8)',fontSize:12});
@@ -2376,23 +2466,26 @@ async function updateOverview(token,mode,f){
   }catch(error){
     if(token!==state.renderToken)return;
     c.hideLoading();c.clear();
-    ['kpiYoy','kpiYtd','kpiDaily','insightMom'].forEach(id=>$(id).textContent='—');
-    $('kpiYoySub').textContent='ยังโหลดข้อมูลเปรียบเทียบไม่ได้';$('kpiYtdSub').textContent='ยังโหลดข้อมูลสะสมไม่ได้';
+    ['kpiYoy','kpiYtd','kpiPreviousMonth','insightMom'].forEach(id=>$(id).textContent='—');
+    $('kpiYoySub').textContent='ยังโหลดข้อมูลเปรียบเทียบไม่ได้';$('kpiYtdSub').textContent='ยังโหลดข้อมูลสะสมไม่ได้';$('kpiPreviousMonthSub').textContent='ยังโหลดข้อมูลเดือนก่อนไม่ได้';
     $('trendNote').textContent='โหลดแนวโน้มไม่สำเร็จ · '+error.message;
   }
 }
 function renderKpis(r){
   const total=Number(r.total)||0;
-  $('kpiTotal').textContent=formatNumber(total/1000,1);
-  $('kpiTotal').title=formatNumber(total,2)+' '+expectedUnit();
+  $('kpiTotal').textContent=formatVolume(total,2);
+  $('kpiTotal').title='ค่าจริง '+formatVolume(total,3)+' '+displayUnit();
   $('kpiTotalSub').textContent=summaryUnit()+' · '+periodText();
   const c=r.companyAgg[0],a=r.areaAgg[0];
+  $('kpiCompanyLabel').textContent=state.company?'บริษัทตามตัวกรอง':'ผู้ค้าที่มียอดสูงสุด';
   $('kpiCompany').textContent=c?.name||'—';
-  $('kpiCompanySub').textContent=c?formatCompact(c.value)+' '+expectedUnit()+' · '+formatNumber(total?c.value/total*100:0,1)+'%':'ไม่มีข้อมูล';
+  $('kpiCompanySub').textContent=c?formatVolume(c.value,2)+' '+displayUnit()+' · '+formatNumber(total?c.value/total*100:0,1)+'%'+(state.company?' ของขอบเขตที่กรอง':' ของยอดรวม'):'ไม่มีข้อมูล';
+  $('kpiAreaLabel').textContent=(state.mode==='province'?'จังหวัด':'สาขาธุรกิจ')+(state.secondary?'ตามตัวกรอง':'ที่มียอดสูงสุด');
   $('kpiArea').textContent=a?.name||'—';
-  $('kpiAreaSub').textContent=a?formatCompact(a.value)+' '+expectedUnit()+' · '+formatNumber(total?a.value/total*100:0,1)+'%':'ไม่มีข้อมูล';
+  $('kpiAreaSub').textContent=a?formatVolume(a.value,2)+' '+displayUnit()+' · '+formatNumber(total?a.value/total*100:0,1)+'% ของยอดรวม':'ไม่มีข้อมูล';
+  $('kpiCoverageLabel').textContent='ขอบเขตข้อมูลตามตัวกรอง';
   $('kpiCompanyCount').textContent=r.companyAgg.length.toLocaleString('th-TH')+' บริษัท';
-  $('coverageNote').textContent=r.areaAgg.length+' '+(state.mode==='province'?'จังหวัด':'สาขาธุรกิจ');
+  $('coverageNote').textContent='ครอบคลุม '+r.areaAgg.length+' '+(state.mode==='province'?'จังหวัด':'สาขาธุรกิจ')+' · '+companyLabel();
   $('heroPeriod').textContent=periodText();
   $('heroScope').textContent=scopeLabel()+' · '+companyLabel();
   $('overviewHeading').textContent=state.company||state.secondary?'ภาพรวมการจำหน่ายตามตัวกรอง':'ภาพรวมการจำหน่ายทั้งประเทศ';
@@ -2455,8 +2548,8 @@ async function exportCsv(){
   try{
     const m=await workerCall({type:'export',mode:state.mode,filters:filterPayload()});
     const total=state.lastResult.total;
-    const header=['ปี พ.ศ.','เดือน','ผลิตภัณฑ์',state.mode==='province'?'จังหวัด':'สาขาธุรกิจ','บริษัท',`ปริมาณ (${expectedUnit()})`,'Market Share (%)'];
-    const lines=[header,...m.rows.map(r=>[r[0],TH_MONTHS[r[1]-1],displayProduct(r[2]),r[3],r[4],Number(r[5]).toFixed(3),total?(r[5]/total*100).toFixed(4):'0'])];
+    const header=['ปี พ.ศ.','เดือน','ผลิตภัณฑ์',state.mode==='province'?'จังหวัด':'สาขาธุรกิจ','บริษัท',`ปริมาณ (${displayUnit()})`,'Market Share (%)'];
+    const lines=[header,...m.rows.map(r=>[r[0],TH_MONTHS[r[1]-1],displayProduct(r[2]),r[3],r[4],toDisplayVolume(Number(r[5])).toFixed(6),total?(r[5]/total*100).toFixed(4):'0'])];
     const csv='\ufeff'+lines.map(a=>a.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\r\n');
     const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
     a.href=URL.createObjectURL(blob);a.download=`eppo-petroleum-volume-${state.mode}-${state.year}-${state.month||'all'}.csv`;a.click();
