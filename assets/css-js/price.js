@@ -385,13 +385,6 @@ function renderKPI(){
     cards.push(['ราคากลาง (กทม.)', bkkNow!=null? bkkNow.toFixed(2)+' ฿':'-', 'ฐานคำนวณราคาอ้างอิงทั่วประเทศ']);
     if(max) cards.push(['ราคาสูงสุด'+(scopeIsProvince?' ในจังหวัด':''), max.price.toFixed(2)+' ฿', max.prov+' / '+max.dist+(max.compliant? ' · <span style="color:var(--down)">✓ตรงตามเกณฑ์ สนพ.</span>' : (max.diff!=null? ` · <span style="color:${max.diff>0?'var(--up)':'var(--down)'}">${max.diff>0?'+':''}${max.diff.toFixed(2)}฿ จากราคาอ้างอิง</span>`:''))]);
     if(min) cards.push(['ราคาต่ำสุด'+(scopeIsProvince?' ในจังหวัด':''), min.price.toFixed(2)+' ฿', min.prov+' / '+min.dist+(min.compliant? ' · <span style="color:var(--down)">✓ตรงตามเกณฑ์ สนพ.</span>' : (min.diff!=null? ` · <span style="color:${min.diff>0?'var(--up)':'var(--down)'}">${min.diff>0?'+':''}${min.diff.toFixed(2)}฿ จากราคาอ้างอิง</span>`:''))]);
-    if(!scopeIsProvince){
-      const provAvg = provinceAverages(stationSnap);
-      const provMax = provAvg.reduce((a,b)=>b.avg>a.avg?b:a);
-      const provMin = provAvg.reduce((a,b)=>b.avg<a.avg?b:a);
-      cards.push(['จังหวัดแพงสุด (เฉลี่ย)', provMax.avg.toFixed(2)+' ฿', provMax.prov]);
-      cards.push(['จังหวัดถูกสุด (เฉลี่ย)', provMin.avg.toFixed(2)+' ฿', provMin.prov]);
-    }
     cards.push(['ค่าขนส่งเฉลี่ย สนพ.', avgTransport!=null? avgTransport.toFixed(2)+' ฿':'-', 'จาก '+transports.length+' อำเภอ']);
     const aboveCountTop = diffs.filter(v=>v>0.001).length;
     const belowCountTop = diffs.filter(v=>v<-0.001).length;
@@ -764,23 +757,65 @@ function barAxisRange(vals){
   const pad = Math.max(1, (hi-lo)*0.15);
   return {min:Math.floor(lo-pad), max:Math.ceil(hi+pad)};
 }
+function provinceExtremeRankingRows(snapshot, mode='max'){
+  // จัดอันดับ "จังหวัด" โดยไม่เฉลี่ยราคาอำเภอ
+  // max: ใช้อำเภอที่แพงที่สุดของแต่ละจังหวัดเป็นตัวแทนจังหวัด
+  // min: ใช้อำเภอที่ถูกที่สุดของแต่ละจังหวัดเป็นตัวแทนจังหวัด
+  const best = new Map();
+  snapshot
+    .filter(r=>!r.isBangkokBaseline && r.prov && r.dist && r.price!=null)
+    .forEach(r=>{
+      const cur = best.get(r.prov);
+      const isBetter = !cur || (mode==='max' ? r.price > cur.price : r.price < cur.price)
+        || (cur && r.price===cur.price && String(r.dist).localeCompare(String(cur.dist),'th') < 0);
+      if(isBetter) best.set(r.prov, r);
+    });
+
+  const rows = [...best.values()].map(r=>({
+    ...r,
+    label:`${r.prov} / ${r.dist}`,
+    extremeType: mode==='max' ? 'อำเภอแพงสุดของจังหวัด' : 'อำเภอถูกสุดของจังหวัด'
+  }));
+
+  return rows.sort((a,b)=>
+    mode==='max'
+      ? (b.price-a.price || a.prov.localeCompare(b.prov,'th'))
+      : (a.price-b.price || a.prov.localeCompare(b.prov,'th'))
+  );
+}
 function renderTopBottom(){
-  const snap = latestSnapshot();
-  const provAvg = provinceAverages(snap).sort((a,b)=>b.avg-a.avg);
-  const top5 = provAvg.slice(0,5);
-  const bottom5 = provAvg.slice(-5).reverse();
+  // ยังคงจัดอันดับระดับ "จังหวัด" แต่ไม่ใช้ค่าเฉลี่ยทั้งจังหวัด
+  // กลุ่มแพง: ใช้อำเภอที่แพงสุดของแต่ละจังหวัด
+  // กลุ่มถูก: ใช้อำเภอที่ถูกสุดของแต่ละจังหวัด
+  const snapshot = latestSnapshot();
+  const top5 = provinceExtremeRankingRows(snapshot, 'max').slice(0,5);
+  const bottom5 = provinceExtremeRankingRows(snapshot, 'min').slice(0,5);
   const t = chartTheme();
-  const allVals = [...top5,...bottom5].map(x=>x.avg);
+  const allVals = [...top5,...bottom5].map(x=>x.price);
   const {min:axisMin, max:axisMax} = barAxisRange(allVals);
+  const rows=[
+    ...top5.map(x=>({...x, group:'สูงสุด', color:t.up})),
+    ...bottom5.map(x=>({...x, group:'ต่ำสุด', color:t.down}))
+  ].reverse();
   getChart('topBottomChart').setOption({
     backgroundColor:'transparent',
-    tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    legend:{data:['สูงสุด','ต่ำสุด'], textStyle:{color:t.dim, fontSize:SC(14)}, itemWidth:22, itemHeight:14, itemGap:20, top:0},
-    grid:{left:70,right:36,top:30,bottom:20},
+    tooltip:{
+      trigger:'axis', axisPointer:{type:'shadow'},
+      formatter:params=>{
+        const p=params?.[0]; const r=rows[p?.dataIndex];
+        if(!r) return '';
+        return `<b>${r.prov}</b><br>${r.extremeType}: <b>${r.dist}</b><br>ราคา: <b>${r.price.toFixed(2)} บาท/ลิตร</b>`;
+      }
+    },
+    grid:{left:165,right:46,top:12,bottom:20},
     xAxis:{type:'value', min:axisMin, max:axisMax, axisLabel:{color:t.dim,fontSize:SC(9)}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:[...top5.map(x=>x.prov),...bottom5.map(x=>x.prov)].reverse(), axisLabel:{color:t.text,fontSize:SC(10)}},
+    yAxis:{
+      type:'category', data:rows.map(x=>x.label),
+      axisLabel:{color:t.text,fontSize:SC(9), width:150, overflow:'truncate'}
+    },
     series:[{
-      type:'bar', barMaxWidth:22, data:[...top5.map(x=>({value:x.avg,itemStyle:{color:t.up}})),...bottom5.map(x=>({value:x.avg,itemStyle:{color:t.down}}))].reverse(),
+      type:'bar', barMaxWidth:22,
+      data:rows.map(x=>({value:x.price,itemStyle:{color:x.color}})),
       label:{show:true, position:'right', color:t.text, fontSize:SC(9), formatter:p=>p.value.toFixed(2)}
     }]
   }, true);
@@ -1011,26 +1046,34 @@ function renderOutlierTable(){
 }
 
 function renderRanking(){
-  const snap = latestSnapshot();
-  const provAvg = provinceAverages(snap).sort((a,b)=>b.avg-a.avg);
+  // จัดอันดับจังหวัดโดยใช้อำเภอสุดขั้วของแต่ละจังหวัด ไม่ใช้ค่าเฉลี่ย
+  const snapshot = latestSnapshot();
+  const topRanked = provinceExtremeRankingRows(snapshot, 'max');
+  const bottomRanked = provinceExtremeRankingRows(snapshot, 'min');
   const t = chartTheme();
-  const top20 = provAvg.slice(0,20).reverse();
-  const bottom20 = provAvg.slice(-20);
-  const topRange = barAxisRange(top20.map(x=>x.avg));
-  const bottomRange = barAxisRange(bottom20.map(x=>x.avg));
+  const top20 = topRanked.slice(0,20).reverse();
+  const bottom20 = bottomRanked.slice(0,20);
+  const topRange = barAxisRange(top20.map(x=>x.price));
+  const bottomRange = barAxisRange(bottom20.map(x=>x.price));
+  const tip = rows => params=>{
+    const p=params?.[0]; const r=rows[p?.dataIndex];
+    if(!r) return '';
+    return `<b>${r.prov}</b><br>${r.dist}<br>ราคา: <b>${r.price.toFixed(2)} บาท/ลิตร</b>`;
+  };
   getChart('rankTop').setOption({
-    backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    grid:{left:90,right:36,top:10,bottom:20},
+    backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, formatter:tip(top20)},
+    grid:{left:180,right:44,top:10,bottom:20},
     xAxis:{type:'value', min:topRange.min, max:topRange.max, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:top20.map(x=>x.prov), axisLabel:{color:t.text, fontSize:SC(10)}},
-    series:[{type:'bar', barMaxWidth:16, data:top20.map(x=>x.avg), itemStyle:{color:t.up}, label:{show:true,position:'right',color:t.text,fontSize:SC(9),formatter:p=>p.value.toFixed(2)}}]
+    yAxis:{type:'category', data:top20.map(x=>x.label), axisLabel:{color:t.text, fontSize:SC(9), width:165, overflow:'truncate'}},
+    series:[{type:'bar', barMaxWidth:16, data:top20.map(x=>x.price), itemStyle:{color:t.up}, label:{show:true,position:'right',color:t.text,fontSize:SC(9),formatter:p=>p.value.toFixed(2)}}]
   }, true);
+  const bottomDisplay=bottom20.slice().reverse();
   getChart('rankBottom').setOption({
-    backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}},
-    grid:{left:90,right:36,top:10,bottom:20},
+    backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, formatter:tip(bottomDisplay)},
+    grid:{left:180,right:44,top:10,bottom:20},
     xAxis:{type:'value', min:bottomRange.min, max:bottomRange.max, axisLabel:{color:t.dim}, splitLine:{lineStyle:{color:t.border}}},
-    yAxis:{type:'category', data:bottom20.map(x=>x.prov).reverse(), axisLabel:{color:t.text, fontSize:SC(10)}},
-    series:[{type:'bar', barMaxWidth:16, data:bottom20.map(x=>x.avg).reverse(), itemStyle:{color:t.down}, label:{show:true,position:'right',color:t.text,fontSize:SC(9),formatter:p=>p.value.toFixed(2)}}]
+    yAxis:{type:'category', data:bottomDisplay.map(x=>x.label), axisLabel:{color:t.text, fontSize:SC(9), width:165, overflow:'truncate'}},
+    series:[{type:'bar', barMaxWidth:16, data:bottomDisplay.map(x=>x.price), itemStyle:{color:t.down}, label:{show:true,position:'right',color:t.text,fontSize:SC(9),formatter:p=>p.value.toFixed(2)}}]
   }, true);
 }
 
@@ -1126,15 +1169,5 @@ function renderMomChart(){
       name:'เปลี่ยนแปลง (฿)', nameTextStyle:{color:t.dim, fontSize:SC(10)} },
     series
   }, true);
-}
-
-function exportCurrentCsv(){
-  const snap = latestSnapshot();
-  const rows = [['จังหวัด','อำเภอ','ผลิตภัณฑ์','ราคา','ค่าขนส่งสนพ.','ส่วนต่างอ้างอิง']];
-  const prodName = state.filterProduct===-1 ? 'ทุกผลิตภัณฑ์ (เฉลี่ย)' : dispName(state.data.products[state.filterProduct]);
-  snap.forEach(r=> rows.push([r.prov, r.dist, prodName, r.price, r.transport ?? '', r.diff ?? '']));
-  const csv = '\uFEFF' + rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');
-  const blob = new Blob([csv], {type:'text/csv;charset=utf-8;'});
-  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'pttor-price-export.csv'; a.click();
 }
 

@@ -75,7 +75,6 @@ function renderVolumeAll(){
   renderVolMap();
   renderVolTopBottomRegion();
   renderVolTrend();
-  renderVolCompare();
   renderVolRanking();
 }
 function currentVolProdIdx(){
@@ -105,40 +104,6 @@ function renderVolKPI(){
   $('volMapHint').textContent = (m===''?'ทั้งปี '+y:THAI_MONTHS_FULL[m-1]+' '+y) + (prod===-2? ' · ⚠ ผลิตภัณฑ์นี้ไม่มีข้อมูลปริมาณในไฟล์ volume_all (มีเฉพาะราคา)' : '');
   $('shareHint').textContent = $('volMapHint').textContent;
 }
-function renderVolCompare(){
-  const vd = state.volData; if(!vd || !state.volCompareItems) return;
-  const {y,m} = volYearMonth();
-  const items = state.volCompareItems;
-  const t = chartTheme();
-  const colors = COMPARE_COLORS;
-  const series = sortedProdIdx(vd.products).map(pi=>{ const prodName = vd.products[pi]; return {
-    name:dispName(prodName), type:'bar', stack:'total', itemStyle:{color:prodColor(prodName)},
-    data: items.map(it=>Math.round(volOf(it.provIdx,y,m,pi)*10)/10)
-  };});
-  getChart('volCompareBar').setOption({
-    backgroundColor:'transparent', tooltip:{trigger:'axis', axisPointer:{type:'shadow'}, valueFormatter:v=>volFmt(v,1)+' ล้านลิตร'},
-    legend:{top:0, textStyle:{fontSize:10, color:t.dim}, type:'scroll'},
-    grid:{left:70,right:24,top:40,bottom:40},
-    xAxis:{type:'category', data:items.map(it=>it.label), axisLabel:{fontSize:10.5, color:t.dim}},
-    yAxis:{type:'value', name:'ล้านลิตร', nameLocation:'middle', nameGap:58, axisLabel:{color:t.dim, formatter:v=>volFmt(v,0)}, splitLine:{lineStyle:{color:t.border}}, nameTextStyle:{color:t.dim}},
-    series: items.length? series : []
-  }, true);
-  const prod = currentVolProdIdx();
-  const keys = state.volIdx.monthKeys;
-  const trendSeries = items.map((it,i)=>({
-    name:it.label, type:'line', smooth:true, itemStyle:{color:colors[i%colors.length]}, lineStyle:{width:2.2},
-    data: keys.map(k=>{ const [ky,km]=k.split('-').map(Number); return Math.round(volOf(it.provIdx,ky,km,prod)*10)/10; })
-  }));
-  getChart('volCompareTrend').setOption({
-    backgroundColor:'transparent', tooltip:{trigger:'axis', valueFormatter:v=>volFmt(v,1)+' ล้านลิตร'},
-    legend:{top:0, textStyle:{fontSize:10, color:t.dim}, type:'scroll'},
-    grid:{left:60,right:24,top:40,bottom:50},
-    xAxis:{type:'category', data:keys.map(k=>{ const [ky,km]=k.split('-').map(Number); return THAI_MONTHS_SHORT[km-1]+' '+String(ky).slice(2); }), axisLabel:{fontSize:10, rotate:45, color:t.dim}},
-    yAxis:{type:'value', name:'ล้านลิตร', nameLocation:'middle', nameGap:58, axisLabel:{color:t.dim, formatter:v=>volFmt(v,0)}, splitLine:{lineStyle:{color:t.border}}, nameTextStyle:{color:t.dim}},
-    dataZoom:[{type:'inside'},{type:'slider', height:16, bottom:10}],
-    series: items.length? trendSeries : []
-  }, true);
-}
 function renderVolRanking(){
   const vd = state.volData; if(!vd) return;
   const {y,m} = volYearMonth();
@@ -149,23 +114,6 @@ function renderVolRanking(){
   $('volRankHint').textContent = (m===''?'ทั้งปี '+y:THAI_MONTHS_FULL[m-1]+' '+y)+' · '+arr.length+' จังหวัด';
   const rows = arr.map((r,i)=>`<tr><td>${i+1}</td><td>${r.prov}</td><td style="text-align:right">${r.v.toLocaleString('th-TH',{maximumFractionDigits:1})}</td><td style="text-align:right">${total>0?(r.v/total*100).toFixed(1):'0.0'}%</td></tr>`).join('');
   $('volRankTable').innerHTML = `<thead><tr><th>อันดับ</th><th>จังหวัด</th><th style="text-align:right">ปริมาณ (ล้านลิตร)</th><th style="text-align:right">สัดส่วน</th></tr></thead><tbody>${rows}</tbody>`;
-  state._volRankExport = arr;
-}
-async function exportVolExcel(){
-  const button=$('volExportExcel');
-  button.disabled=true;
-  try{
-    await loadXlsx();
-  const rows = (state._volRankExport||[]).map((r,i)=>({'อันดับ':i+1, 'จังหวัด':r.prov, 'ปริมาณ (ล้านลิตร)':r.v}));
-  const ws = XLSX.utils.json_to_sheet(rows);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, 'ปริมาณจำหน่าย');
-  XLSX.writeFile(wb, 'pttor-volume-ranking.xlsx');
-  }catch(error){
-    alert(error.message || String(error));
-  }finally{
-    button.disabled=false;
-  }
 }
 function renderVolMap(){
   const vd = state.volData, {y,m} = volYearMonth();
