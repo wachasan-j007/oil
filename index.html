@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=1200, viewport-fit=cover, user-scalable=yes">
   <title>Fuel Value Chain</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -378,16 +378,18 @@
 
     .flow-line {
       fill: none;
-      stroke-width: 2.2;
+      stroke-width: 2.5;
       stroke-linecap: round;
-      stroke-dasharray: 10 8;
-      opacity: .86;
-      animation: none;
+      stroke-dasharray: 12 10;
+      opacity: .95;
+      /* One full dash cycle keeps the motion smooth when the animation repeats. */
+      animation: flowDash .7s linear infinite;
+      will-change: stroke-dashoffset;
     }
 
     @keyframes flowDash {
       to {
-        stroke-dashoffset: -180
+        stroke-dashoffset: -22;
       }
     }
 
@@ -1060,7 +1062,7 @@
       html, body { animation: none !important; }
       .block { animation: fadeIn .01s linear forwards !important; transition: none !important; }
       .block::after, .block::before { animation: none !important; opacity: .12 !important; }
-      .flow-line { animation: none !important; }
+      /* The flow lines are the diagram's direction cue, so keep them moving. */
       .text-size-control { animation: none !important; }
       .block:hover, .block.is-active { transform: none !important; }
     }
@@ -1162,6 +1164,172 @@
         font-size: calc(20px * var(--scale));
       }
     }
+  
+
+    /* ==========================================================
+       MOBILE FIT — คงผัง 4 คอลัมน์เหมือนเดสก์ท็อปแล้วย่อทั้งผังให้พอดีจอ
+       ========================================================== */
+    @media (max-width: 1180px) {
+      html, body {
+        overflow-x: hidden;
+      }
+
+      .page-header {
+        padding: 24px 10px 6px;
+      }
+
+      .page-header .eyebrow {
+        font-size: 7px;
+        letter-spacing: 1.6px;
+      }
+
+      .page-header h1 {
+        font-size: 17px;
+        margin: 6px 0 5px;
+      }
+
+      .page-header p {
+        font-size: 7px;
+        white-space: nowrap;
+      }
+
+      .legend {
+        width: max-content;
+        max-width: none;
+        flex-wrap: nowrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .legend-item {
+        gap: 4px;
+        font-size: 6px;
+        white-space: nowrap;
+      }
+
+      .legend-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 2px;
+      }
+
+      .chain-wrap {
+        padding: 14px 8px 24px;
+        overflow: hidden;
+      }
+
+      .flow-wrap {
+        width: 1180px;
+        max-width: none;
+        margin: 0;
+        transform-origin: left top;
+        will-change: transform;
+      }
+
+      .flow-grid,
+      .section-title-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 40px;
+      }
+
+      .flow-grid {
+        min-height: 700px;
+      }
+
+      .flow-line {
+        stroke-width: 1.5;
+      }
+
+      .section-title {
+        font-size: 16px;
+        padding: 10px 4px;
+      }
+
+      .stage-col {
+        gap: 18px;
+        padding-top: 16px;
+      }
+
+      .group-label {
+        font-size: 28px;
+        padding: 8px 0;
+        margin-bottom: 4px;
+      }
+
+      .block-u1 .block-name,
+      .block-u2 .block-name,
+      .block-u3 .block-name,
+      .block-u4 .block-name,
+      .block-i1 .block-name,
+      .block-i2 .block-name,
+      .block-d1 .block-name,
+      .block-e1 .block-name,
+      .block-e2 .block-name,
+      .block-e3 .block-name,
+      .block-e4 .block-name,
+      .block-e5 .block-name,
+      .block-e6 .block-name {
+        font-size: 18px;
+      }
+
+      .block-u1, .block-u2, .block-u3, .block-u4,
+      .block-i1, .block-i2, .block-d1,
+      .block-e1, .block-e2, .block-e3, .block-e4, .block-e5, .block-e6 {
+        padding: 15px 16px;
+      }
+
+      .block-i1 {
+        margin-top: 200px;
+        width: 270px;
+        margin-left: 12px;
+      }
+
+      .block-i2 {
+        margin-top: 120px;
+        margin-left: 165px;
+        width: 320px;
+      }
+
+      .block-d1 {
+        margin-top: 200px;
+        margin-left: 8px;
+        width: 270px;
+      }
+
+      .block-icon {
+        width: 42px !important;
+        height: 42px !important;
+      }
+
+      .group-label--export {
+        left: -18px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      /* ยกเลิกกฎเดิมที่บีบ grid จนผังเสียทรง */
+      .page-header {
+        padding: 22px 8px 6px;
+      }
+
+      .flow-grid,
+      .section-title-row {
+        gap: 40px;
+      }
+
+      .group-label {
+        font-size: 28px;
+      }
+
+      .chain-wrap {
+        padding: 12px 6px 20px;
+      }
+    }
+
+  </style>
+
+  <style id="desktop-mirror-mobile">
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   </style>
 </head>
 
@@ -1381,6 +1549,52 @@
     const svg = document.getElementById("flow-svg");
     const flowWrap = document.querySelector(".flow-wrap");
 
+
+    // ===== Mobile: ย่อผังเดสก์ท็อปทั้งชุดให้พอดีกับความกว้างโทรศัพท์ =====
+    const MOBILE_FLOW_WIDTH = 1180;
+    const chainWrap = document.querySelector(".chain-wrap");
+
+    function fitMobileFlow() {
+      if (!flowWrap || !chainWrap) return;
+
+      if (window.innerWidth <= MOBILE_FLOW_WIDTH) {
+        // ใช้ความกว้างจริงด้านในของ container เพื่อไม่ให้เกิด scroll แนวนอน
+        const cs = getComputedStyle(chainWrap);
+        const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+        const available = Math.max(280, chainWrap.clientWidth - padX);
+        const scale = Math.min(1, available / MOBILE_FLOW_WIDTH);
+
+        flowWrap.style.width = MOBILE_FLOW_WIDTH + "px";
+        flowWrap.style.maxWidth = "none";
+        flowWrap.style.transformOrigin = "left top";
+        flowWrap.style.transform = `scale(${scale})`;
+
+        // ลูกศรบนมือถือให้เล็กแบบในภาพอ้างอิง ไม่บังกล่อง
+        svg.querySelectorAll("marker").forEach(marker => {
+          marker.setAttribute("markerUnits", "userSpaceOnUse");
+          marker.setAttribute("markerWidth", "7");
+          marker.setAttribute("markerHeight", "7");
+        });
+
+        // transform ไม่ลดพื้นที่ layout อัตโนมัติ จึงปรับความสูง main ให้เท่าที่เห็นจริง
+        const naturalHeight = flowWrap.scrollHeight;
+        chainWrap.style.height = Math.ceil(naturalHeight * scale + 24) + "px";
+      } else {
+        flowWrap.style.width = "";
+        flowWrap.style.maxWidth = "";
+        flowWrap.style.transform = "";
+        flowWrap.style.transformOrigin = "";
+        chainWrap.style.height = "";
+        svg.querySelectorAll("marker").forEach(marker => {
+          marker.removeAttribute("markerUnits");
+          marker.setAttribute("markerWidth", "6");
+          marker.setAttribute("markerHeight", "6");
+        });
+      }
+    }
+
+    fitMobileFlow();
+
     function drawConnections() {
       svg.querySelectorAll(".flow-line").forEach(el => el.remove());
       const wrapRect = flowWrap.getBoundingClientRect();
@@ -1534,8 +1748,14 @@
       });
     })();
 
-    window.addEventListener("load", drawConnections);
-    setTimeout(drawConnections, 150);
+    window.addEventListener("load", () => {
+      fitMobileFlow();
+      requestAnimationFrame(drawConnections);
+    });
+    setTimeout(() => {
+      fitMobileFlow();
+      drawConnections();
+    }, 180);
 
     // ===== stagger fade-in delay per card (in DOM order) =====
     document.querySelectorAll(".block").forEach((el, i) => {
@@ -1727,7 +1947,10 @@
     let redrawTimer = null;
     function scheduleRedraw() {
       if (redrawTimer) clearTimeout(redrawTimer);
-      redrawTimer = setTimeout(() => requestAnimationFrame(drawConnections), 60);
+      redrawTimer = setTimeout(() => {
+        fitMobileFlow();
+        requestAnimationFrame(drawConnections);
+      }, 60);
     }
 
     window.addEventListener("resize", scheduleRedraw);
