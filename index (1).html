@@ -3,7 +3,7 @@
 
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=1200, viewport-fit=cover, user-scalable=yes">
   <title>Fuel Value Chain</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -154,10 +154,10 @@
       border-radius: 26px;
       border: 2px solid rgba(56, 189, 248, .6);
       background: rgba(15, 23, 42, .95);
-      backdrop-filter: blur(8px);
+      backdrop-filter: none;
       padding: 6px;
       box-shadow: 0 4px 24px rgba(56, 189, 248, .3);
-      animation: pulse-glow 2.5s ease-in-out infinite;
+      animation: none;
     }
 
     @keyframes pulse-glow {
@@ -378,16 +378,18 @@
 
     .flow-line {
       fill: none;
-      stroke-width: 2.2;
+      stroke-width: 2.5;
       stroke-linecap: round;
-      stroke-dasharray: 10 8;
-      opacity: .86;
-      animation: flowDash 6s linear infinite;
+      stroke-dasharray: 12 10;
+      opacity: .95;
+      /* One full dash cycle keeps the motion smooth when the animation repeats. */
+      animation: flowDash .7s linear infinite;
+      will-change: stroke-dashoffset;
     }
 
     @keyframes flowDash {
       to {
-        stroke-dashoffset: -180
+        stroke-dashoffset: -22;
       }
     }
 
@@ -402,13 +404,18 @@
       overflow: hidden;
       isolation: isolate;
       transition: transform .28s cubic-bezier(.22,1,.36,1), box-shadow .28s ease, border-color .28s ease, opacity .28s ease, filter .28s ease;
-      opacity: 0;
-      transform: translateY(12px) scale(.98);
-      animation: fadeIn .6s cubic-bezier(.22,1,.36,1) forwards;
+      /* Visible by default, including when a specific block overrides animation. */
+      opacity: 1;
+      transform: none;
+      animation: fadeIn .6s cubic-bezier(.22,1,.36,1) backwards;
       animation-delay: var(--d, 0s);
     }
 
     @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(12px) scale(.98);
+      }
       to {
         opacity: 1;
         transform: translateY(0) scale(1);
@@ -424,8 +431,8 @@
       background: linear-gradient(100deg, transparent 40%, rgba(255,255,255,.10) 50%, transparent 60%);
       opacity: 0;
       pointer-events: none;
-      will-change: transform;
-      animation: glassSweep 8s ease-in-out 3;
+      will-change: auto;
+      animation: none;
       animation-delay: var(--d, 0s);
       z-index: 3;
     }
@@ -445,7 +452,7 @@
       opacity: .15;
       pointer-events: none;
       z-index: -1;
-      animation: cardGlow 5s ease-in-out infinite;
+      animation: none;
       animation-delay: var(--d, 0s);
     }
 
@@ -528,7 +535,7 @@
 
     .block:hover .block-icon,
     .block.is-active .block-icon {
-      filter: brightness(1.25);
+      filter: none;
     }
 
     .block-top {
@@ -834,187 +841,53 @@
       color: #34d399;
     }
 
-    /* ป๊อปอัพ 2 ตัวเลือก (ปริมาณ / ราคา) ของสถานีบริการน้ำมันเชื้อเพลิง */
-    .block.has-choice {
-      cursor: pointer;
-    }
-
-    .choice-modal-overlay {
-      position: fixed;
-      inset: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 24px;
-      background: rgba(2, 6, 23, .72);
-      backdrop-filter: blur(6px);
-      -webkit-backdrop-filter: blur(6px);
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-      transition: opacity .22s ease, visibility .22s;
-      z-index: 5000;
-    }
-
-    .choice-modal-overlay.is-open {
-      opacity: 1;
-      visibility: visible;
-      pointer-events: auto;
-    }
-
-    .choice-modal {
-      position: relative;
-      width: 100%;
-      max-width: 560px;
-      border-radius: 22px;
-      border: 1px solid var(--panel-border);
-      background:
-        radial-gradient(circle at 15% -10%, rgba(52, 211, 153, .14), transparent 45%),
-        radial-gradient(circle at 90% 0%, rgba(251, 191, 36, .1), transparent 40%),
-        #101a30;
-      box-shadow: 0 30px 80px -20px rgba(0, 0, 0, .7);
-      padding: 30px 28px 26px;
-      transform: scale(.94) translateY(10px);
-      opacity: 0;
-      transition: transform .28s cubic-bezier(.22,1,.36,1), opacity .28s ease;
-    }
-
-    .choice-modal-overlay.is-open .choice-modal {
-      transform: scale(1) translateY(0);
-      opacity: 1;
-    }
-
-    .choice-modal-close {
-      position: absolute;
-      top: 16px;
-      right: 16px;
-      width: 32px;
-      height: 32px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 999px;
-      border: 1px solid var(--panel-border);
-      background: rgba(148, 163, 184, .08);
-      color: var(--text-lo);
-      cursor: pointer;
-      transition: background .18s ease, color .18s ease;
-    }
-
-    .choice-modal-close:hover,
-    .choice-modal-close:focus-visible {
-      background: rgba(148, 163, 184, .18);
-      color: var(--text-hi);
-    }
-
-    .choice-modal-close svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .choice-modal-eyebrow {
-      font-size: 12.5px;
-      color: var(--text-lo);
-      letter-spacing: .3px;
-    }
-
-    .choice-modal-title {
-      font-size: clamp(19px, 2.6vw, 23px);
-      font-weight: 600;
-      margin-top: 6px;
-      padding-right: 30px;
-      line-height: 1.35;
-    }
-
-    .choice-modal-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 14px;
-      margin-top: 22px;
-    }
-
-    @media (max-width: 520px) {
-      .choice-modal-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
-    .choice-card {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 10px;
-      padding: 20px 18px;
-      border-radius: 16px;
-      border: 1px solid var(--panel-border);
-      background: rgba(148, 163, 184, .05);
-      text-align: left;
-      transition: transform .22s cubic-bezier(.22,1,.36,1), border-color .22s ease, background .22s ease, box-shadow .22s ease;
-    }
-
-    .choice-card:hover,
-    .choice-card:focus-visible {
-      transform: translateY(-3px);
-    }
-
-    .choice-card--volume:hover,
-    .choice-card--volume:focus-visible {
-      border-color: rgba(52, 211, 153, .55);
-      background: rgba(52, 211, 153, .1);
-      box-shadow: 0 16px 32px -14px rgba(52, 211, 153, .5);
-    }
-
-    .choice-card--price:hover,
-    .choice-card--price:focus-visible {
-      border-color: rgba(251, 191, 36, .55);
-      background: rgba(251, 191, 36, .1);
-      box-shadow: 0 16px 32px -14px rgba(251, 191, 36, .5);
-    }
-
-    .choice-card-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .choice-card-icon svg {
-      width: 55%;
-      height: 55%;
-    }
-
-    .choice-card--volume .choice-card-icon {
-      background: rgba(52, 211, 153, .16);
-      border: 1px solid rgba(52, 211, 153, .4);
-      color: #34d399;
-    }
-
-    .choice-card--price .choice-card-icon {
-      background: rgba(251, 191, 36, .16);
-      border: 1px solid rgba(251, 191, 36, .4);
-      color: #fbbf24;
-    }
-
-    .choice-card-title {
-      font-size: 17px;
-      font-weight: 600;
-    }
-
-    .choice-card-sub {
-      font-size: 13px;
-      color: var(--text-lo);
-      line-height: 1.5;
-    }
-
-    @media (prefers-reduced-motion: reduce) {
-      .choice-modal-overlay,
-      .choice-modal,
-      .choice-card {
-        transition: none !important;
-      }
-    }
+    /* ==========================================================
+       ป๊อปอัพตัวเลือกแบบเว่อๆ (ปริมาณ / ราคา) — สถานีบริการน้ำมันเชื้อเพลิง
+       ========================================================== */
+    /* Station selector: native modal, cinematic entrance, two clear destinations. */
+    .block.has-choice { cursor:pointer; }
+    .block.has-choice:focus-visible { outline:3px solid #6ee7b7; outline-offset:5px; }
+    .block-e3 .click-badge { color:#a7f3d0; }
+    .choice-modal { color:#14243b; font-family:inherit; width:min(1040px,calc(100% - 32px)); max-height:calc(100dvh - 32px); overflow:auto; margin:auto; padding:clamp(24px,4.5vw,56px); border:1px solid #ffffff; border-radius:28px; background:#f9fafb; box-shadow:0 48px 140px #02061780; }
+    .choice-modal::backdrop { background:#081526d9; backdrop-filter: none; }
+    .choice-modal[open] { animation:station-enter .2s cubic-bezier(.16,1,.3,1) both; }
+    .choice-modal[open]::backdrop { animation:station-fade .15s ease both; }
+    .choice-modal-close { position:absolute; right:20px; top:20px; width:44px; height:44px; border-radius:50%; border:1px solid #dce2e8; color:#42536a; background:#fff; cursor:pointer; display:grid; place-items:center; transition:background .2s,transform .2s; }
+    .choice-modal-close:hover { background:#e9eef3; transform:rotate(90deg); }
+    .choice-modal-close svg { width:20px; height:20px; }
+    .choice-modal-eyebrow { font-size:calc(14px * var(--scale)); color:#4a6077; margin:0 52px 16px 0; font-weight:500; }
+    .choice-modal-title { font-size:calc(clamp(28px,3.8vw,44px) * var(--scale)); letter-spacing:-.5px; line-height:1.45; margin:0 28px 10px 0; font-weight:700; }
+    .choice-modal-intro { margin:0; color:#637086; font-size:calc(16px * var(--scale)); }
+    .choice-modal-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:24px; margin-top:36px; }
+    .choice-card { --accent:#60a5fa; --rgb:96,165,250; position:relative; isolation:isolate; overflow:hidden; display:flex; flex-direction:column; gap:18px; padding:clamp(26px,3.5vw,42px); border:1px solid #28425e; border-radius:20px; background:#102844; color:#f4f7fc; min-width:0; transition:transform .25s,border-color .25s,box-shadow .25s; }
+    .choice-card--volume { --accent:#345dcc; --rgb:52,93,204; background:#f0f4ff; border-color:#d5dff4; color:#182d50; }
+    .choice-card--price .choice-card-sub { color:#b9cbe0; }
+    .choice-card--price .choice-card-icon { background:#193859; border-color:#355778; }
+    .choice-card--price .choice-card-arrow { color:#102844; }
+    .choice-card--price:focus-visible { outline-color:#60a5fa; }
+    .choice-card--volume .choice-card-icon { background:#e4ebff; border-color:#ccd9ff; }
+    .choice-card::before { content:""; position:absolute; z-index:-1; inset:0; background:radial-gradient(circle at var(--mx,50%) var(--my,0%),rgba(var(--rgb),.07),transparent 65%); opacity:0; transition:opacity .25s; }
+    .choice-card::after { content:""; position:absolute; top:34px; bottom:34px; left:0; width:3px; background:var(--accent); border-radius:0 3px 3px 0; }
+    .choice-card:hover,.choice-card:focus-visible { transform:translateY(-7px); border-color:var(--accent); box-shadow:0 26px 42px -25px rgba(var(--rgb),.35); }
+    .choice-card:hover::before,.choice-card:focus-visible::before { opacity:1; }
+    .choice-modal :focus-visible { outline:3px solid #1d4ed8; outline-offset:4px; }
+    .choice-card-top { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .choice-card-icon { display:grid; place-items:center; width:64px; height:64px; border-radius:18px; color:var(--accent); background:#ffffff; border:1px solid rgba(var(--rgb),.15); box-shadow:0 5px 12px #14243b05; }
+    .choice-card-icon svg { width:34px; height:34px; }
+    .choice-card-label { color:var(--accent); font-size:14px; letter-spacing:2.5px; font-weight:500; }
+    .choice-card-title { font-size:calc(clamp(40px,4.5vw,58px) * var(--scale)); line-height:1.35; font-weight:600; margin-top:20px; }
+    .choice-card-sub { color:#526379; font-size:calc(16px * var(--scale)); line-height:1.8; }
+    .choice-card-cta { display:flex; justify-content:space-between; align-items:center; gap:12px; margin-top:auto; padding-top:24px; border-top:1px solid rgba(var(--rgb),.18); color:var(--accent); font-size:calc(16px * var(--scale)); font-weight:600; }
+    .choice-card-arrow { display:grid; place-items:center; width:42px; height:42px; flex-shrink:0; background:var(--accent); color:white; border-radius:50%; transition:transform .25s; }
+    .choice-card:hover .choice-card-arrow { transform:translateX(4px); }
+    .choice-modal-footer { margin:26px 0 0; display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; color:#627086; font-size:14px; }
+    .choice-modal-footer kbd { font:inherit; border:1px solid #d5dce5; border-radius:5px; padding:2px 6px; }
+    .choice-modal[open] .choice-card { animation:none; }
+    .choice-modal[open] .choice-card:nth-child(2) { animation-delay:.16s; }
+    @keyframes station-enter { from { opacity:0; transform:translateY(26px) scale(.94); } to { opacity:1; transform:translateY(0) scale(1); } }
+    @keyframes station-fade { from { opacity:0; } to { opacity:1; } }
+    @media(max-width:600px) { .choice-modal-grid { grid-template-columns:1fr; gap:16px; margin-top:24px; } .choice-modal { border-radius:22px; } .choice-card { gap:12px; } .choice-card-icon { width:52px; height:52px; border-radius:15px; } .choice-card-title { font-size:calc(32px * var(--scale)); } .choice-modal-footer span:last-child { display:none; } }
+    @media(prefers-reduced-motion:reduce) { .choice-modal,.choice-modal::backdrop,.choice-modal .choice-card { animation:none!important; } .choice-modal * { transition:none!important; } .choice-card:hover { transform:none; } }
 
     .block-e4 {
       padding: calc(clamp(10px, 1.2vw, 18px) * var(--scale)) calc(clamp(10px, 1.4vw, 18px) * var(--scale));
@@ -1120,8 +993,7 @@
       padding: 12px 14px;
       border-radius: 14px;
       background: rgba(15, 23, 42, .92);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      backdrop-filter: none;
       border: 1px solid rgba(148, 163, 184, .25);
       box-shadow: 0 12px 40px rgba(0,0,0,.45), 0 0 0 1px rgba(255,255,255,.02);
       font-size: 13px;
@@ -1190,7 +1062,7 @@
       html, body { animation: none !important; }
       .block { animation: fadeIn .01s linear forwards !important; transition: none !important; }
       .block::after, .block::before { animation: none !important; opacity: .12 !important; }
-      .flow-line { animation: none !important; }
+      /* The flow lines are the diagram's direction cue, so keep them moving. */
       .text-size-control { animation: none !important; }
       .block:hover, .block.is-active { transform: none !important; }
     }
@@ -1218,8 +1090,8 @@
       * {
         animation: none !important;
         transition: none !important;
-        backdrop-filter: none !important;
-        -webkit-backdrop-filter: none !important;
+        backdrop-filter: none;
+        backdrop-filter: none;
         box-shadow: none !important;
         text-shadow: none !important;
       }
@@ -1292,6 +1164,172 @@
         font-size: calc(20px * var(--scale));
       }
     }
+  
+
+    /* ==========================================================
+       MOBILE FIT — คงผัง 4 คอลัมน์เหมือนเดสก์ท็อปแล้วย่อทั้งผังให้พอดีจอ
+       ========================================================== */
+    @media (max-width: 1180px) {
+      html, body {
+        overflow-x: hidden;
+      }
+
+      .page-header {
+        padding: 24px 10px 6px;
+      }
+
+      .page-header .eyebrow {
+        font-size: 7px;
+        letter-spacing: 1.6px;
+      }
+
+      .page-header h1 {
+        font-size: 17px;
+        margin: 6px 0 5px;
+      }
+
+      .page-header p {
+        font-size: 7px;
+        white-space: nowrap;
+      }
+
+      .legend {
+        width: max-content;
+        max-width: none;
+        flex-wrap: nowrap;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .legend-item {
+        gap: 4px;
+        font-size: 6px;
+        white-space: nowrap;
+      }
+
+      .legend-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 2px;
+      }
+
+      .chain-wrap {
+        padding: 14px 8px 24px;
+        overflow: hidden;
+      }
+
+      .flow-wrap {
+        width: 1180px;
+        max-width: none;
+        margin: 0;
+        transform-origin: left top;
+        will-change: transform;
+      }
+
+      .flow-grid,
+      .section-title-row {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 40px;
+      }
+
+      .flow-grid {
+        min-height: 700px;
+      }
+
+      .flow-line {
+        stroke-width: 1.5;
+      }
+
+      .section-title {
+        font-size: 16px;
+        padding: 10px 4px;
+      }
+
+      .stage-col {
+        gap: 18px;
+        padding-top: 16px;
+      }
+
+      .group-label {
+        font-size: 28px;
+        padding: 8px 0;
+        margin-bottom: 4px;
+      }
+
+      .block-u1 .block-name,
+      .block-u2 .block-name,
+      .block-u3 .block-name,
+      .block-u4 .block-name,
+      .block-i1 .block-name,
+      .block-i2 .block-name,
+      .block-d1 .block-name,
+      .block-e1 .block-name,
+      .block-e2 .block-name,
+      .block-e3 .block-name,
+      .block-e4 .block-name,
+      .block-e5 .block-name,
+      .block-e6 .block-name {
+        font-size: 18px;
+      }
+
+      .block-u1, .block-u2, .block-u3, .block-u4,
+      .block-i1, .block-i2, .block-d1,
+      .block-e1, .block-e2, .block-e3, .block-e4, .block-e5, .block-e6 {
+        padding: 15px 16px;
+      }
+
+      .block-i1 {
+        margin-top: 200px;
+        width: 270px;
+        margin-left: 12px;
+      }
+
+      .block-i2 {
+        margin-top: 120px;
+        margin-left: 165px;
+        width: 320px;
+      }
+
+      .block-d1 {
+        margin-top: 200px;
+        margin-left: 8px;
+        width: 270px;
+      }
+
+      .block-icon {
+        width: 42px !important;
+        height: 42px !important;
+      }
+
+      .group-label--export {
+        left: -18px;
+      }
+    }
+
+    @media (max-width: 420px) {
+      /* ยกเลิกกฎเดิมที่บีบ grid จนผังเสียทรง */
+      .page-header {
+        padding: 22px 8px 6px;
+      }
+
+      .flow-grid,
+      .section-title-row {
+        gap: 40px;
+      }
+
+      .group-label {
+        font-size: 28px;
+      }
+
+      .chain-wrap {
+        padding: 12px 6px 20px;
+      }
+    }
+
+  </style>
+
+  <style id="desktop-mirror-mobile">
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
   </style>
 </head>
 
@@ -1511,35 +1549,113 @@
     const svg = document.getElementById("flow-svg");
     const flowWrap = document.querySelector(".flow-wrap");
 
+
+    // ===== Mobile: ย่อผังเดสก์ท็อปทั้งชุดให้พอดีกับความกว้างโทรศัพท์ =====
+    const MOBILE_FLOW_WIDTH = 1180;
+    const chainWrap = document.querySelector(".chain-wrap");
+
+    function fitMobileFlow() {
+      if (!flowWrap || !chainWrap) return;
+
+      if (window.innerWidth <= MOBILE_FLOW_WIDTH) {
+        // ใช้ความกว้างจริงด้านในของ container เพื่อไม่ให้เกิด scroll แนวนอน
+        const cs = getComputedStyle(chainWrap);
+        const padX = (parseFloat(cs.paddingLeft) || 0) + (parseFloat(cs.paddingRight) || 0);
+        const available = Math.max(280, chainWrap.clientWidth - padX);
+        const scale = Math.min(1, available / MOBILE_FLOW_WIDTH);
+
+        flowWrap.style.width = MOBILE_FLOW_WIDTH + "px";
+        flowWrap.style.maxWidth = "none";
+        flowWrap.style.transformOrigin = "left top";
+        flowWrap.style.transform = `scale(${scale})`;
+
+        // ลูกศรบนมือถือให้เล็กแบบในภาพอ้างอิง ไม่บังกล่อง
+        svg.querySelectorAll("marker").forEach(marker => {
+          marker.setAttribute("markerUnits", "userSpaceOnUse");
+          marker.setAttribute("markerWidth", "7");
+          marker.setAttribute("markerHeight", "7");
+        });
+
+        // transform ไม่ลดพื้นที่ layout อัตโนมัติ จึงปรับความสูง main ให้เท่าที่เห็นจริง
+        const naturalHeight = flowWrap.scrollHeight;
+        chainWrap.style.height = Math.ceil(naturalHeight * scale + 24) + "px";
+      } else {
+        flowWrap.style.width = "";
+        flowWrap.style.maxWidth = "";
+        flowWrap.style.transform = "";
+        flowWrap.style.transformOrigin = "";
+        chainWrap.style.height = "";
+        svg.querySelectorAll("marker").forEach(marker => {
+          marker.removeAttribute("markerUnits");
+          marker.setAttribute("markerWidth", "6");
+          marker.setAttribute("markerHeight", "6");
+        });
+      }
+    }
+
+    fitMobileFlow();
+
+    // พิกัดเส้นใช้ layout coordinate จริง (offsetLeft/offsetTop)
+    // ไม่ใช้ getBoundingClientRect เพราะค่าจาก rect เปลี่ยนตาม Browser Zoom / CSS transform
+    // ขณะที่ SVG และกล่องอยู่ใน flowWrap เดียวกัน จึงควรคุยกันด้วยพิกัด layout ชุดเดียวกัน
+    function getOffsetInsideFlow(el) {
+      let left = 0;
+      let top = 0;
+      let node = el;
+
+      // รวม offset ของทุกชั้นจนถึง flowWrap
+      while (node && node !== flowWrap) {
+        left += node.offsetLeft || 0;
+        top += node.offsetTop || 0;
+        node = node.offsetParent;
+      }
+
+      return {
+        left,
+        top,
+        width: el.offsetWidth || 0,
+        height: el.offsetHeight || 0,
+        right: left + (el.offsetWidth || 0),
+        bottom: top + (el.offsetHeight || 0)
+      };
+    }
+
     function drawConnections() {
       svg.querySelectorAll(".flow-line").forEach(el => el.remove());
-      const wrapRect = flowWrap.getBoundingClientRect();
-      svg.setAttribute("viewBox", `0 0 ${wrapRect.width} ${wrapRect.height}`);
+
+      // ขนาด SVG ใช้ขนาด layout จริงของ flowWrap ไม่ใช่ขนาดหลัง browser zoom
+      const svgWidth = Math.max(flowWrap.scrollWidth, flowWrap.offsetWidth, 1);
+      const svgHeight = Math.max(flowWrap.scrollHeight, flowWrap.offsetHeight, 1);
+      svg.setAttribute("viewBox", `0 0 ${svgWidth} ${svgHeight}`);
+      svg.setAttribute("width", svgWidth);
+      svg.setAttribute("height", svgHeight);
+      svg.setAttribute("preserveAspectRatio", "none");
 
       const upstreamIds = ["U1", "U2", "U3"];
-
       const upstreamRects = upstreamIds
-        .map(id => document.querySelector(`.block[data-id="${id}"]`)?.getBoundingClientRect())
+        .map(id => {
+          const el = document.querySelector(`.block[data-id="${id}"]`);
+          return el ? getOffsetInsideFlow(el) : null;
+        })
         .filter(Boolean);
 
       const upstreamMergeX = upstreamRects.length
-        ? Math.max(...upstreamRects.map(r => r.right - wrapRect.left)) + 15
+        ? Math.max(...upstreamRects.map(r => r.right)) + 15
         : 0;
-
 
       CONNECTIONS.forEach(([fromId, toId]) => {
         const fromEl = document.querySelector(`.block[data-id="${fromId}"]`);
         const toEl = document.querySelector(`.block[data-id="${toId}"]`);
         if (!fromEl || !toEl) return;
 
-        const fr = fromEl.getBoundingClientRect();
-        const tr = toEl.getBoundingClientRect();
+        const fr = getOffsetInsideFlow(fromEl);
+        const tr = getOffsetInsideFlow(toEl);
 
-        let x1 = fr.right - wrapRect.left;
-        let y1 = fr.top - wrapRect.top + fr.height / 2;
-        let x2 = tr.left - wrapRect.left;
-        let y2 = tr.top - wrapRect.top + tr.height / 2;
-
+        // จุดเริ่ม/ปลายเกาะขอบกล่องจริงโดยตรง
+        let x1 = fr.right;
+        let y1 = fr.top + fr.height / 2;
+        let x2 = tr.left;
+        let y2 = tr.top + tr.height / 2;
         let d = "";
 
         if (toId === "I1" && ["U1", "U2", "U3"].includes(fromId)) {
@@ -1550,32 +1666,29 @@
           d = `M ${x1} ${y1} L ${forkX} ${y1} L ${forkX} ${y2} L ${x2} ${y2}`;
         }
         else if (fromId === "I2" && toId === "I1") {
-          x1 = fr.left + (fr.width * 0.05) - wrapRect.left;
-          y1 = fr.top - wrapRect.top;
-          y2 = tr.bottom - wrapRect.top;
+          x1 = fr.left + (fr.width * 0.05);
+          y1 = fr.top;
+          y2 = tr.bottom;
           d = `M ${x1} ${y1} L ${x1} ${y2}`;
         }
         else if (fromId === "I2" && toId === "D1") {
-          x1 = fr.left + (fr.width * 0.92) - wrapRect.left;
-          y1 = fr.top - wrapRect.top;
-          y2 = tr.bottom - wrapRect.top;
+          x1 = fr.left + (fr.width * 0.92);
+          y1 = fr.top;
+          y2 = tr.bottom;
           d = `M ${x1} ${y1} L ${x1} ${y2}`;
         }
         else if (fromId === "U1" && toId === "E1") {
           d = `M ${x1} ${y1} L ${x2} ${y2}`;
         }
         else if (fromId === "U4" && toId === "I1") {
-          x2 = tr.left + (tr.width * 0.25) - wrapRect.left;
-          y2 = tr.bottom - wrapRect.top;
+          x2 = tr.left + (tr.width * 0.25);
+          y2 = tr.bottom;
           d = `M ${x1} ${y1} L ${x2} ${y1} L ${x2} ${y2}`;
         }
         else if (fromId === "U4" && toId === "D1") {
-          x2 = tr.left + (tr.width * 0.75) - wrapRect.left;
-          y2 = tr.bottom - wrapRect.top;
-
-          d = `M ${x1} ${y1}
-       L ${x2} ${y1}
-       L ${x2} ${y2}`;
+          x2 = tr.left + (tr.width * 0.75);
+          y2 = tr.bottom;
+          d = `M ${x1} ${y1} L ${x2} ${y1} L ${x2} ${y2}`;
         }
         else if (fromId === "I1") {
           const shortX = x1 + 10;
@@ -1583,7 +1696,9 @@
         }
         else {
           const midX = x1 + (x2 - x1) / 2;
-          d = Math.abs(y1 - y2) < 5 ? `M ${x1} ${y1} L ${x2} ${y2}` : `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
+          d = Math.abs(y1 - y2) < 5
+            ? `M ${x1} ${y1} L ${x2} ${y2}`
+            : `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
         }
 
         const stage = STAGE_COLOR[fromId] || "upstream";
@@ -1607,121 +1722,71 @@
       });
     });
 
-    // ===== ป๊อปอัพโมดัลใหญ่ 2 ตัวเลือก (ปริมาณ / ราคา) สำหรับสถานีบริการน้ำมันเชื้อเพลิง =====
-    // Append เข้า <body> โดยตรง (ไม่ใช่ลูกของ .block) เพราะ .block ตั้ง overflow:hidden ไว้
-    (function () {
-      const CHOICE_OPTIONS = {
-        E3: {
-          eyebrow: "สถานีบริการน้ำมันเชื้อเพลิง",
-          title: "เลือกมุมมองข้อมูลที่ต้องการดู",
-          options: [
-            {
-              href: "Volume.html",
-              key: "volume",
-              title: "ปริมาณ",
-              sub: "ภาพรวมปริมาณจำหน่ายทั่วประเทศ แยกจังหวัด/สาขา",
-              icon: '<path d="M3 3v18h18"/><path d="M7 15l4-5 3 3 5-7"/>'
-            },
-            {
-              href: "Companies.html",
-              key: "price",
-              title: "ราคา",
-              sub: "ข้อมูลราคาน้ำมันแยกรายบริษัท",
-              icon: '<path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'
-            }
-          ]
-        }
+    // Destination links retained from the original page.
+    const STATION_DESTINATIONS = { price: "Companies.html", volume: "Volume.html" };
+    (() => {
+      const trigger = document.querySelector('.block.has-choice[data-id="E3"]');
+      if (!trigger) return;
+      trigger.setAttribute('aria-haspopup', 'dialog');
+      trigger.setAttribute('aria-controls', 'station-selector');
+      const modal = document.createElement('dialog');
+      modal.id = 'station-selector';
+      modal.className = 'choice-modal';
+      modal.setAttribute('aria-labelledby', 'station-title');
+      modal.setAttribute('aria-describedby', 'station-intro');
+      const icons = {
+        price: '<path d="M12 3v18M16 6H9a3 3 0 0 0 0 6h6a3 3 0 0 1 0 6H8"/>',
+        volume: '<path d="M4 3v18h17M8 16v-5M13 16V7M18 16V4"/>'
       };
-
-      const choiceBlocks = Array.from(document.querySelectorAll(".block.has-choice"));
-      if (!choiceBlocks.length) return;
-
-      let overlayEl = null;
-      let lastFocusedEl = null;
-
-      function buildOverlay() {
-        if (overlayEl) return overlayEl;
-        overlayEl = document.createElement("div");
-        overlayEl.className = "choice-modal-overlay";
-        overlayEl.innerHTML = `
-          <div class="choice-modal" role="dialog" aria-modal="true">
-            <button type="button" class="choice-modal-close" aria-label="ปิด">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
-            </button>
-            <div class="choice-modal-eyebrow"></div>
-            <div class="choice-modal-title"></div>
-            <div class="choice-modal-grid"></div>
-          </div>
-        `;
-        document.body.appendChild(overlayEl);
-
-        overlayEl.querySelector(".choice-modal-close").addEventListener("click", closeModal);
-        overlayEl.addEventListener("click", (e) => {
-          if (e.target === overlayEl) closeModal();
-        });
-
-        return overlayEl;
+      modal.innerHTML = `
+        <button class="choice-modal-close" type="button" aria-label="ปิดหน้าต่าง"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 6 12 12M6 18 18 6"/></svg></button>
+        <p class="choice-modal-eyebrow">สถานีบริการน้ำมันเชื้อเพลิง</p>
+        <h2 class="choice-modal-title" id="station-title">ข้อมูลสถานีบริการน้ำมัน</h2>
+        <p class="choice-modal-intro" id="station-intro">เลือกมุมมองที่ต้องการสำรวจ</p>
+        <div class="choice-modal-grid">
+          ${[
+            { key:'price', label:'PRICE', title:'ราคา', sub:'ดูข้อมูลราคาน้ำมัน<br>แยกตามบริษัทผู้ค้า', cta:'ดูข้อมูลราคา' },
+            { key:'volume', label:'VOLUME', title:'ปริมาณ', sub:'ดูปริมาณจำหน่ายทั่วประเทศ<br>แยกตามจังหวัดและสาขาธุรกิจ', cta:'ดูข้อมูลปริมาณ' }
+          ].map(o => `<a class="choice-card choice-card--${o.key}" href="${STATION_DESTINATIONS[o.key]}">
+            <span class="choice-card-top"><span class="choice-card-icon"><svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round">${icons[o.key]}</svg></span><span class="choice-card-label" aria-hidden="true">${o.label}</span></span>
+            <span class="choice-card-title">${o.title}</span><span class="choice-card-sub">${o.sub}</span>
+            <span class="choice-card-cta">${o.cta}<span class="choice-card-arrow" aria-hidden="true">→</span></span>
+          </a>`).join('')}
+        </div>
+        <div class="choice-modal-footer"><span>ราคาและปริมาณการจำหน่ายน้ำมันเชื้อเพลิง</span><span>กด <kbd>Esc</kbd> เพื่อกลับ</span></div>`;
+      document.body.appendChild(modal);
+      let previousOverflow = '';
+      function openModal() {
+        if (modal.open) return;
+        previousOverflow = document.body.style.overflow;
+        modal.showModal();
+        document.body.style.overflow = 'hidden';
+        trigger.setAttribute('aria-expanded', 'true');
       }
-
-      function fillOverlay(id) {
-        const data = CHOICE_OPTIONS[id];
-        if (!data) return null;
-        const overlay = buildOverlay();
-        overlay.querySelector(".choice-modal-eyebrow").textContent = data.eyebrow;
-        overlay.querySelector(".choice-modal-title").textContent = data.title;
-        overlay.querySelector(".choice-modal-grid").innerHTML = data.options.map(opt => `
-          <a class="choice-card choice-card--${opt.key}" href="${opt.href}">
-            <span class="choice-card-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${opt.icon}</svg></span>
-            <span class="choice-card-title">${opt.title}</span>
-            <span class="choice-card-sub">${opt.sub}</span>
-          </a>
-        `).join("");
-        return overlay;
-      }
-
-      function openModal(block) {
-        const overlay = fillOverlay(block.dataset.id);
-        if (!overlay) return;
-        lastFocusedEl = document.activeElement;
-        overlay.classList.add("is-open");
-        block.setAttribute("aria-expanded", "true");
-        document.body.style.overflow = "hidden";
-        const closeBtn = overlay.querySelector(".choice-modal-close");
-        if (closeBtn) closeBtn.focus();
-      }
-
-      function closeModal() {
-        if (!overlayEl) return;
-        overlayEl.classList.remove("is-open");
-        choiceBlocks.forEach(b => b.setAttribute("aria-expanded", "false"));
-        document.body.style.overflow = "";
-        if (lastFocusedEl && typeof lastFocusedEl.focus === "function") lastFocusedEl.focus();
-      }
-
-      choiceBlocks.forEach(block => {
-        block.addEventListener("click", (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-          openModal(block);
-        });
-
-        block.addEventListener("keydown", (e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault();
-            openModal(block);
-          }
-        });
+      trigger.addEventListener('click', e => { e.preventDefault(); openModal(); });
+      trigger.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); openModal(); }
       });
-
-      document.addEventListener("keydown", (e) => {
-        if (e.key === "Escape" && overlayEl && overlayEl.classList.contains("is-open")) {
-          closeModal();
-        }
+      modal.querySelector('.choice-modal-close').addEventListener('click', () => modal.close());
+      let beganOutside = false;
+      function outside(e) { const r=modal.getBoundingClientRect(); return e.clientX<r.left || e.clientX>r.right || e.clientY<r.top || e.clientY>r.bottom; }
+      modal.addEventListener('pointerdown', e => { beganOutside = outside(e); });
+      modal.addEventListener('click', e => { if(e.target===modal && beganOutside && outside(e)) modal.close(); });
+      modal.addEventListener('close', () => {
+        document.body.style.overflow = previousOverflow;
+        trigger.setAttribute('aria-expanded', 'false');
+        trigger.focus({preventScroll:true});
       });
     })();
 
-    window.addEventListener("load", drawConnections);
-    setTimeout(drawConnections, 150);
+    window.addEventListener("load", () => {
+      fitMobileFlow();
+      requestAnimationFrame(drawConnections);
+    });
+    setTimeout(() => {
+      fitMobileFlow();
+      drawConnections();
+    }, 180);
 
     // ===== stagger fade-in delay per card (in DOM order) =====
     document.querySelectorAll(".block").forEach((el, i) => {
@@ -1911,18 +1976,39 @@
     // ผ่านตัวหน่วงเดียวกัน (debounce) กันไม่ให้หลายตัวยิงซ้อนกันจนวาดเส้นค้าง
     // เป็นเส้นเกินตอนกำลังซูมเข้า-ออก
     let redrawTimer = null;
+    let redrawRaf = null;
     function scheduleRedraw() {
       if (redrawTimer) clearTimeout(redrawTimer);
-      redrawTimer = setTimeout(() => requestAnimationFrame(drawConnections), 60);
+      if (redrawRaf) cancelAnimationFrame(redrawRaf);
+
+      // pass แรก: วาดทันทีหลัง layout รอบปัจจุบัน
+      redrawRaf = requestAnimationFrame(() => {
+        fitMobileFlow();
+        requestAnimationFrame(drawConnections);
+      });
+
+      // pass ที่สอง: รอ browser จบการ reflow จาก zoom / font / scrollbar แล้ววาดย้ำ
+      redrawTimer = setTimeout(() => {
+        fitMobileFlow();
+        requestAnimationFrame(drawConnections);
+      }, 140);
     }
 
     window.addEventListener("resize", scheduleRedraw);
+    window.addEventListener("orientationchange", scheduleRedraw);
     if (window.ResizeObserver) {
-      new ResizeObserver(scheduleRedraw).observe(flowWrap);
+      const flowResizeObserver = new ResizeObserver(scheduleRedraw);
+      flowResizeObserver.observe(flowWrap);
+      const flowGrid = document.getElementById("flow-grid");
+      if (flowGrid) flowResizeObserver.observe(flowGrid);
+      document.querySelectorAll(".block[data-id]").forEach(el => flowResizeObserver.observe(el));
     }
     if (window.visualViewport) {
       window.visualViewport.addEventListener("resize", scheduleRedraw);
       window.visualViewport.addEventListener("scroll", scheduleRedraw);
+    }
+    if (document.fonts && document.fonts.ready) {
+      document.fonts.ready.then(scheduleRedraw).catch(() => {});
     }
   </script>
 </body>
