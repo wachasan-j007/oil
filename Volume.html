@@ -2,7 +2,7 @@
 <html lang="th" data-theme="light">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="viewport" content="width=1200, viewport-fit=cover, user-scalable=yes">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#f4f7fb">
 <script>
@@ -14,7 +14,6 @@ try{document.documentElement.dataset.theme=localStorage.getItem('eppo_theme')===
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Kanit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
 :root{--font-scale:1;--site-font-weight:400;--site-heading-weight:600}
@@ -198,8 +197,8 @@ select,input[type="search"]{height:40px;font-size:calc(11px * var(--font-scale))
 #productCompareChart{height:450px;min-width:0;min-height:0;background:none}
 .compare-controls,.entity-compare-controls{display:flex;align-items:end;flex-wrap:wrap;gap:9px;margin:0;padding:8px 20px 12px}
 .entity-compare-controls .field{flex:1 1 160px}
-.entity-add-btn,.entity-clear-btn,.export-btn,.page-btn,.year-picker-btn,.modal-reset{padding:9px 13px;min-height:36px;border:1px solid #d9e5f1;background:#f7fafe;border-radius:8px;font-size:11px;color:#426583}
-.entity-add-btn,.export-btn{background:var(--navy);color:#fff;border-color:var(--navy)}
+.entity-add-btn,.entity-clear-btn,.page-btn,.year-picker-btn,.modal-reset{padding:9px 13px;min-height:36px;border:1px solid #d9e5f1;background:#f7fafe;border-radius:8px;font-size:11px;color:#426583}
+.entity-add-btn{background:var(--navy);color:#fff;border-color:var(--navy)}
 .year-picker{position:relative}
 .year-menu{position:absolute;top:calc(100% + 5px);left:0;z-index:100;min-width:225px;max-height:280px;overflow:auto;padding:12px;background:#fff;border:1px solid var(--line);border-radius:10px;box-shadow:0 10px 30px #1a385523}
 .year-actions{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.year-actions button{font-size:10px;border:1px solid var(--line);background:#f3f7fa;border-radius:6px;padding:5px}
@@ -257,7 +256,7 @@ body.chart-modal-active{overflow:hidden}
 .chart-modal-filterbar select{width:100%;height:36px}.chart-modal-filterbar .modal-reset{align-self:end}
 .chart-font-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:10px;padding:12px 22px;background:#f6f9fd;font-size:11px}
 @media(min-width:1450px){.shell{padding-top:24px}.overview-grid{grid-template-columns:minmax(0,2.1fr) minmax(300px,1fr)}#nationalTrendChart{height:315px}}
-@media(max-width:1250px){.filter-grid{grid-template-columns:80px 115px minmax(170px,1.4fr) minmax(130px,1fr) minmax(125px,1fr)}.unit-badge,.reset-btn{height:31px}.unit-badge{grid-column:1/3}.reset-btn{grid-column:5}.header-inner{flex-wrap:wrap;gap:10px}.brand{flex:1 1 500px}.header-status{margin-left:auto}.product-analysis-layout{grid-template-columns:200px minmax(0,1fr)}}
+@media(max-width:1180px){.filter-grid{grid-template-columns:80px 115px minmax(170px,1.4fr) minmax(130px,1fr) minmax(125px,1fr)}.unit-badge,.reset-btn{height:31px}.unit-badge{grid-column:1/3}.reset-btn{grid-column:5}.header-inner{flex-wrap:wrap;gap:10px}.brand{flex:1 1 500px}.header-status{margin-left:auto}.product-analysis-layout{grid-template-columns:200px minmax(0,1fr)}}
 @media(max-width:980px){.shell{padding:16px}.header-inner{padding:10px 16px}.header-status{gap:5px}.overview-grid{grid-template-columns:minmax(0,1.5fr) minmax(240px,1fr)}.chart-grid,.geo-grid{grid-template-columns:minmax(0,1fr)}.card-title{flex-basis:220px}.filter-grid{grid-template-columns:85px 120px minmax(160px,1fr)}.company-field{grid-column:1/3}.secondary-field{grid-column:3}.unit-badge{grid-column:1/3}.reset-btn{grid-column:3}.dataset-line{max-width:100%}.executive-hero{padding:23px}.hero-meta{min-width:170px}.kpi-card{padding:15px}.leader-item{padding:12px}.chart-modal-filterbar{grid-template-columns:repeat(3,minmax(0,1fr))}.chart-modal-filterbar .modal-reset{grid-column:auto}.legend-list{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){html{scroll-padding-top:105px}.app-header{position:relative}.header-inner{gap:10px}.brand{flex-basis:100%}.brand-copy h1{font-size:15px}.brand-copy p{font-size:8px}.header-status{width:100%;justify-content:flex-start}.latest-pill{margin-left:auto}.shell{padding:12px}.executive-hero{padding:22px;gap:14px;align-items:flex-start;flex-direction:column;margin-bottom:12px}.executive-hero h2{font-size:26px}.executive-hero p{font-size:11px}.hero-meta{padding:10px 0 0;border-left:0;border-top:1px solid #ffffff20;width:100%;display:flex;align-items:center;gap:10px;flex-wrap:wrap}.hero-meta strong{font-size:15px;margin:0}.hero-meta span{font-size:9px}.hero-meta small{font-size:10px}.control-center{position:relative;top:0;padding:12px;margin-bottom:14px}.control-top{display:block}.tab-switch{width:100%;margin-bottom:9px}.tab-btn{flex:1;justify-content:center;font-size:10px;padding:0 7px}.filter-grid{grid-template-columns:1fr 1fr;gap:9px}.product-field{grid-column:1/-1}.company-field{grid-column:1}.secondary-field{grid-column:2}.unit-badge{grid-column:1}.reset-btn{grid-column:2}.dataset-line{font-size:9px}.kpi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}.kpi-card{min-height:125px;padding:14px}.kpi-value{font-size:27px}.kpi-label{font-size:11px}.leader-strip{grid-template-columns:1fr 1fr}.leader-item:nth-child(2){border-right:0}.leader-item:last-child{grid-column:1/-1;display:flex;gap:10px;align-items:center;border-top:1px solid var(--line)}.leader-item:last-child small{margin:0}.leader-item:last-child .kpi-sub{margin-left:auto}.overview-grid{grid-template-columns:1fr;gap:12px}.insight-card{display:grid;grid-template-columns:1fr 1fr;gap:0 18px;padding:18px}.insight-card h2,.insight-eyebrow,.insight-note{grid-column:1/-1}.insight-card h2{margin-bottom:10px}.insight-metric strong{font-size:23px}.product-analysis-layout,.panel.chart-modal .product-analysis-layout{grid-template-columns:minmax(0,1fr)!important}.product-top-kpi{padding:15px 18px;display:grid;grid-template-columns:1fr 1fr;gap:3px 14px}.product-top-label,.product-top-period{grid-column:1/-1}.product-top-name{font-size:17px;margin:3px 0}.product-top-value{font-size:17px;margin:3px 0}.product-top-yoy{margin:0;font-size:11px;grid-column:1/-1}.product-top-period{margin:3px 0 0;font-size:9px}.section-heading{margin-top:20px}.section-heading h2{font-size:16px}.section-heading p{font-size:10px}.section-tag{display:none}.card-head{padding:16px 15px 8px}.card-title h2{font-size:15px}.card-title{flex:1 1 160px}.chart-tools,.chart-head-actions{justify-content:flex-start}.legend-list{grid-template-columns:repeat(2,minmax(0,1fr));padding:0 13px 14px}.table-tools{padding:8px 14px 12px}.table-summary{order:3;width:100%}.table-wrap{margin:0 12px}.panel.chart-modal{width:98vw!important;height:96dvh!important;max-height:96dvh!important;border-radius:12px!important}.panel.chart-modal .card-head{padding:12px}.chart-modal-filterbar{grid-template-columns:1fr 1fr;padding:12px}.chart-modal-filterbar .modal-reset{grid-column:auto}.panel.chart-modal .legend-list{grid-template-columns:repeat(2,minmax(0,1fr))}.chart-font-toolbar{padding:12px}.font-control input{width:54px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{transition:none!important;animation-duration:.01ms!important}}
@@ -294,7 +293,7 @@ select option{background:var(--panel);color:var(--text)}
 .reset-btn,.leader-strip,.year-menu,.map-card-strong,.loader-box{background:var(--panel);color:var(--text);border-color:var(--line)}
 .chart-tool,.tab-btn{color:var(--text-2)}
 .tab-switch,.chart-modal-filterbar,.chart-font-toolbar{background:var(--panel-soft)}
-.tab-btn.active,.chart-tool.active,.entity-add-btn,.export-btn{background:var(--navy);color:#fff}
+.tab-btn.active,.chart-tool.active,.entity-add-btn{background:var(--navy);color:#fff}
 .unit-badge,.chart-unit-badge,.data-count,.section-index,.entity-chip{background:var(--accent-soft);border-color:var(--line);color:var(--text-2)}
 .entity-chip button,.legend-entry b{color:var(--text)}
 .product-scope{color:var(--blue)}
@@ -536,7 +535,7 @@ html[data-theme="dark"] .chart-unit-line .unit-note{color:#9fb0c5}
 .entity-selected{padding:2px 24px 12px}
 .entity-chip{padding:6px 10px;border-color:var(--line);border-radius:20px;background:var(--accent-soft);color:var(--text-2)}
 .entity-compare-context{padding:0 24px 12px}
-.entity-add-btn,.export-btn{background:linear-gradient(125deg,#3e65cd,#304fae);color:#fff;border:0;box-shadow:0 3px 7px #26489220}
+.entity-add-btn{background:linear-gradient(125deg,#3e65cd,#304fae);color:#fff;border:0;box-shadow:0 3px 7px #26489220}
 .entity-clear-btn,.year-picker-btn,.page-btn{background:var(--panel-soft);border-color:var(--line);color:var(--text-2)}
 .table-tools{padding:3px 24px 18px}
 .table-wrap{margin:0 24px;border-radius:12px;border-color:var(--line)}
@@ -547,8 +546,13 @@ td{font-size:12px;padding:13px 12px}
 .panel.chart-modal{background:linear-gradient(155deg,var(--card-top),var(--card-bottom))!important;border:1px solid var(--line);border-radius:22px!important}
 .panel.chart-modal .card-head{background:var(--panel);border-bottom:1px solid var(--line)}
 .chart-modal-filterbar,.chart-font-toolbar{background:var(--panel-soft)}
+
+.value-chain-back{display:inline-flex;align-items:center;gap:7px;height:34px;padding:0 12px;border:1px solid var(--line);border-radius:9px;background:var(--panel-soft);color:var(--text-2);text-decoration:none;font-size:10px;font-weight:600;white-space:nowrap;transition:transform .15s ease,background .15s ease,border-color .15s ease}
+.value-chain-back:hover{transform:translateY(-1px);background:var(--panel);border-color:#b9cce0;color:var(--navy)}
+.value-chain-back svg{width:15px;height:15px;flex:none}
+
 @media(min-width:1450px){.shell{padding-top:28px}.overview-grid{grid-template-columns:minmax(0,2.3fr) minmax(300px,1fr)}}
-@media(max-width:1250px){
+@media(max-width:1180px){
  .header-inner{gap:12px;flex-wrap:wrap}.brand{flex:1 1 540px}.header-status{margin-left:auto}
  .filter-grid{grid-template-columns:80px 115px minmax(160px,1.4fr) minmax(130px,1fr) minmax(125px,1fr)}
  .unit-badge{grid-column:1/3;height:32px}.reset-btn{grid-column:5;height:32px}
@@ -612,6 +616,10 @@ td{font-size:12px;padding:13px 12px}
 
 
 </style>
+
+  <style id="desktop-mirror-mobile">
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  </style>
 </head>
 
 <body>
@@ -619,7 +627,7 @@ td{font-size:12px;padding:13px 12px}
   <div class="loader-box">
     <div class="loader-ring" id="loaderRing"></div>
     <h3 id="loadingTitle">กำลังเตรียม Dashboard</h3>
-    <p id="loadingMessage">กำลังเชื่อมต่อฐานข้อมูล Supabase...</p>
+    <p id="loadingMessage">กำลังเชื่อมต่อ PostgreSQL Docker...</p>
     <div class="progress" id="progressWrap"><span id="progressBar"></span></div>
     <div class="error-box" id="errorBox"></div>
   </div>
@@ -640,6 +648,10 @@ td{font-size:12px;padding:13px 12px}
       </div>
     </div>
     <div class="header-status">
+      <a class="value-chain-back" href="index.html" title="กลับหน้า Petroleum Value Chain">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 12H5"/><path d="m12 19-7-7 7-7"/></svg>
+        <span>Value Chain</span>
+      </a>
       <div class="font-control" title="เลื่อนเพื่อปรับขนาดตัวอักษรและตัวหนังสือในกราฟ">
         <span class="a-small">A</span>
         <input id="fontScaleRange" type="range" min="80" max="145" step="1" value="100" aria-label="ขนาดตัวอักษร">
@@ -959,7 +971,6 @@ td{font-size:12px;padding:13px 12px}
         <input type="search" id="tableSearch" placeholder="ค้นหาบริษัท / จังหวัด / สาขาธุรกิจ / ผลิตภัณฑ์...">
       </div>
       <div class="table-summary" id="tableSummary">—</div>
-      <button class="export-btn" id="exportCsv" type="button">Export CSV</button>
     </div>
 
     <div class="table-wrap">
@@ -1000,29 +1011,11 @@ td{font-size:12px;padding:13px 12px}
 'use strict';
 
 /* ============================================================
-   DATA SOURCE — SUPABASE v6 SLIM
-   ใส่ Project URL + Publishable key (anon/public) ของ Supabase ตรงนี้
-   ห้ามใส่ service_role, sb_secret, DATABASE_URL หรือรหัสผ่านฐานข้อมูล
+   DATA SOURCE — LOCAL DOCKER API
+   Browser -> Nginx /api -> FastAPI -> PostgreSQL Docker
+   ไม่มี Supabase URL / key / DATABASE_URL อยู่ในหน้าเว็บ
    ============================================================ */
-const SUPABASE_URL = 'https://gyusawedgtzqgsnxztok.supabase.co';
-const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_DQD4NWas1VRl7eMOnbWLLA_hfOSVqoC';
-
-const db = supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_PUBLISHABLE_KEY,
-  {
-    auth:{persistSession:false,autoRefreshToken:false,detectSessionInUrl:false}
-  }
-);
-
-const VIEW_BY_MODE = {
-  province:'dashboard_province_company_volume',
-  business:'dashboard_business_company_volume'
-};
-const AREA_COLUMN_BY_MODE = {
-  province:'province',
-  business:'business_sector'
-};
+const API_BASE = '/api';
 
 /* ---------- FAST v2: session cache ----------
    ลดการยิง RPC ซ้ำเวลาเปลี่ยนปี/ย้อนกลับปีเดิม
@@ -1320,151 +1313,36 @@ function updateModeUI(){
 }
 
 /* ============================================================
-   SUPABASE DATA LAYER
-   คง interface workerCall(...) เดิมไว้ เพื่อให้ UI / กราฟเดิมใช้ต่อได้
-   แต่เปลี่ยนแหล่งข้อมูลจาก CSV.GZ เป็น PostgreSQL ผ่าน Supabase
+   LOCAL DOCKER API DATA LAYER
+   API อยู่ใน Docker และเชื่อม private PostgreSQL โดยตรง
    ============================================================ */
 
-const DB_PAGE_SIZE = 1000;
-const MAX_FETCH_ROWS = 250000;
-
-function assertSupabaseConfig(){
-  if(
-    !SUPABASE_URL ||
-    SUPABASE_URL.includes('PASTE_YOUR_') ||
-    !SUPABASE_PUBLISHABLE_KEY ||
-    SUPABASE_PUBLISHABLE_KEY.includes('PASTE_YOUR_')
-  ){
-    throw new Error(
-      'ยังไม่ได้ใส่ SUPABASE_URL และ SUPABASE_PUBLISHABLE_KEY ในไฟล์ HTML'
-    );
+async function apiJson(path, options={}){
+  const res=await fetch(API_BASE+path,{
+    headers:{'Content-Type':'application/json',...(options.headers||{})},
+    ...options
+  });
+  let body=null;
+  try{body=await res.json()}catch(_){body=null}
+  if(!res.ok){
+    const msg=body?.detail||body?.message||`API HTTP ${res.status}`;
+    throw new Error(msg);
   }
+  return body;
+}
+function apiPost(path,mode,filters){
+  return apiJson(path,{method:'POST',body:JSON.stringify({mode,filters})});
 }
 
-function tableForMode(mode){
-  const table=VIEW_BY_MODE[mode];
-  if(!table)throw new Error('Unknown mode: '+mode);
-  return table;
-}
-function areaColumnForMode(mode){
-  return AREA_COLUMN_BY_MODE[mode] || 'province';
-}
-function unitForProductName(product){
-  return product===LPG_NAME?'พันกิโลกรัม':'พันลิตร';
-}
-function normalizeDbError(error){
-  if(!error)return new Error('Supabase query failed');
-  const parts=[error.message,error.details,error.hint].filter(Boolean);
-  return new Error(parts.join(' · '));
-}
-
-/* ดึงข้อมูลแบบแบ่งหน้า ป้องกัน PostgREST limit 1,000 rows */
-async function fetchAllRows(table,columns,buildQuery,progressLabel='ข้อมูล'){
-  let out=[],from=0;
-  while(true){
-    let q=db.from(table).select(columns).order('year').order('month').order(table===VIEW_BY_MODE.business?'business_sector':'province').order('company').order('product').range(from,from+DB_PAGE_SIZE-1);
-    if(buildQuery)q=buildQuery(q);
-    const {data,error}=await q;
-    if(error)throw normalizeDbError(error);
-    const batch=data||[];
-    out.push(...batch);
-
-    if(out.length>MAX_FETCH_ROWS){
-      throw new Error(
-        `คำค้นหานี้คืนข้อมูลเกิน ${MAX_FETCH_ROWS.toLocaleString()} แถว กรุณาเลือกปี/เดือน/ผลิตภัณฑ์ให้แคบลง`
-      );
-    }
-
-    if(batch.length<DB_PAGE_SIZE)break;
-    from+=DB_PAGE_SIZE;
-    $('loadingMessage').textContent=`กำลังอ่าน${progressLabel} ${out.length.toLocaleString('th-TH')} แถว...`;
-  }
-  return out;
-}
-
-function applyProductFilter(q,product){
-  if(product===ALL_OIL){
-    return q.neq('product',LPG_NAME).eq('unit','พันลิตร');
-  }
-  if(product){
-    return q.eq('product',product).eq('unit',unitForProductName(product));
-  }
-  return q;
-}
-
-function applyCommonFilters(q,mode,f,{month=true,company=true,secondary=true}={}){
-  if(f.year!=null&&f.year!=='')q=q.eq('year',Number(f.year));
-  if(month&&f.month!=='')q=q.eq('month',Number(f.month));
-  q=applyProductFilter(q,f.product);
-  if(company&&f.company)q=q.eq('company',f.company);
-  if(secondary&&f.secondary)q=q.eq(areaColumnForMode(mode),f.secondary);
-  return q;
-}
-
-async function loadMetaFromSupabase(){
-  assertSupabaseConfig();
-
-  const [
-    {data:periodRows,error:periodErr},
-    {data:provinceRows,error:provinceErr},
-    {data:businessRows,error:businessErr}
-  ]=await Promise.all([
-    db.from('dim_period').select('year,month').order('year',{ascending:true}).order('month',{ascending:true}),
-    db.from('dim_province').select('province_name').order('province_name',{ascending:true}),
-    db.from('dim_business_sector').select('business_sector_name').order('business_sector_name',{ascending:true})
-  ]);
-
-  if(periodErr)throw normalizeDbError(periodErr);
-  if(provinceErr)throw normalizeDbError(provinceErr);
-  if(businessErr)throw normalizeDbError(businessErr);
-
-  const periods=(periodRows||[])
-    .map(r=>({year:Number(r.year),month:Number(r.month)}))
-    .filter(r=>Number.isFinite(r.year)&&Number.isFinite(r.month));
-
-  if(!periods.length)throw new Error('dim_period ยังไม่มีข้อมูล กรุณารันตัวอัปเดตข้อมูลก่อน');
-
-  const years=[...new Set(periods.map(r=>r.year))].sort((a,b)=>a-b);
-  const periodKeys=periods.map(r=>`${r.year}-${String(r.month).padStart(2,'0')}`);
-  const latest=periods.reduce((best,r)=>{
-    if(!best)return r;
-    return (r.year>best.year||(r.year===best.year&&r.month>best.month))?r:best;
-  },null);
-
-  return {
-    years,
-    periods:periodKeys,
-    latest_period:`${latest.year}-${String(latest.month).padStart(2,'0')}`,
-    provinces:(provinceRows||[]).map(r=>r.province_name).filter(Boolean),
-    business_sectors:(businessRows||[]).map(r=>r.business_sector_name).filter(Boolean),
-    sources:{}
-  };
+async function loadMetaFromLocalApi(){
+  return apiJson('/meta');
 }
 
 async function queryStoreDb(mode,f){
   const cacheKey=stableCacheKey('query',mode,f);
   const cached=getDashCache('query',cacheKey);
   if(cached)return cached;
-
-  const {data,error}=await db.rpc('dashboard_volume_query',{
-    p_mode:mode,
-    p_year:Number(f.year),
-    p_month:f.month===''?null:Number(f.month),
-    p_product:f.product||ALL_OIL,
-    p_company:f.company||null,
-    p_secondary:f.secondary||null,
-    p_search:f.search||null,
-    p_page:Math.max(1,Number(f.page)||1),
-    p_page_size:Math.min(100,Math.max(1,Number(f.pageSize)||50))
-  });
-  if(error)throw normalizeDbError(error);
-
-  const result=data||{
-    total:0,rawCount:0,searchCount:0,
-    companyAgg:[],areaAgg:[],table:[],
-    page:Math.max(1,Number(f.page)||1),
-    pageSize:Number(f.pageSize)||50
-  };
+  const result=await apiPost('/query',mode,f);
   return setDashCache('query',cacheKey,result);
 }
 
@@ -1472,35 +1350,15 @@ async function availabilityDb(mode,f){
   const cacheKey=stableCacheKey('availability',mode,f);
   const cached=getDashCache('availability',cacheKey);
   if(cached)return cached;
-
-  const {data,error}=await db.rpc('dashboard_volume_availability',{
-    p_mode:mode,
-    p_year:Number(f.year),
-    p_product:f.product||ALL_OIL,
-    p_company:f.company||null,
-    p_secondary:f.secondary||null
-  });
-  if(error)throw normalizeDbError(error);
-
-  return setDashCache(
-    'availability',
-    cacheKey,
-    data||{products:[],areas:[],companies:[]}
-  );
+  const result=await apiPost('/availability',mode,f);
+  return setDashCache('availability',cacheKey,result||{products:[],areas:[],companies:[]});
 }
-
 
 async function loadProductComparison(){
   const f={year:state.year,month:state.month,product:state.product,company:state.company,secondary:state.secondary},mode=state.mode;
   const cacheKey=stableCacheKey('product',mode,f),cached=getDashCache('product',cacheKey);
   if(cached)return cached;
-  const fetchMonth=async month=>{
-    const {data,error}=await db.rpc('dashboard_product_comparison',{
-      p_mode:mode,p_year:Number(f.year),p_month:Number(month),p_product:f.product||ALL_OIL,p_company:f.company||null,p_secondary:f.secondary||null
-    });
-    if(error)throw normalizeDbError(error);
-    return data||{items:[],topProduct:null};
-  };
+  const fetchMonth=async month=>apiPost('/product-comparison',mode,{...f,month:String(month)});
   if(f.month!=='')return setDashCache('product',cacheKey,await fetchMonth(f.month));
   const months=Array.from({length:12},(_,i)=>i+1).filter(m=>hasPeriod(f.year,m));
   const results=[],queue=[...months];
@@ -1514,7 +1372,6 @@ async function loadProductComparison(){
   const items=[...byProduct.values()].map(r=>({...r,changePct:previousComplete?percentChange(r.current,r.previous):null})).sort((a,b)=>b.current-a.current);
   return setDashCache('product',cacheKey,{items,topProduct:items.find(r=>r.current>0)||null,comparedMonths:months,previousComplete});
 }
-
 
 async function compareYearsDb(mode,f){
   const years=[...new Set((f.years||[]).map(Number))].sort((a,b)=>a-b);
@@ -1531,88 +1388,14 @@ async function compareYearsDb(mode,f){
 }
 
 async function entityOptionsDb(mode,f){
-  const areaCol=areaColumnForMode(mode);
-  const rows=await fetchAllRows(
-    tableForMode(mode),
-    `${areaCol},company,volume`,
-    q=>applyCommonFilters(q,mode,{...f,month:''},{month:false,company:false,secondary:false}),
-    'รายการเปรียบเทียบ'
-  );
-
-  const companies=new Set(),areas=new Set();
-  for(const r of rows){
-    const v=Number(r.volume);
-    if(!Number.isFinite(v)||v===0)continue;
-    const company=String(r.company||'').trim();
-    const area=String(r[areaCol]||'').trim();
-    if(!f.secondary||area===f.secondary){
-      if(company)companies.add(company);
-    }
-    if(!f.company||company===f.company){
-      if(area)areas.add(area);
-    }
-  }
-  return {companies:[...companies],areas:[...areas]};
+  return apiPost('/entity-options',mode,f);
 }
 
 async function compareEntitiesDb(mode,f){
-  const selected=[...(f.entities||[])];
-  if(!selected.length)return [];
-
-  const areaCol=areaColumnForMode(mode);
-  const dimension=f.dimension==='area'?areaCol:'company';
-  const rows=await fetchAllRows(
-    tableForMode(mode),
-    `year,month,${areaCol},company,product,volume,unit`,
-    q=>{
-      q=q.eq('year',Number(f.year));
-      q=applyProductFilter(q,f.product);
-      q=q.in(dimension,selected);
-      if(f.dimension==='company'&&f.secondary)q=q.eq(areaCol,f.secondary);
-      if(f.dimension==='area'&&f.company)q=q.eq('company',f.company);
-      return q;
-    },
-    'ข้อมูลเปรียบเทียบรายการ'
-  );
-
-  const byEntity=new Map(selected.map(name=>[name,new Float64Array(12)]));
-  const seen=new Set();
-  for(const r of rows){
-    const name=String(r[dimension]||'');
-    const arr=byEntity.get(name);
-    const m=Number(r.month),v=Number(r.volume);
-    if(!arr||!Number.isFinite(m)||!Number.isFinite(v))continue;
-    if(m>=1&&m<=12){arr[m-1]+=v;seen.add(name+'-'+m);}
-  }
-
-  return selected.map(name=>({
-    name,
-    months:Array.from(byEntity.get(name)||new Float64Array(12),(v,i)=>seen.has(name+'-'+(i+1))?v:null)
-  }));
+  return apiPost('/compare-entities',mode,f);
 }
 
-async function exportRowsDb(mode,f){
-  const areaCol=areaColumnForMode(mode);
-  const rows=await fetchAllRows(
-    tableForMode(mode),
-    `year,month,product,${areaCol},company,volume,unit`,
-    q=>applyCommonFilters(q,mode,f),
-    'ข้อมูลสำหรับ Export'
-  );
 
-  const qtext=(f.search||'').trim().toLowerCase();
-  const out=[];
-  for(const r of rows){
-    const v=Number(r.volume);
-    if(!Number.isFinite(v)||v===0)continue;
-    const company=String(r.company||'').trim();
-    const area=String(r[areaCol]||'').trim();
-    const product=String(r.product||'').trim();
-    if(qtext&&!((company+' '+area+' '+product).toLowerCase().includes(qtext)))continue;
-    out.push([Number(r.year),Number(r.month),product,area,company,v]);
-  }
-  return out;
-}
 
 /* Compatibility shim: UI เดิมยังเรียก workerCall(...) ได้ */
 async function workerCall(payload){
@@ -1627,8 +1410,6 @@ async function workerCall(payload){
       return {result:await compareEntitiesDb(payload.mode,payload.filters)};
     case 'entityOptions':
       return {result:await entityOptionsDb(payload.mode,payload.filters)};
-    case 'export':
-      return {rows:await exportRowsDb(payload.mode,payload.filters)};
     case 'load':
       return {meta:{count:0}};
     default:
@@ -2541,22 +2322,6 @@ function showRenderError(error){
 
 function filterPayload(){return {year:state.year,month:state.month,product:state.product,company:state.company,secondary:state.secondary,search:state.tableQuery,page:state.tablePage,pageSize:PAGE_SIZE};}
 
-/* ---------- CSV export ---------- */
-async function exportCsv(){
-  if(!state.lastResult)return;
-  const btn=$('exportCsv'),old=btn.textContent;btn.textContent='กำลังสร้าง...';btn.disabled=true;
-  try{
-    const m=await workerCall({type:'export',mode:state.mode,filters:filterPayload()});
-    const total=state.lastResult.total;
-    const header=['ปี พ.ศ.','เดือน','ผลิตภัณฑ์',state.mode==='province'?'จังหวัด':'สาขาธุรกิจ','บริษัท',`ปริมาณ (${displayUnit()})`,'Market Share (%)'];
-    const lines=[header,...m.rows.map(r=>[r[0],TH_MONTHS[r[1]-1],displayProduct(r[2]),r[3],r[4],toDisplayVolume(Number(r[5])).toFixed(6),total?(r[5]/total*100).toFixed(4):'0'])];
-    const csv='\ufeff'+lines.map(a=>a.map(v=>`"${String(v).replaceAll('"','""')}"`).join(',')).join('\r\n');
-    const blob=new Blob([csv],{type:'text/csv;charset=utf-8'}),a=document.createElement('a');
-    a.href=URL.createObjectURL(blob);a.download=`eppo-petroleum-volume-${state.mode}-${state.year}-${state.month||'all'}.csv`;a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),0);
-  }finally{btn.textContent=old;btn.disabled=false}
-}
-
 /* ---------- events ---------- */
 
 function applyFontScale(value,rerender=true){
@@ -2656,7 +2421,6 @@ function bindEvents(){
   });
   $('prevPage').addEventListener('click',()=>{if(state.tablePage>1){state.tablePage--;requestRender()}});
   $('nextPage').addEventListener('click',()=>{state.tablePage++;requestRender()});
-  $('exportCsv').addEventListener('click',exportCsv);
   $('fontScaleRange').addEventListener('input',e=>applyFontScale(e.target.value,true));
   $('themeToggle').addEventListener('click',()=>applyTheme(state.theme==='dark'?'light':'dark'));
 
@@ -2887,11 +2651,11 @@ function bindEvents(){
 /* ---------- bootstrap ---------- */
 async function boot(){
   try{
-    $('loadingTitle').textContent='กำลังเชื่อมต่อ Supabase';
+    $('loadingTitle').textContent='กำลังเชื่อมต่อ PostgreSQL Docker';
     $('loadingMessage').textContent='กำลังอ่านปี เดือน จังหวัด และสาขาธุรกิจจากฐานข้อมูล...';
     $('progressBar').style.width='22%';
 
-    const idx=await loadMetaFromSupabase();
+    const idx=await loadMetaFromLocalApi();
     state.index=idx;
     state.loaded.province=true;
     state.loaded.business=true;
@@ -2945,9 +2709,7 @@ async function boot(){
     box.innerHTML=`
       <strong>${escapeHtml(err.message)}</strong>
       <div style="margin-top:6px;color:var(--error-text);font-size:12px;line-height:1.7">
-        ตรวจสอบ 3 จุด: (1) ใส่ SUPABASE_URL และ Publishable key แล้ว
-        (2) รัน SQL สร้าง dashboard_province_company_volume / dashboard_business_company_volume
-        (3) เปิด SELECT ให้ anon ตามไฟล์ doeb_dashboard_views_security.sql
+        ตรวจสอบ 3 จุด: (1) eppo-api ต้องเป็น Up (2) PostgreSQL ต้องเป็น Up และมีข้อมูล (3) Nginx ต้อง proxy /api ไปที่ eppo-api
       </div>`;
   }
 }

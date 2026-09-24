@@ -2,13 +2,24 @@
 <html lang="th">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=1200, viewport-fit=cover, user-scalable=yes">
 <link rel="icon" href="assets/picture/or-logo-sm.png">
 <title>PTTOR Insight Dashboard | ราคาขายปลีกน้ำมัน สนพ.</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
 <script defer src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
-<link rel="stylesheet" href="assets/css-js/styles.css">
+<link rel="stylesheet" href="assets/css-js/styles.css?v=20260924-fullscreen2">
+<style id="outlier-header-theme">
+html[data-theme="light"] #outlierTable thead th {
+  color: #0F172A !important;
+  background-color: #E2E8F0 !important;
+  font-weight: 700;
+}
+</style>
+
+  <style id="desktop-mirror-mobile">
+    html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+  </style>
 </head>
 <body>
 
@@ -44,14 +55,14 @@
 <div class="topbar">
   <div class="topbar-row1">
     <div class="topbar-actions" style="margin-left:auto;">
-      <div class="size-switch" title="ขนาดตัวอักษร (ทั้งเว็บ)">
-        <button class="size-btn" data-size="small">เล็ก</button>
-        <button class="size-btn active" data-size="medium">กลาง</button>
-        <button class="size-btn" data-size="large">ใหญ่</button>
+      <div class="font-size-control" title="เลื่อนเพื่อปรับขนาดตัวอักษรทั้งเว็บ">
+        <span class="font-size-mark font-size-mark-sm">A</span>
+        <input id="fontSizeRange" type="range" min="80" max="150" step="5" value="100" aria-label="ปรับขนาดตัวอักษรทั้งเว็บ">
+        <span class="font-size-mark font-size-mark-lg">A</span>
+        <span id="fontSizeValue" class="font-size-value">100%</span>
       </div>
       <button class="icon-btn" id="themeToggle" title="สลับโหมดสี (สว่าง/มืด)">☀</button>
-      <button class="icon-btn" id="refreshData" title="โหลดข้อมูลล่าสุดจาก Supabase / SQL (ล้างแคช)">↻</button>
-      <button class="icon-btn" id="exportCsv" title="Export CSV">⬇</button>
+      <button class="icon-btn" id="refreshData" title="โหลดข้อมูลล่าสุดจาก PostgreSQL (ล้างแคช)">↻</button>
     </div>
   </div>
 </div>
@@ -92,7 +103,7 @@
       </div>
     </div>
     <div class="card">
-      <h3>Top 5 / Bottom 5 จังหวัด</h3>
+      <h3>Top 5 / Bottom 5 จังหวัด <span class="hint">· ใช้อำเภอแพงสุด/ถูกสุดของแต่ละจังหวัด · ไม่เฉลี่ย</span></h3>
       <div id="topBottomChart" class="echart"></div>
       <h3 style="margin-top:14px">สัดส่วนตามภาค</h3>
       <div id="regionPie" class="echart"></div>
@@ -135,11 +146,11 @@
 <div class="page" id="page-ranking">
   <div class="grid-half">
     <div class="card">
-      <h3>Top 20 จังหวัดแพงสุด</h3>
+      <h3>Top 20 จังหวัดราคาสูงสุด <span class="hint">· ใช้อำเภอที่แพงสุดของแต่ละจังหวัด</span></h3>
       <div id="rankTop" class="echart tall"></div>
     </div>
     <div class="card">
-      <h3>Bottom 20 จังหวัดถูกสุด</h3>
+      <h3>Bottom 20 จังหวัดราคาต่ำสุด <span class="hint">· ใช้อำเภอที่ถูกสุดของแต่ละจังหวัด</span></h3>
       <div id="rankBottom" class="echart tall"></div>
     </div>
   </div>
@@ -184,19 +195,8 @@
     <h3>แนวโน้มปริมาณจำหน่ายรายเดือน <span class="hint">ตามผลิตภัณฑ์/ภาค/จังหวัดที่เลือก — ทุกปีในไฟล์</span></h3>
     <div id="volTrendChart" class="echart tall"></div>
   </div>
-  <div class="card" style="margin-bottom:20px;">
-    <h3>เปรียบเทียบจังหวัด (ปริมาณ) <span class="hint">พิมพ์ค้นหาแล้วเลือกจังหวัด เพิ่มได้หลายรายการ</span></h3>
-    <div style="position:relative; max-width:320px; margin-bottom:10px;">
-      <input type="text" id="volCompareSearch" placeholder="พิมพ์ชื่อจังหวัด..." style="width:100%; font-family:inherit; font-size:calc(12.5px * var(--ui-scale)); padding:8px 12px; border-radius:9px; border:1px solid var(--border); background:var(--surface-solid); color:var(--text); outline:none;">
-      <div id="volCompareSearchResults" class="search-results" style="width:100%;"></div>
-    </div>
-    <div id="volCompareChips" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;"></div>
-    <div id="volCompareBar" class="echart tall"></div>
-    <div id="volCompareTrend" class="echart tall" style="margin-top:14px"></div>
-  </div>
   <div class="card">
     <h3>จัดอันดับจังหวัดตามปริมาณ (ทั้งหมด) <span class="hint" id="volRankHint"></span></h3>
-    <button class="small-btn" id="volExportExcel" style="margin-bottom:10px;">Export Excel</button>
     <div class="table-wrap"><table class="data-table" id="volRankTable"></table></div>
   </div>
 </div>
@@ -228,8 +228,9 @@
 
 <div class="footer-note">PTTOR Dashboard </div>
 
-<script defer src="assets/css-js/app.js"></script>
-<script defer src="assets/css-js/price.js"></script>
-<script defer src="assets/css-js/volume.js"></script>
+<script defer src="assets/css-js/config.js?v=20260914-db1"></script>
+<script defer src="assets/css-js/app.js?v=20260924-fullscreen2"></script>
+<script defer src="assets/css-js/price.js?v=20260910-fix7"></script>
+<script defer src="assets/css-js/volume.js?v=20260910-fix7"></script>
 </body>
 </html>
